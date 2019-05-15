@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
 #include "reader.hpp"
 
 u1 Reader::read_u1(FILE *fp){
@@ -12,8 +13,6 @@ u1 Reader::read_u1(FILE *fp){
 u2 Reader::read_u2(FILE* fp){
     unsigned short res = 0;
     unsigned char temp;
-
-    // pq eu nao leio 2 bytes direto ?
 
     fread(&res, 1, 1, fp);
     fread(&temp, 1, 1, fp);
