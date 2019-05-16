@@ -26,5 +26,5 @@ int main(int argc, char* argv[]) {
     // get constant pool length and create it
     class_file.constant_pool_length = Reader::read_u2(file_pointer);
     class_file.constant_pool = create_constant_pool(class_file.constant_pool_length, file_pointer);
-
+    
 }

@@ -1,5 +1,4 @@
-#ifndef UTILS_H_
-#define UTILS_H_
+#pragma once
 
 #include <iostream>
 #include <vector>
@@ -10,5 +9,3 @@
 
 bool magic_number(FILE*);
 std::vector<u2> version(FILE*);
-
-#endif

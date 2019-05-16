@@ -1,5 +1,4 @@
-#ifndef READER_H_
-#define READER_H_
+#pragma once
 
 #include <iostream>
 #include "base_types.hpp"
@@ -10,4 +9,3 @@ class Reader{
 		static u2 read_u2(FILE *fp);
 		static u4 read_u4(FILE *fp);
 };
-#endif

@@ -1,5 +1,4 @@
-#ifndef CLASS_FILE_H_
-#define CLASS_FILE_H_
+#pragma once
 
 #include "base_types.hpp"
 #include "constant_pool.hpp"
@@ -28,4 +27,3 @@ class Class_file{
 		
 		u2 attributes_count;
 };
-#endif
