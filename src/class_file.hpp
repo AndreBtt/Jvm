@@ -8,7 +8,7 @@ class Class_file{
 		u4 magic_number;
 
 		u2 min_version;
-		u2 max_version;
+		u2 major_version;
 
 		u2 constant_pool_length;
 		std::vector<Constant_pool_variables> constant_pool;

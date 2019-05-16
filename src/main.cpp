@@ -5,6 +5,7 @@
 #include "types.hpp"
 #include "utils.hpp"
 #include "reader.hpp"
+#include "display.hpp"
 
 int main(int argc, char* argv[]) {
     char* file_name = argv[1];
@@ -21,7 +22,7 @@ int main(int argc, char* argv[]) {
     // get versions
     std::vector<u2> versions = version(file_pointer);
     class_file.min_version = versions[0];
-    class_file.max_version = versions[1];
+    class_file.major_version = versions[1];
 
     // get constant pool length and create it
     class_file.constant_pool_length = Reader::read_u2(file_pointer);
@@ -44,4 +45,6 @@ int main(int argc, char* argv[]) {
     class_file.fields_count = Reader::read_u2(file_pointer);
 
     // TODO : create fiels , really complicate
+
+    display_class_file(class_file);
 }
