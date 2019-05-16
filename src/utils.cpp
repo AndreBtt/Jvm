@@ -18,3 +18,11 @@ std::vector<u2> version(FILE* file_pointer) {
 
     return version;    
 }
+
+std::vector<u2> create_interfaces(u2 interface_size, FILE* file_pointer) {
+    std::vector<u2> interface(interface_size);
+    for (u2 i = 0; i < interface_size; i++) {
+        interface[i] = Reader::read_u2(file_pointer);
+    }
+    return interface;
+}

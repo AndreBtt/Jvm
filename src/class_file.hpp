@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base_types.hpp"
+#include "types.hpp"
 #include "constant_pool.hpp"
 
 class Class_file{
@@ -20,8 +20,10 @@ class Class_file{
 		u2 super_class;
 		
 		u2 interfaces_count;
+		std::vector<u2> interfaces;
 		
 		u2 fields_count;
+		std::vector<field_info> fields;
 		
 		u2 methods_count;
 		

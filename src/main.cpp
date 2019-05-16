@@ -2,7 +2,7 @@
 #include <vector>
 
 #include "class_file.hpp"
-#include "base_types.hpp"
+#include "types.hpp"
 #include "utils.hpp"
 #include "reader.hpp"
 
@@ -27,4 +27,21 @@ int main(int argc, char* argv[]) {
     class_file.constant_pool_length = Reader::read_u2(file_pointer);
     class_file.constant_pool = create_constant_pool(class_file.constant_pool_length, file_pointer);
     
+    // get access flags
+    class_file.access_flags = Reader::read_u2(file_pointer);
+
+    // get this class
+    class_file.this_class = Reader::read_u2(file_pointer);
+
+    // get super class
+    class_file.super_class = Reader::read_u2(file_pointer);
+
+    // get interfaces size and create it
+    class_file.interfaces_count = Reader::read_u2(file_pointer);
+    class_file.interfaces = create_interfaces(class_file.interfaces_count, file_pointer);
+
+    // get fields size and create it
+    class_file.fields_count = Reader::read_u2(file_pointer);
+
+    // TODO : create fiels , really complicate
 }

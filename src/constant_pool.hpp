@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 
-#include "base_types.hpp"
+#include "types.hpp"
 
 #define CONSTANT_CLASS 7
 #define CONSTANT_FIELD_REF 9
@@ -16,7 +16,6 @@
 #define CONSTANT_DOUBLE 6
 #define CONSTANT_NAME_AND_TYPE 12
 #define CONSTANT_UTF8 1
-#define CONSTANT_INVALID 99
 
 struct Constant_pool_variables{
     u1 tag;
@@ -37,4 +36,4 @@ struct Constant_pool_variables{
     std::vector <u1> utf8_bytes;
 };
 
-std::vector<Constant_pool_variables> create_constant_pool(int, FILE*);
+std::vector<Constant_pool_variables> create_constant_pool(u2, FILE*);

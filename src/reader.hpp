@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include "base_types.hpp"
+#include "types.hpp"
 
 class Reader{
 	public:
