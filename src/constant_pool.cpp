@@ -2,11 +2,9 @@
 #include "reader.hpp"
 
 std::vector<Constant_pool_variables> create_constant_pool(u2 constant_pool_length, FILE* file_pointer) {
-    u2 pool_size = constant_pool_length - 1;
-    
-    std::vector<Constant_pool_variables> constant_pool(pool_size);
+    std::vector<Constant_pool_variables> constant_pool(constant_pool_length);
 
-    for(u2 i = 0; i < pool_size; i++) {
+    for(u2 i = 1; i < constant_pool_length; i++) {
         Constant_pool_variables current_variable;
         
         current_variable.tag = Reader::read_u1(file_pointer);

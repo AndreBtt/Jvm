@@ -24,14 +24,26 @@ struct Constant_pool_variables{
     but not all of them will be used,
     it depends on the tag value */
 
+    // Class info --- Name and Type
     u2 name_index;
+    // descriptor just name and type
+    u2 descriptor_index;
+
+    // Field ref info --- Method ref info --- Interface Method ref info
     u2 class_index;
     u2 name_and_type_index;
-    u2 descriptor_index;
+
+    // String
     u2 string_index;
+
+    // Integer --- Float
     u4 bytes;
+
+    // Long --- Double    
     u4 high_bytes;
     u4 low_bytes;
+
+    // UTF8
     u2 utf8_length;
     std::vector <u1> utf8_bytes;
 };
