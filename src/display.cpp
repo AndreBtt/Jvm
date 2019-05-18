@@ -5,7 +5,33 @@
 using namespace std;
 
 string format_UTF8(u2 utf8_length, vector <u1> utf8_bytes) {
-    // TODO
+    string formated_string = "";
+
+	for(int i = 0; i < utf8_bytes.size(); i++){
+        if (!(utf8_bytes[i] & 0x80)) { 
+            // 1 byte
+            // check if it is 1 byte encoded:
+            // if the bit 7 is 0
+            // is the same as if bit 7 is not 0
+			formated_string += (char)utf8_bytes[i];
+		} else {
+			if (!(utf8_bytes[i+1] & 0x20)) { 
+                // 2 bytes
+                // check if it is 2 byte encoded:
+                // if the bit 5 is 0
+                // is the same as if the bit 5 is not 1
+				formated_string += char(((utf8_bytes[i] & 0x1f) << 6) + (utf8_bytes[i+1] & 0x3f));
+                i++;
+			} else { 
+                // 3 bytes
+				formated_string += char(((utf8_bytes[i] & 0xf) << 12) + ((utf8_bytes[i+1] & 0x3f) << 6) + (utf8_bytes[i+2] & 0x3f));
+				i += 2;
+			}
+		}
+	}
+
+    return formated_string;
+
 }
 
 void display_class_name(vector<Constant_pool_variables> constant_pool, u2 index) {
@@ -15,7 +41,7 @@ void display_class_name(vector<Constant_pool_variables> constant_pool, u2 index)
     u2 utf8_length = constant_pool[name_index].utf8_length;
     vector <u1> utf8_bytes = constant_pool[name_index].utf8_bytes;
 
-    cout << format_UTF8(utf8_length, utf8_bytes) << endl;
+    cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << endl;
 }
 
 void display_access_flags(u2 accessFlags) {
