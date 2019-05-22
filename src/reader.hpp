@@ -1,6 +1,10 @@
 #pragma once
 
 #include <iostream>
+#include <vector>
+#include <stdio.h>
+#include <string>
+
 #include "types.hpp"
 
 class Reader{

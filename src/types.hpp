@@ -30,7 +30,7 @@ struct constant_pool_variables{
 
     // Class info --- Name and Type
     u2 name_index;
-    // descriptor just name and type
+    // descriptor just to Name and Type
     u2 descriptor_index;
 
     // Field ref info --- Method ref info --- Interface Method ref info

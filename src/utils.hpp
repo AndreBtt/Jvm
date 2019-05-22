@@ -5,7 +5,6 @@
 #include <stdio.h>
 #include <string>
 
-
 #include "types.hpp"
 #include "reader.hpp"
 #include "utils.hpp"

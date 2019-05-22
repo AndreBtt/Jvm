@@ -8,7 +8,7 @@ std::string format_UTF8(u2 utf8_length, std::vector <u1> utf8_bytes) {
             // 1 byte
             // check if it is 1 byte encoded:
             // if the bit 7 is 0
-            // is the same as if bit 7 is not 0
+            // is the same as if bit 7 is not 1
 			formated_string += (char)utf8_bytes[i];
 		} else {
 			if (!(utf8_bytes[i+1] & 0x20)) { 
@@ -48,27 +48,4 @@ attribute_info get_attribute_info(FILE* file_pointer) {
     // exit(1);
 
     return result;
-}
-
-std::vector<method_info> create_methods(u2 method_size, FILE* file_pointer) {
-    std::vector<method_info> methods(method_size);
-
-    for (u2 i = 0; i < method_size; i++) {
-        method_info method;
-        
-        method.access_flags = Reader::read_u2(file_pointer);
-        method.name_index = Reader::read_u2(file_pointer);
-        method.descriptor_index = Reader::read_u2(file_pointer);
-        method.attributes_count = Reader::read_u2(file_pointer);
-
-        method.attributes = std::vector<attribute_info>(method.attributes_count);
-        
-        for (u2 j = 0; j < method.attributes_count; j++) {
-            method.attributes[j] = get_attribute_info(file_pointer);
-        }
-        
-        methods[i] = method;
-    }
-
-    return methods;
 }

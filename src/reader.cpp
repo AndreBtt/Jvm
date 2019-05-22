@@ -1,7 +1,3 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
 #include "reader.hpp"
 
 u1 Reader::read_u1(FILE *fp){
