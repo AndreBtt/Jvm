@@ -2,12 +2,17 @@
 
 #include <iostream>
 #include <vector>
+#include <stdio.h>
+#include <string>
+
 
 #include "types.hpp"
 #include "reader.hpp"
 #include "utils.hpp"
 
-bool magic_number(FILE*);
-std::vector<u2> version(FILE*);
+void check_magic_number(u4);
 
-std::vector<u2> create_interfaces(u2 ,FILE*);
+std::string format_UTF8(u2, std::vector <u1> );
+
+attribute_info get_attribute_info(FILE*);
+std::vector<method_info> create_methods(u2, FILE*);

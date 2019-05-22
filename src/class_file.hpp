@@ -1,7 +1,11 @@
 #pragma once
 
+#include <iostream>
+#include <vector>
+#include <stdio.h>
+#include <string>
+
 #include "types.hpp"
-#include "constant_pool.hpp"
 
 class Class_file{
 	public:
@@ -11,7 +15,7 @@ class Class_file{
 		u2 major_version;
 
 		u2 constant_pool_length;
-		std::vector<Constant_pool_variables> constant_pool;
+		std::vector<constant_pool_variables> constant_pool;
 		
 		u2 access_flags;
 		
@@ -26,6 +30,17 @@ class Class_file{
 		std::vector<field_info> fields;
 		
 		u2 methods_count;
+		std::vector<method_info> methods;
 		
 		u2 attributes_count;
+
+		void set_magic_number(FILE*);
+		void set_version(FILE*);
+		void set_constant_pool(FILE*);
+		void set_access_flags(FILE*);
+		void set_this_class(FILE*);
+		void set_super_class(FILE*);
+		void set_interfaces(FILE*);
+		void set_fields(FILE*);
+		void set_methods(FILE*);
 };

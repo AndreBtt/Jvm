@@ -1,11 +1,56 @@
 #pragma once
 
-#include <stdint.h>
+#include <iostream>
 #include <vector>
+#include <stdio.h>
+#include <string>
+
+#define CONSTANT_CLASS 7
+#define CONSTANT_FIELD_REF 9
+#define CONSTANT_METHOD_REF 10
+#define CONSTANT_INTERFACE_METHOD_REF 11
+#define CONSTANT_STRING 8
+#define CONSTANT_INTEGER 3
+#define CONSTANT_FLOAT 4
+#define CONSTANT_LONG 5
+#define CONSTANT_DOUBLE 6
+#define CONSTANT_NAME_AND_TYPE 12
+#define CONSTANT_UTF8 1
 
 typedef uint8_t u1;
 typedef uint16_t u2;
 typedef uint32_t u4;
+
+struct constant_pool_variables{
+    u1 tag;
+
+    /* declare all possible variables 
+    but not all of them will be used,
+    it depends on the tag value */
+
+    // Class info --- Name and Type
+    u2 name_index;
+    // descriptor just name and type
+    u2 descriptor_index;
+
+    // Field ref info --- Method ref info --- Interface Method ref info
+    u2 class_index;
+    u2 name_and_type_index;
+
+    // String
+    u2 string_index;
+
+    // Integer --- Float
+    u4 bytes;
+
+    // Long --- Double    
+    u4 high_bytes;
+    u4 low_bytes;
+
+    // UTF8
+    u2 utf8_length;
+    std::vector <u1> utf8_bytes;
+};
 
 struct Exception_table {
     u2 start_pc;
@@ -44,34 +89,9 @@ struct Code_attribute {
 };
 
 struct attribute_info {
-    // Constant value attribute
     u2 attribute_name_index;
     u4 attribute_length;
-    
-    // Code attribute
-    u2 constant_value_index;
-    u2 attributes_count;
-	std::vector<attribute_info> attributes;
-    Code_attribute code_info;
-
-    // Exceptions attribute
-    u2 number_of_exceptions;
-	std::vector<u2>exception_index_table;
-
-    // Inner Classes attribute
-    u2 number_of_classes;
-	Class *classes;
-
-    // Source File attribute
-    u2 source_file_index;
-
-    // Line Number Table attribute
-    u2 line_number_table_length;
-	std::vector<Line_number_table> line_number_table;
-
-    // Local Variable Table attribute
-    u2 local_variable_table_length;
-    std::vector<Local_variable_table> localVariableTable;
+    std::vector<u1> info;
 };
 
 struct field_info {
@@ -82,3 +102,10 @@ struct field_info {
     std::vector<attribute_info> attributes;
 };
 
+struct method_info {
+    u2 access_flags;
+    u2 name_index;
+    u2 descriptor_index;
+    u2 attributes_count;
+    std::vector<attribute_info> attributes;
+};

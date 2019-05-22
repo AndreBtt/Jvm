@@ -1,28 +1,74 @@
-#include <iostream>
-
 #include "utils.hpp"
 
-bool magic_number(FILE* file_pointer) {
-    u4 magic_number = Reader::read_u4(file_pointer);
-    return magic_number == 0xcafebabe;
+std::string format_UTF8(u2 utf8_length, std::vector <u1> utf8_bytes) {
+    std::string formated_string = "";
+
+	for(int i = 0; i < utf8_bytes.size(); i++){
+        if (!(utf8_bytes[i] & 0x80)) { 
+            // 1 byte
+            // check if it is 1 byte encoded:
+            // if the bit 7 is 0
+            // is the same as if bit 7 is not 0
+			formated_string += (char)utf8_bytes[i];
+		} else {
+			if (!(utf8_bytes[i+1] & 0x20)) { 
+                // 2 bytes
+                // check if it is 2 byte encoded:
+                // if the bit 5 is 0
+                // is the same as if the bit 5 is not 1
+				formated_string += char(((utf8_bytes[i] & 0x1f) << 6) + (utf8_bytes[i+1] & 0x3f));
+                i++;
+			} else { 
+                // 3 bytes
+				formated_string += char(((utf8_bytes[i] & 0xf) << 12) + ((utf8_bytes[i+1] & 0x3f) << 6) + (utf8_bytes[i+2] & 0x3f));
+				i += 2;
+			}
+		}
+	}
+
+    return formated_string;
 }
 
-std::vector<u2> version(FILE* file_pointer) {
-    std::vector<u2> version;
-    
-    // get min version
-    version.push_back(Reader::read_u2(file_pointer));
-    
-    // get max version
-    version.push_back(Reader::read_u2(file_pointer));
-
-    return version;    
-}
-
-std::vector<u2> create_interfaces(u2 interface_size, FILE* file_pointer) {
-    std::vector<u2> interface(interface_size);
-    for (u2 i = 0; i < interface_size; i++) {
-        interface[i] = Reader::read_u2(file_pointer);
+void check_magic_number(u4 magic_number) {
+    if(magic_number != 0xcafebabe) {
+        std::cout << "missing cafe babe" << std::endl;
+        exit(1);
     }
-    return interface;
+}
+
+attribute_info get_attribute_info(FILE* file_pointer) {
+    attribute_info result;
+    result.attribute_name_index = Reader::read_u2(file_pointer);
+    result.attribute_length = Reader::read_u4(file_pointer);
+
+    // std::string attribute_name = format_UTF8()
+
+    // std::cout << "PRECISO TESTAR ISSO AQUI COM ALGUMA CLASSE " << result.attribute_name_index << std::endl;
+    // falta pegar os bytes desse atributo
+    // exit(1);
+
+    return result;
+}
+
+std::vector<method_info> create_methods(u2 method_size, FILE* file_pointer) {
+    std::vector<method_info> methods(method_size);
+
+    for (u2 i = 0; i < method_size; i++) {
+        method_info method;
+        
+        method.access_flags = Reader::read_u2(file_pointer);
+        method.name_index = Reader::read_u2(file_pointer);
+        method.descriptor_index = Reader::read_u2(file_pointer);
+        method.attributes_count = Reader::read_u2(file_pointer);
+
+        method.attributes = std::vector<attribute_info>(method.attributes_count);
+        
+        for (u2 j = 0; j < method.attributes_count; j++) {
+            method.attributes[j] = get_attribute_info(file_pointer);
+        }
+        
+        methods[i] = method;
+    }
+
+    return methods;
 }
