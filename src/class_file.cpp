@@ -115,7 +115,7 @@ void Class_file::set_fields(FILE* file_pointer) {
         field.attributes = std::vector<attribute_info>(field.attributes_count);
         
         for (u2 j = 0; j < field.attributes_count; j++) {
-            field.attributes[j] = get_attribute_info(file_pointer);
+            field.attributes[j] = get_attribute_info(file_pointer, constant_pool);
         }
         
         fields[i] = field;
@@ -139,7 +139,7 @@ void Class_file::set_methods(FILE* file_pointer) {
         method.attributes = std::vector<attribute_info>(method.attributes_count);
         
         for (u2 j = 0; j < method.attributes_count; j++) {
-            method.attributes[j] = get_attribute_info(file_pointer);
+            method.attributes[j] = get_attribute_info(file_pointer, constant_pool);
         }
         
         methods[i] = method;

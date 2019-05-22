@@ -36,16 +36,59 @@ void check_magic_number(u4 magic_number) {
     }
 }
 
-attribute_info get_attribute_info(FILE* file_pointer) {
+Exception_table get_exception_table(FILE *file_pointer) {
+    Exception_table result;
+    result.start_pc = Reader::read_u2(file_pointer);
+    result.end_pc = Reader::read_u2(file_pointer);
+    result.handler_pc = Reader::read_u2(file_pointer);
+    result.catch_type = Reader::read_u2(file_pointer);
+    return result;
+}
+
+Code_attribute get_code_attribute(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
+    Code_attribute result;
+    result.max_stack = Reader::read_u2(file_pointer);
+    result.max_locals = Reader::read_u2(file_pointer);
+    
+    result.code_length = Reader::read_u4(file_pointer);
+    
+    result.code = std::vector<u1>(result.code_length);
+    for (u4 i = 0; i < result.code_length; i++) {
+        result.code[i] = Reader::read_u1(file_pointer);
+    }
+    
+    result.exception_table_length = Reader::read_u2(file_pointer);
+    result.exception_table = std::vector<Exception_table>(result.exception_table_length);
+    for (u2 i = 0; i < result.exception_table_length; i++) {
+        result.exception_table[i] = get_exception_table(file_pointer);
+    }
+    
+    result.attributes_count = Reader::read_u2(file_pointer);
+    result.attributes = std::vector<attribute_info>(result.attributes_count);
+    for (u2 i = 0; i < result.attributes_count; i++) {
+        result.attributes[i] = get_attribute_info(file_pointer, constant_pool);
+    }
+    
+    return result;
+}
+
+attribute_info get_attribute_info(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
     attribute_info result;
     result.attribute_name_index = Reader::read_u2(file_pointer);
     result.attribute_length = Reader::read_u4(file_pointer);
 
-    // std::string attribute_name = format_UTF8()
+    u2 utf8_length = constant_pool[result.attribute_name_index].utf8_length;
+    std::vector <u1> utf8_bytes = constant_pool[result.attribute_name_index].utf8_bytes;
 
-    // std::cout << "PRECISO TESTAR ISSO AQUI COM ALGUMA CLASSE " << result.attribute_name_index << std::endl;
-    // falta pegar os bytes desse atributo
-    // exit(1);
+    std::string attribute_name = format_UTF8(utf8_length, utf8_bytes);
+
+    if(attribute_name == "ConstantValue") {
+        std::cout << "opa" << std::endl;
+    } else if(attribute_name == "Code") {
+        result.code_attribute = get_code_attribute(file_pointer, constant_pool);
+    } else if(attribute_name == "LineNumberTable") {
+
+    }
 
     return result;
 }
