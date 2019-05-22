@@ -30,10 +30,10 @@ int main(int argc, char* argv[]) {
     class_file.set_interfaces(file_pointer);
 
     // set fields size and create it
-    class_file.set_fields(file_pointer);
+    // class_file.set_fields(file_pointer);
 
     // set methods size and create it
-    class_file.set_methods(file_pointer);
+    // class_file.set_methods(file_pointer);
 
     display_class_file(class_file);
 }

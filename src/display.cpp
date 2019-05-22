@@ -79,7 +79,7 @@ void display_general_information(Class_file class_file) {
     cout << "\t // " << class_name << endl;
     cout << endl;
 
-    if (class_file.super_class == 0) {
+    if(class_file.super_class == 0) {
         cout << "\t Super class: none" << endl;
     } else {
         cout << "\t Super class: #" << class_file.super_class;
@@ -101,9 +101,71 @@ void display_general_information(Class_file class_file) {
     cout << endl;
 }
 
-void display_class_file (Class_file class_file) {
+void display_constant_pool(Class_file class_file) {
+
+    vector<constant_pool_variables> constant_pool = class_file.constant_pool;
+    
+    for (int i = 1; i < class_file.constant_pool_length; i++) {
+        constant_pool_variables element = constant_pool[i];
+        
+        cout << "#" << i << " = ";
+
+        switch (element.tag) {
+            case CONSTANT_CLASS:
+            {
+                cout << "Class";
+                cout << "\t #" << element.name_index;
+                u2 utf8_length = constant_pool[element.name_index].utf8_length;
+                vector <u1> utf8_bytes = constant_pool[element.name_index].utf8_bytes;
+                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << endl;
+            }
+            break;
+
+            case CONSTANT_FIELD_REF:
+            case CONSTANT_METHOD_REF:
+            case CONSTANT_INTERFACE_METHOD_REF:
+            {
+                cout << "Fieldref";
+                cout << "\t #" << element.class_index << ".#" << element.name_and_type_index;
+                
+                u2 utf8_length = constant_pool[element.class_index].utf8_length;
+                vector <u1> utf8_bytes = constant_pool[element.class_index].utf8_bytes;
+                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << ".";
+
+                utf8_length = constant_pool[element.name_and_type_index].utf8_length;
+                utf8_bytes = constant_pool[element.name_and_type_index].utf8_bytes;
+                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << endl;
+
+            }
+            break;
+            
+            case CONSTANT_NAME_AND_TYPE:
+            break;
+
+            case CONSTANT_UTF8:
+            break;
+
+            case CONSTANT_STRING:
+            break;
+
+            case CONSTANT_INTEGER:
+            case CONSTANT_FLOAT:
+            break;
+            
+            case CONSTANT_LONG:
+            case CONSTANT_DOUBLE:
+            break;
+		}
+        cout << endl;
+    }
+
+}
+
+void display_class_file(Class_file class_file) {
     cout << endl;
     cout << "Informações gerais:\n" << endl; 
-
     display_general_information(class_file);
+
+    cout << "Constant Pool:" << endl;
+    display_constant_pool(class_file);
 }
