@@ -1,11 +1,4 @@
-#include <stdio.h>
-
-#include "class_file.hpp"
-#include "utils.hpp"
-
-using namespace std;
-
-void display_attribute_info(AttributeInfo, vector<constant_pool_variables>, int);
+#include "display.hpp"
 
 void display_indentation(int indentation) {
     for(int i = 0; i < indentation; i++) {
@@ -72,13 +65,6 @@ void display_access_flags(u2 accessFlags) {
     cout << endl;
 }
 
-void display_byte_code(CodeAttribute code_attribute, vector<constant_pool_variables> constant_pool, int indentation) {
-    u4 code_length = code_attribute.code_length;
-    vector<u1> code = code_attribute.code;
-    display_indentation(indentation);
-    cout << "sei fazer ainda nao" << endl;
-}
-
 void display_code_attribute(CodeAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
 
     CodeAttribute code = attribute_info;
@@ -101,7 +87,8 @@ void display_code_attribute(CodeAttribute attribute_info, vector<constant_pool_v
 
     display_indentation(indentation);
     cout << "Bytecode: " << endl;
-    display_byte_code(code, constant_pool, indentation+1);
+    display_indentation(indentation+1);
+    cout << "sei fazer ainda nao" << endl;
 
     display_indentation(indentation);
     cout << "Attributes: " << endl;

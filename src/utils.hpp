@@ -7,7 +7,6 @@
 
 #include "types.hpp"
 #include "reader.hpp"
-#include "utils.hpp"
 
 void check_magic_number(u4);
 

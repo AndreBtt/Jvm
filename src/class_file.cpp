@@ -1,6 +1,7 @@
 #include "class_file.hpp"
 #include "reader.hpp"
 #include "utils.hpp"
+#include "attribute.hpp"
 
 void ClassFile::set_magic_number(FILE* file_pointer) {
     magic_number = Reader::read_u4(file_pointer);
