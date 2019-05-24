@@ -4,6 +4,7 @@
 #include <vector>
 #include <stdio.h>
 #include <string>
+#include <math.h>
 
 #include "class_file.hpp"
 #include "utils.hpp"

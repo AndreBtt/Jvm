@@ -39,5 +39,7 @@ int main(int argc, char* argv[]) {
     class_file.set_attributes(file_pointer);
 
     display::class_file(class_file);
+
+    fclose(file_pointer);
 }
 

@@ -261,7 +261,6 @@ void display::constant_pool(ClassFile class_file) {
                 display::indentation(2);
                 cout << "Descriptor: \t" << format_UTF8(utf8_length, utf8_bytes);                
                 cout << "\tcp_index #" << name_index << endl;
-                
             }
             break;
 
@@ -288,8 +287,25 @@ void display::constant_pool(ClassFile class_file) {
             break;
 
             case CONSTANT_INTEGER:
+                cout << "Integer" << endl;
+                display::indentation(2);
+                printf("Bytes: \t\t0x%.8X\n", element.bytes);
+                display::indentation(2);
+                cout << "Integer: \t" << int32_t(element.bytes) << endl;
+            break;
             case CONSTANT_FLOAT:
-                // TODO
+            {
+                int32_t sig = ((element.bytes >> 31) == 0) ? 1 : -1;
+                int32_t exponent = ((element.bytes >> 23) & 0xff);
+                int32_t mantissa = (exponent == 0) ? (element.bytes & 0x7fffff) << 1 : (element.bytes & 0x7fffff) | 0x800000;
+                float number = sig * mantissa * pow(2, exponent-150);
+
+                cout << "Float" << endl;
+                display::indentation(2);
+                printf("Bytes: \t\t0x%.8X\n", element.bytes);
+                display::indentation(2);
+                printf("Float: \t\t%f\n", number);
+            }
             break;
             
             case CONSTANT_LONG:
