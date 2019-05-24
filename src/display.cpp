@@ -108,18 +108,27 @@ void display_line_number_table_attribute(LineNumberTableAttribute attribute_info
     }
 }
 
+void display_source_file_attribute(SourceFileAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+    display_indentation(indentation);
+    cout << "SourceFile: " << get_constant_pool_element(constant_pool, attribute_info.source_file_index);
+    cout << "\tcp_index #" << attribute_info.source_file_index << endl;
+}
+
 void display_attribute_info(AttributeInfo attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {    
     string attribute_name = get_constant_pool_element(constant_pool, attribute_info.attribute_name_index);
     display_indentation(indentation);
     cout << attribute_name << endl;
     display_indentation(indentation);
     cout << "\tAttribute name index: #" << attribute_info.attribute_name_index << endl;
+    display_indentation(indentation);
+    cout << "\tAttribute length: " << attribute_info.attribute_length << endl;
 
-    if(attribute_name == "ConstantValue") {
-    } else if(attribute_name == "Code") {
+    if(attribute_name == "Code") {
         display_code_attribute(attribute_info.code_attribute, constant_pool, indentation+1);
     } else if(attribute_name == "LineNumberTable") {
-        display_line_number_table_attribute(attribute_info.line_number_table_attribute, constant_pool, indentation);
+        display_line_number_table_attribute(attribute_info.line_number_table_attribute, constant_pool, indentation+1);
+    } else if(attribute_name == "SourceFile") {
+        display_source_file_attribute(attribute_info.source_file_attribute, constant_pool, indentation+1);
     }
 
 }
@@ -372,6 +381,13 @@ void display_fields(ClassFile class_file, int indentation) {
 	}
 }
 
+void display_attributes (ClassFile class_file, int indentation) {    
+    for (u2 i = 0; i < class_file.attributes_count; i++) {
+        display_attribute_info(class_file.attributes[i], class_file.constant_pool, indentation);
+        cout << endl;
+    }
+}
+
 void display_class_file(ClassFile class_file) {
     cout << endl;
 
@@ -393,5 +409,8 @@ void display_class_file(ClassFile class_file) {
     cout << "Methods:" << endl;
     display_methods(class_file, 1);
     cout << endl;
-
+    
+    cout << "Attributes:" << endl;
+    display_attributes(class_file, 1);
+    cout << endl;
 }

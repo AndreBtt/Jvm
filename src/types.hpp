@@ -87,12 +87,18 @@ struct CodeAttribute {
     std::vector<AttributeInfo> attributes;
 };
 
+struct SourceFileAttribute {
+  	u2 source_file_index;
+};
+
 struct AttributeInfo {
     u2 attribute_name_index;
     u4 attribute_length;
 
     CodeAttribute code_attribute;
     LineNumberTableAttribute line_number_table_attribute;
+    SourceFileAttribute source_file_attribute;
+
 };
 
 struct FieldInfo {

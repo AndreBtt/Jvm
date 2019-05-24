@@ -54,6 +54,12 @@ LineNumberTableAttribute get_line_number_table_attribute(FILE* file_pointer, std
     return result;
 }
 
+SourceFileAttribute get_source_file_attribute(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
+    SourceFileAttribute result;
+    result.source_file_index = Reader::read_u2(file_pointer);
+    return result;
+}
+
 AttributeInfo get_attribute_info(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
     AttributeInfo result;
     result.attribute_name_index = Reader::read_u2(file_pointer);
@@ -64,13 +70,12 @@ AttributeInfo get_attribute_info(FILE* file_pointer, std::vector<constant_pool_v
 
     std::string attribute_name = format_UTF8(utf8_length, utf8_bytes);
 
-    if(attribute_name == "ConstantValue") {
-    } else if(attribute_name == "Code") {
+    if(attribute_name == "Code") {
         result.code_attribute = get_code_attribute(file_pointer, constant_pool);
     } else if(attribute_name == "LineNumberTable") {
         result.line_number_table_attribute = get_line_number_table_attribute(file_pointer, constant_pool);
     } else if(attribute_name == "SourceFile") {
-
+        result.source_file_attribute = get_source_file_attribute(file_pointer, constant_pool);
     }
 
     return result;
