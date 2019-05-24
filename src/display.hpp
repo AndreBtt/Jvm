@@ -9,8 +9,8 @@
 
 void display_class_name(std::vector<constant_pool_variables>, u2);
 
-std::vector<std::string> getAccessFlags(Class_file);
+std::vector<std::string> getAccessFlags(ClassFile);
 
-void display_general_information(Class_file);
+void display_general_information(ClassFile);
 
-void display_class_file(Class_file);
+void display_class_file(ClassFile);

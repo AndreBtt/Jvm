@@ -137,51 +137,51 @@ void display_attribute_info(AttributeInfo attribute_info, vector<constant_pool_v
 
 }
 
-void display_general_information(Class_file class_file) {
+void display_general_information(ClassFile class_file) {
     
-    cout << "\t Minor Version: " << class_file.min_version << endl;
+    cout << "\tMinor Version: " << class_file.min_version << endl;
     cout << endl;
     
-    cout << "\t Major Version: " << class_file.major_version << endl;
+    cout << "\tMajor Version: " << class_file.major_version << endl;
     cout << endl;
     
-    cout << "\t Constant pool count: " << class_file.constant_pool_length << endl;
+    cout << "\tConstant pool count: " << class_file.constant_pool_length << endl;
     cout << endl;
     
-    printf("\t Access Flags: (0x%.4X) ", class_file.access_flags);
+    printf("\tAccess Flags: (0x%.4X) ", class_file.access_flags);
     display_access_flags(class_file.access_flags);
     cout << endl;
 
-    cout << "\t This class: #" << class_file.this_class;
     string class_name = get_constant_pool_element(class_file.constant_pool, class_file.this_class);
-    cout << "\t // " << class_name << endl;
+    cout << "\tThis class: " << class_name;
+    cout << "\tcp_index #" << class_file.this_class << endl;
     cout << endl;
 
     if(class_file.super_class == 0) {
-        cout << "\t Super class: none" << endl;
+        cout << "\tSuper class: none" << endl;
     } else {
-        cout << "\t Super class: #" << class_file.super_class;
         string super_class_name = get_constant_pool_element(class_file.constant_pool, class_file.super_class);
-        cout << "\t // " << super_class_name << endl;
-        cout << endl;
+        cout << "\tSuper class: " << super_class_name;
+        cout << "\tcp_index #" << class_file.super_class << endl;
     }
-
-    cout << "\t Interfaces count: " << class_file.interfaces_count << endl;
     cout << endl;
 
-    cout << "\t Fields count: " <<  class_file.fields_count << endl;
+    cout << "\tInterfaces count: " << class_file.interfaces_count << endl;
     cout << endl;
 
-    cout << "\t Methods pool count: " << class_file.methods_count << endl;
+    cout << "\tFields count: " <<  class_file.fields_count << endl;
+    cout << endl;
+
+    cout << "\tMethods pool count: " << class_file.methods_count << endl;
     cout << endl;
     
-    cout << "\t Attributes pool count: " << class_file.attributes_count << endl;
+    cout << "\tAttributes pool count: " << class_file.attributes_count << endl;
     cout << endl;
 
     cout << endl;
 }
 
-void display_constant_pool(Class_file class_file) {
+void display_constant_pool(ClassFile class_file) {
     vector<constant_pool_variables> constant_pool = class_file.constant_pool;
     
     for (int i = 1; i < class_file.constant_pool_length; i++) {
@@ -303,40 +303,89 @@ void display_constant_pool(Class_file class_file) {
 
 }
 
-void display_interfaces(Class_file class_file) {	
+void display_interfaces(ClassFile class_file) {	
 	for (u2 i = 0; i < class_file.interfaces_count; i++) {
 		cout << get_constant_pool_element(class_file.constant_pool, class_file.interfaces[i]);
 		
 	}
 }
 
-void display_methods(Class_file class_file) {
+void display_method(MethodInfo method, vector<constant_pool_variables> constant_pool, int indentation) {
+    display_indentation(indentation);
+    cout << "Name: " << get_constant_pool_element(constant_pool, method.name_index);;
+    cout << "\tcp_index #" << method.name_index;
+    cout << endl;
+    
+    display_indentation(indentation);
+    cout << "Descriptor: " << get_constant_pool_element(constant_pool, method.descriptor_index);
+    cout << "\tcp_index #" << method.descriptor_index << endl;
+
+    display_indentation(indentation);
+    printf("Access Flags: (0x%.4X) ", method.access_flags);
+    display_access_flags(method.access_flags);
+    
+    display_indentation(indentation);
+    cout << "Attributes:" << endl;
+    if(method.attributes_count == 0) {
+        display_indentation(indentation+1);
+        cout << "Attributes is empty.";
+    }
+    
+    for (u2 j = 0; j < method.attributes_count; j++) {
+        display_attribute_info(method.attributes[j], constant_pool, indentation+1);
+    }
+}
+
+void display_methods(ClassFile class_file, int indentation) {
     for (u2 i = 0; i < class_file.methods_count; i++) {
-        cout << endl;
         MethodInfo method = class_file.methods[i];
+        display_indentation(indentation);
         string method_name = get_constant_pool_element(class_file.constant_pool, method.name_index);
-        string descriptor = get_constant_pool_element(class_file.constant_pool, method.descriptor_index);
-
-        cout << "\t Method Name: " << method_name;
-        cout << "   cp_index #" << method.name_index;
+		cout << method_name << endl;
+		display_method(method, class_file.constant_pool, indentation+1);
         cout << endl;
-        
-        cout << "\t Descriptor: " << descriptor;
-        cout << "   cp_index #" << method.descriptor_index;
-        cout << endl;
-        
-        printf("\t Access Flags: (0x%.4X) ", method.access_flags);
-        display_access_flags(method.access_flags);
-
-        cout << "\t Attributes: " << endl;
-        for (u2 j = 0; j < method.attributes_count; j++) {
-            display_attribute_info(method.attributes[j], class_file.constant_pool, 2);
-        }
     }
 
 }
 
-void display_class_file(Class_file class_file) {
+void display_field(FieldInfo field, vector<constant_pool_variables> constant_pool, int indentation) {
+    display_indentation(indentation);
+    cout << "Name: " << get_constant_pool_element(constant_pool, field.name_index);
+    cout << "\tcp_index #" << field.name_index << endl;
+
+    display_indentation(indentation);
+    cout << "Descriptor: " << get_constant_pool_element(constant_pool, field.descriptor_index);
+    cout << "\tcp_index #" << field.descriptor_index << endl;
+
+    display_indentation(indentation);
+    printf("Access Flags: (0x%.4X) ", field.access_flags);
+    display_access_flags(field.access_flags);
+    
+    display_indentation(indentation);
+    cout << "Attributes:" << endl;
+    if(field.attributes_count == 0) {
+        display_indentation(indentation+1);
+        cout << "Attributes is empty.";
+    }
+    
+    for (u2 j = 0; j < field.attributes_count; j++) {
+        display_attribute_info(field.attributes[j], constant_pool, indentation+1);
+    }
+}
+
+void display_fields(ClassFile class_file, int indentation) {
+	for (u2 i = 0; i < class_file.fields_count; i++) {
+        FieldInfo field = class_file.fields[i];
+        
+        display_indentation(indentation);
+        string field_name = get_constant_pool_element(class_file.constant_pool, field.name_index);
+		cout << field_name << endl;
+		display_field(field, class_file.constant_pool, indentation+1);
+        cout << endl;
+	}
+}
+
+void display_class_file(ClassFile class_file) {
     cout << endl;
 
     cout << "Informações gerais:\n" << endl; 
@@ -351,11 +400,11 @@ void display_class_file(Class_file class_file) {
     cout << endl;
 
     cout << "Fields:" << endl;
-    // display_fields(class_file);
+    display_fields(class_file, 1);
     cout << endl;
 
     cout << "Methods:" << endl;
-    display_methods(class_file);
+    display_methods(class_file, 1);
     cout << endl;
 
 }

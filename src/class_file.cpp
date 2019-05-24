@@ -2,12 +2,12 @@
 #include "reader.hpp"
 #include "utils.hpp"
 
-void Class_file::set_magic_number(FILE* file_pointer) {
+void ClassFile::set_magic_number(FILE* file_pointer) {
     magic_number = Reader::read_u4(file_pointer);
     check_magic_number(magic_number);
 }
 
-void Class_file::set_version(FILE* file_pointer) {
+void ClassFile::set_version(FILE* file_pointer) {
     // get min version
     min_version = Reader::read_u2(file_pointer);
     
@@ -15,7 +15,7 @@ void Class_file::set_version(FILE* file_pointer) {
     major_version = Reader::read_u2(file_pointer);
 }
 
-void Class_file::set_constant_pool(FILE* file_pointer) {
+void ClassFile::set_constant_pool(FILE* file_pointer) {
     // get constant pool length
     constant_pool_length = Reader::read_u2(file_pointer);
     constant_pool = std::vector<constant_pool_variables>(constant_pool_length);
@@ -75,19 +75,19 @@ void Class_file::set_constant_pool(FILE* file_pointer) {
 
 }
 
-void Class_file::set_access_flags(FILE* file_pointer) {
+void ClassFile::set_access_flags(FILE* file_pointer) {
     access_flags = Reader::read_u2(file_pointer);
 }
 
-void Class_file::set_this_class(FILE* file_pointer) {
+void ClassFile::set_this_class(FILE* file_pointer) {
     this_class = Reader::read_u2(file_pointer);
 }
 
-void Class_file::set_super_class(FILE* file_pointer) {
+void ClassFile::set_super_class(FILE* file_pointer) {
     super_class = Reader::read_u2(file_pointer);
 }
 
-void Class_file::set_interfaces(FILE* file_pointer) {
+void ClassFile::set_interfaces(FILE* file_pointer) {
     // get interface size
     interfaces_count = Reader::read_u2(file_pointer);
 
@@ -98,7 +98,7 @@ void Class_file::set_interfaces(FILE* file_pointer) {
     }
 }
 
-void Class_file::set_fields(FILE* file_pointer) {
+void ClassFile::set_fields(FILE* file_pointer) {
     // get field size
     fields_count = Reader::read_u2(file_pointer);
     fields = std::vector<FieldInfo>(fields_count);
@@ -122,7 +122,7 @@ void Class_file::set_fields(FILE* file_pointer) {
     }
 }
 
-void Class_file::set_methods(FILE* file_pointer) {
+void ClassFile::set_methods(FILE* file_pointer) {
     // get method size
     methods_count = Reader::read_u2(file_pointer);
     methods = std::vector<MethodInfo>(methods_count);
@@ -146,7 +146,7 @@ void Class_file::set_methods(FILE* file_pointer) {
     }
 }
 
-void Class_file::set_attributes(FILE* file_pointer) {
+void ClassFile::set_attributes(FILE* file_pointer) {
     // get attributes size
     attributes_count = Reader::read_u2(file_pointer);
     attributes = std::vector<AttributeInfo>(attributes_count);

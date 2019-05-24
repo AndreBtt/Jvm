@@ -6,7 +6,7 @@ int main(int argc, char* argv[]) {
     FILE* file_pointer = fopen(file_name, "rb");
 
     // this variable holds all the information about .class file
-    Class_file class_file;
+    ClassFile class_file;
 
     // set magic number and check if it is 0xcafebabe
     class_file.set_magic_number(file_pointer);
