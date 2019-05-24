@@ -91,6 +91,10 @@ struct SourceFileAttribute {
   	u2 source_file_index;
 };
 
+struct ConstantValueAttribute {
+    u2 constant_value_index;
+};
+
 struct AttributeInfo {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -98,6 +102,7 @@ struct AttributeInfo {
     CodeAttribute code_attribute;
     LineNumberTableAttribute line_number_table_attribute;
     SourceFileAttribute source_file_attribute;
+    ConstantValueAttribute constant_value_attribute;
 
 };
 
@@ -116,3 +121,4 @@ struct MethodInfo {
     u2 attributes_count;
     std::vector<AttributeInfo> attributes;
 };
+

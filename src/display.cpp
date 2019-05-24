@@ -28,7 +28,6 @@ void display::class_file(ClassFile class_file) {
 }
 
 void display::general_information(ClassFile class_file) {
-    
     cout << "\tMinor Version: " << class_file.min_version << endl;
     cout << endl;
     
@@ -84,7 +83,6 @@ void display::access_flags(u2 accessFlags) {
 }
 
 void display::code_attribute(CodeAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
-
     CodeAttribute code = attribute_info;
 
     display::indentation(indentation);
@@ -105,6 +103,7 @@ void display::code_attribute(CodeAttribute attribute_info, vector<constant_pool_
 
     display::indentation(indentation);
     cout << "Bytecode: " << endl;
+    // TODO
     display::indentation(indentation+1);
     cout << "sei fazer ainda nao" << endl;
 
@@ -132,6 +131,12 @@ void display::source_file_attribute(SourceFileAttribute attribute_info, vector<c
     cout << "\tcp_index #" << attribute_info.source_file_index << endl;
 }
 
+void display::constant_value_attribute(ConstantValueAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+    display::indentation(indentation);
+    cout << "Constant value: " << get_constant_pool_element(constant_pool, attribute_info.constant_value_index);
+    cout << "\tcp_index #" << attribute_info.constant_value_index << endl;
+}
+
 void display::attribute_info(AttributeInfo attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {    
     string attribute_name = get_constant_pool_element(constant_pool, attribute_info.attribute_name_index);
     display::indentation(indentation);
@@ -141,7 +146,9 @@ void display::attribute_info(AttributeInfo attribute_info, vector<constant_pool_
     display::indentation(indentation);
     cout << "\tAttribute length: " << attribute_info.attribute_length << endl;
 
-    if(attribute_name == "Code") {
+    if(attribute_name == "ConstantValue") {
+        display::constant_value_attribute(attribute_info.constant_value_attribute, constant_pool, indentation+1);
+    } else if(attribute_name == "Code") {
         display::code_attribute(attribute_info.code_attribute, constant_pool, indentation+1);
     } else if(attribute_name == "LineNumberTable") {
         display::line_number_table_attribute(attribute_info.line_number_table_attribute, constant_pool, indentation+1);
@@ -156,95 +163,115 @@ void display::constant_pool(ClassFile class_file) {
     
     for (int i = 1; i < class_file.constant_pool_length; i++) {
         constant_pool_variables element = constant_pool[i];
-        
-        cout << "#" << i << " = ";
+
+        cout << endl;
+        display::indentation(1);
+        cout << "#" << i << " ";
 
         switch (element.tag) {
             case CONSTANT_CLASS:
             {
-                cout << "Class";
-                cout << "\t\t #" << element.name_index;
+                cout << "Class" << endl;
+                display::indentation(2);
                 u2 utf8_length = constant_pool[element.name_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[element.name_index].utf8_bytes;
-                cout << "\t\t // " << format_UTF8(utf8_length, utf8_bytes);
+                cout << "Class name: \t" << format_UTF8(utf8_length, utf8_bytes);
+                cout << "\tcp_index #" << element.name_index << endl;
             }
             break;
 
             case CONSTANT_FIELD_REF:
             {
-                cout << "Fieldref";
-                cout << "\t\t #" << element.class_index << ".#" << element.name_and_type_index;
-                
+                cout << "Fieldref" << endl;
+                                
                 // display class
                 u2 class_index = constant_pool[element.class_index].name_index;
                 u2 utf8_length = constant_pool[class_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[class_index].utf8_bytes;
-                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << ".";
+                display::indentation(2);
+                cout << "Class name: \t" << format_UTF8(utf8_length, utf8_bytes);
+                cout << "\tcp_index #" << element.class_index << endl;
 
                 // get name and type information
                 u2 name_index = constant_pool[element.name_and_type_index].name_index;
                 utf8_length = constant_pool[name_index].utf8_length;
                 utf8_bytes = constant_pool[name_index].utf8_bytes;
-                cout << format_UTF8(utf8_length, utf8_bytes) << ":";
+                string name = format_UTF8(utf8_length, utf8_bytes);
 
                 u2 descriptor_index = constant_pool[element.name_and_type_index].descriptor_index;
                 utf8_length = constant_pool[descriptor_index].utf8_length;
                 utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
-                cout << format_UTF8(utf8_length, utf8_bytes);
+                string descriptor = format_UTF8(utf8_length, utf8_bytes);
+
+                display::indentation(2);
+                cout << "Name and type: \t" << name + descriptor;
+                cout << "\tcp_index #" << element.name_and_type_index << endl;
 
             }
             break;
 
             case CONSTANT_METHOD_REF:
             {
-                cout << "Methodref";
-                cout << "\t\t #" << element.class_index << ".#" << element.name_and_type_index;
+                cout << "Methodref" << endl;
                 
                 // display class
                 u2 class_index = constant_pool[element.class_index].name_index;
                 u2 utf8_length = constant_pool[class_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[class_index].utf8_bytes;
-                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << ".";
+                display::indentation(2);
+                cout << "Class name: \t" << format_UTF8(utf8_length, utf8_bytes);
+                cout << "\tcp_index #" << element.class_index << endl;
 
                 // get name and type information
                 u2 name_index = constant_pool[element.name_and_type_index].name_index;
                 utf8_length = constant_pool[name_index].utf8_length;
                 utf8_bytes = constant_pool[name_index].utf8_bytes;
-                cout << format_UTF8(utf8_length, utf8_bytes) << ":";
+                string name = format_UTF8(utf8_length, utf8_bytes);
 
                 u2 descriptor_index = constant_pool[element.name_and_type_index].descriptor_index;
                 utf8_length = constant_pool[descriptor_index].utf8_length;
                 utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
-                cout << format_UTF8(utf8_length, utf8_bytes);
+                string descriptor = format_UTF8(utf8_length, utf8_bytes);
+
+                display::indentation(2);
+                cout << "Name and type: \t" << name + descriptor;
+                cout << "\tcp_index #" << element.name_and_type_index << endl;
 
             }
             break;
 
             case CONSTANT_INTERFACE_METHOD_REF:
+                // TODO
             break;
             
             case CONSTANT_NAME_AND_TYPE:
             {
-                cout << "NameAndType";
+                cout << "NameAndType" << endl;
                 u2 name_index = element.name_index;
                 u2 descriptor_index = element.descriptor_index;
 
-                cout << "\t #" << name_index << ":#" << descriptor_index;
-
                 u2 utf8_length = constant_pool[name_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[name_index].utf8_bytes;
-                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << ":";
+                display::indentation(2);
+                cout << "Name: \t\t" << format_UTF8(utf8_length, utf8_bytes);                
+                cout << "\tcp_index #" << name_index << endl;
 
                 utf8_length = constant_pool[descriptor_index].utf8_length;
                 utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
-                cout << format_UTF8(utf8_length, utf8_bytes);
+                display::indentation(2);
+                cout << "Descriptor: \t" << format_UTF8(utf8_length, utf8_bytes);                
+                cout << "\tcp_index #" << name_index << endl;
+                
             }
             break;
 
             case CONSTANT_UTF8:
             {
-                cout << "Utf8";
-                cout << "\t\t " << format_UTF8(element.utf8_length, element.utf8_bytes);
+                cout << "Utf8" << endl;
+                display::indentation(2);
+                cout << "Utf8 Length: \t" << element.utf8_length << endl; 
+                display::indentation(2);
+                cout << "Value: \t\t" << format_UTF8(element.utf8_length, element.utf8_bytes) << endl;
             }
             break;
 
@@ -262,10 +289,12 @@ void display::constant_pool(ClassFile class_file) {
 
             case CONSTANT_INTEGER:
             case CONSTANT_FLOAT:
+                // TODO
             break;
             
             case CONSTANT_LONG:
             case CONSTANT_DOUBLE:
+                // TODO
             break;
 		}
         cout << endl;
@@ -276,19 +305,18 @@ void display::constant_pool(ClassFile class_file) {
 void display::interfaces(ClassFile class_file) {	
 	for (u2 i = 0; i < class_file.interfaces_count; i++) {
 		cout << get_constant_pool_element(class_file.constant_pool, class_file.interfaces[i]);
-		
 	}
 }
 
 void display::method(MethodInfo method, vector<constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     cout << "Name: " << get_constant_pool_element(constant_pool, method.name_index);;
-    cout << "\tcp_index #" << method.name_index;
+    cout << "\t # #" << method.name_index;
     cout << endl;
     
     display::indentation(indentation);
     cout << "Descriptor: " << get_constant_pool_element(constant_pool, method.descriptor_index);
-    cout << "\tcp_index #" << method.descriptor_index << endl;
+    cout << "\t # #" << method.descriptor_index << endl;
 
     display::indentation(indentation);
     printf("Access Flags: (0x%.4X) ", method.access_flags);

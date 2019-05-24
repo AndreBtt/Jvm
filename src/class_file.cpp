@@ -65,6 +65,7 @@ void ClassFile::set_constant_pool(FILE* file_pointer) {
             case CONSTANT_DOUBLE:
                 current_variable.high_bytes = Reader::read_u4(file_pointer);
                 current_variable.low_bytes = Reader::read_u4(file_pointer);
+                i++;
             break;
             default:
                 std::cout << "Tag invalida no pool de constantes" << std::endl;
