@@ -33,6 +33,7 @@ class Class_file{
 		std::vector<MethodInfo> methods;
 		
 		u2 attributes_count;
+		std::vector<AttributeInfo> attributes;
 
 		void set_magic_number(FILE*);
 		void set_version(FILE*);
@@ -43,4 +44,5 @@ class Class_file{
 		void set_interfaces(FILE*);
 		void set_fields(FILE*);
 		void set_methods(FILE*);
+		void set_attributes(FILE*);
 };

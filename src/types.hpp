@@ -63,8 +63,15 @@ struct ExceptionTable {
 };
 
 struct LineNumberTable {
-    u2 start_pc;	     
+    u2 start_pc;
     u2 line_number;
+};
+
+struct LineNumberTableAttribute {
+    u2 attribute_name_index;
+    u4 attribute_length;
+    u2 line_number_table_length;
+    std::vector<LineNumberTable> line_number_table;
 };
 
 struct CodeAttribute {
@@ -85,6 +92,7 @@ struct AttributeInfo {
     u4 attribute_length;
 
     CodeAttribute code_attribute;
+    LineNumberTableAttribute line_number_table_attribute;
 };
 
 struct FieldInfo {

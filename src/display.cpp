@@ -5,9 +5,17 @@
 
 using namespace std;
 
+void display_attribute_info(AttributeInfo, vector<constant_pool_variables>, int);
+
+void display_indentation(int indentation) {
+    for(int i = 0; i < indentation; i++) {
+        cout << "\t";
+    }
+}
+
 string get_constant_pool_element(vector<constant_pool_variables> constant_pool, u2 index) {
     u2 tag  = constant_pool[index].tag;
-    
+
     switch (tag) {
             case CONSTANT_CLASS:
             {
@@ -30,6 +38,11 @@ string get_constant_pool_element(vector<constant_pool_variables> constant_pool, 
             break;
 
             case CONSTANT_UTF8:
+            {
+                u2 utf8_length = constant_pool[index].utf8_length;
+                vector <u1> utf8_bytes = constant_pool[index].utf8_bytes;
+                return format_UTF8(utf8_length, utf8_bytes);
+            }
             break;
 
             case CONSTANT_STRING:
@@ -57,6 +70,71 @@ void display_access_flags(u2 accessFlags) {
         }
     }
     cout << endl;
+}
+
+void display_byte_code(CodeAttribute code_attribute, vector<constant_pool_variables> constant_pool, int indentation) {
+    u4 code_length = code_attribute.code_length;
+    vector<u1> code = code_attribute.code;
+    display_indentation(indentation);
+    cout << "sei fazer ainda nao" << endl;
+}
+
+void display_code_attribute(CodeAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+
+    CodeAttribute code = attribute_info;
+
+    display_indentation(indentation);
+    cout << "Maximum stack: " << code.max_stack << endl;
+    display_indentation(indentation);
+    cout << "Maximum local variables: " << code.max_locals << endl;
+    display_indentation(indentation);
+    cout << "Code length: " << code.code_length << endl;
+    display_indentation(indentation);
+    cout << "Exception table: " << endl;
+    if (code.exception_table_length > 0) {
+        // TODO
+    } else {
+        display_indentation(indentation);
+        cout << "\tException table is empty" << endl;
+    }
+
+
+    display_indentation(indentation);
+    cout << "Bytecode: " << endl;
+    display_byte_code(code, constant_pool, indentation+1);
+
+    display_indentation(indentation);
+    cout << "Attributes: " << endl;
+    for (u2 i = 0; i < code.attributes_count; i++) {
+        display_attribute_info(code.attributes[i], constant_pool, indentation+1);
+    }
+}
+
+void display_line_number_table_attribute(LineNumberTableAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+    display_indentation(indentation);        
+    cout <<"\tstart_pc\tline_number" << endl;
+    for (u2 i = 0; i < attribute_info.line_number_table_length; i++) {
+        LineNumberTable table = attribute_info.line_number_table[i];
+        display_indentation(indentation);        
+        cout << "\t" << table.start_pc;
+        cout << "\t\t" << table.line_number << endl;
+    }
+}
+
+void display_attribute_info(AttributeInfo attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {    
+    string attribute_name = get_constant_pool_element(constant_pool, attribute_info.attribute_name_index);
+    display_indentation(indentation);
+    cout << attribute_name << endl;
+    display_indentation(indentation);
+    cout << "\tAttribute name index: #" << attribute_info.attribute_name_index << endl;
+
+    if(attribute_name == "ConstantValue") {
+    } else if(attribute_name == "Code") {
+        display_code_attribute(attribute_info.code_attribute, constant_pool, indentation+1);
+    } else if(attribute_name == "LineNumberTable") {
+        display_line_number_table_attribute(attribute_info.line_number_table_attribute, constant_pool, indentation);
+    }
+
 }
 
 void display_general_information(Class_file class_file) {
@@ -94,9 +172,11 @@ void display_general_information(Class_file class_file) {
     cout << "\t Fields count: " <<  class_file.fields_count << endl;
     cout << endl;
 
-    // cout << "\t Methods pool count: " << class_file.methods_count << endl;
-    // cout << "\t Attributes pool count: " << class_file.attributes_count << endl;
-
+    cout << "\t Methods pool count: " << class_file.methods_count << endl;
+    cout << endl;
+    
+    cout << "\t Attributes pool count: " << class_file.attributes_count << endl;
+    cout << endl;
 
     cout << endl;
 }
@@ -223,11 +303,59 @@ void display_constant_pool(Class_file class_file) {
 
 }
 
+void display_interfaces(Class_file class_file) {	
+	for (u2 i = 0; i < class_file.interfaces_count; i++) {
+		cout << get_constant_pool_element(class_file.constant_pool, class_file.interfaces[i]);
+		
+	}
+}
+
+void display_methods(Class_file class_file) {
+    for (u2 i = 0; i < class_file.methods_count; i++) {
+        cout << endl;
+        MethodInfo method = class_file.methods[i];
+        string method_name = get_constant_pool_element(class_file.constant_pool, method.name_index);
+        string descriptor = get_constant_pool_element(class_file.constant_pool, method.descriptor_index);
+
+        cout << "\t Method Name: " << method_name;
+        cout << "   cp_index #" << method.name_index;
+        cout << endl;
+        
+        cout << "\t Descriptor: " << descriptor;
+        cout << "   cp_index #" << method.descriptor_index;
+        cout << endl;
+        
+        printf("\t Access Flags: (0x%.4X) ", method.access_flags);
+        display_access_flags(method.access_flags);
+
+        cout << "\t Attributes: " << endl;
+        for (u2 j = 0; j < method.attributes_count; j++) {
+            display_attribute_info(method.attributes[j], class_file.constant_pool, 2);
+        }
+    }
+
+}
+
 void display_class_file(Class_file class_file) {
     cout << endl;
+
     cout << "Informações gerais:\n" << endl; 
     display_general_information(class_file);
 
     cout << "Constant Pool:" << endl;
     display_constant_pool(class_file);
+    cout << endl;
+
+    cout << "Interfaces:" << endl;
+    // display_interfaces(class_file);
+    cout << endl;
+
+    cout << "Fields:" << endl;
+    // display_fields(class_file);
+    cout << endl;
+
+    cout << "Methods:" << endl;
+    display_methods(class_file);
+    cout << endl;
+
 }

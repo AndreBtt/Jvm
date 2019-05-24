@@ -20,10 +20,10 @@ int main(int argc, char* argv[]) {
     // set access flags
     class_file.set_access_flags(file_pointer);
 
-    // // set this class
+    // set this class
     class_file.set_this_class(file_pointer);
 
-    // // set super class
+    // set super class
     class_file.set_super_class(file_pointer);
 
     // set interface size and create it
@@ -33,7 +33,10 @@ int main(int argc, char* argv[]) {
     class_file.set_fields(file_pointer);
 
     // set methods size and create it
-    // class_file.set_methods(file_pointer);
+    class_file.set_methods(file_pointer);
+
+    // set attributes size and create it
+    class_file.set_attributes(file_pointer);
 
     display_class_file(class_file);
 }

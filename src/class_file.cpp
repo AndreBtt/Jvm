@@ -145,3 +145,14 @@ void Class_file::set_methods(FILE* file_pointer) {
         methods[i] = method;
     }
 }
+
+void Class_file::set_attributes(FILE* file_pointer) {
+    // get attributes size
+    attributes_count = Reader::read_u2(file_pointer);
+    attributes = std::vector<AttributeInfo>(attributes_count);
+
+    // create each attribute
+    for (u2 i = 0; i < attributes_count; i++) {
+        attributes[i] = get_attribute_info(file_pointer, constant_pool);
+    }
+}

@@ -45,6 +45,13 @@ ExceptionTable get_exception_table(FILE *file_pointer) {
     return result;
 }
 
+LineNumberTable get_line_number_table(FILE *file_pointer) {
+    LineNumberTable result;
+    result.start_pc = Reader::read_u2(file_pointer);
+    result.line_number = Reader::read_u2(file_pointer);
+    return result;
+}
+
 CodeAttribute get_code_attribute(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
     CodeAttribute result;
     result.max_stack = Reader::read_u2(file_pointer);
@@ -72,6 +79,17 @@ CodeAttribute get_code_attribute(FILE* file_pointer, std::vector<constant_pool_v
     return result;
 }
 
+LineNumberTableAttribute get_line_number_table_attribute(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
+    LineNumberTableAttribute result;
+    result.line_number_table_length = Reader::read_u2(file_pointer);
+    result.line_number_table = std::vector<LineNumberTable>(result.line_number_table_length);
+    for (u2 i = 0; i < result.line_number_table_length; i++) {
+        result.line_number_table[i] = get_line_number_table(file_pointer);
+    }
+
+    return result;
+}
+
 AttributeInfo get_attribute_info(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
     AttributeInfo result;
     result.attribute_name_index = Reader::read_u2(file_pointer);
@@ -82,12 +100,12 @@ AttributeInfo get_attribute_info(FILE* file_pointer, std::vector<constant_pool_v
 
     std::string attribute_name = format_UTF8(utf8_length, utf8_bytes);
 
-    std::cout << attribute_name << std::endl;
-
     if(attribute_name == "ConstantValue") {
     } else if(attribute_name == "Code") {
         result.code_attribute = get_code_attribute(file_pointer, constant_pool);
     } else if(attribute_name == "LineNumberTable") {
+        result.line_number_table_attribute = get_line_number_table_attribute(file_pointer, constant_pool);
+    } else if(attribute_name == "SourceFile") {
 
     }
 
