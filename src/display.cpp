@@ -102,7 +102,6 @@ void display_general_information(Class_file class_file) {
 }
 
 void display_constant_pool(Class_file class_file) {
-
     vector<constant_pool_variables> constant_pool = class_file.constant_pool;
     
     for (int i = 1; i < class_file.constant_pool_length; i++) {
@@ -114,38 +113,101 @@ void display_constant_pool(Class_file class_file) {
             case CONSTANT_CLASS:
             {
                 cout << "Class";
-                cout << "\t #" << element.name_index;
+                cout << "\t\t #" << element.name_index;
                 u2 utf8_length = constant_pool[element.name_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[element.name_index].utf8_bytes;
-                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << endl;
+                cout << "\t\t // " << format_UTF8(utf8_length, utf8_bytes);
             }
             break;
 
             case CONSTANT_FIELD_REF:
-            case CONSTANT_METHOD_REF:
-            case CONSTANT_INTERFACE_METHOD_REF:
             {
                 cout << "Fieldref";
-                cout << "\t #" << element.class_index << ".#" << element.name_and_type_index;
+                cout << "\t\t #" << element.class_index << ".#" << element.name_and_type_index;
                 
-                u2 utf8_length = constant_pool[element.class_index].utf8_length;
-                vector <u1> utf8_bytes = constant_pool[element.class_index].utf8_bytes;
+                // display class
+                u2 class_index = constant_pool[element.class_index].name_index;
+                u2 utf8_length = constant_pool[class_index].utf8_length;
+                vector <u1> utf8_bytes = constant_pool[class_index].utf8_bytes;
                 cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << ".";
 
-                utf8_length = constant_pool[element.name_and_type_index].utf8_length;
-                utf8_bytes = constant_pool[element.name_and_type_index].utf8_bytes;
-                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << endl;
+                // get name and type information
+                u2 name_index = constant_pool[element.name_and_type_index].name_index;
+                utf8_length = constant_pool[name_index].utf8_length;
+                utf8_bytes = constant_pool[name_index].utf8_bytes;
+                cout << format_UTF8(utf8_length, utf8_bytes) << ":";
+
+                u2 descriptor_index = constant_pool[element.name_and_type_index].descriptor_index;
+                utf8_length = constant_pool[descriptor_index].utf8_length;
+                utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
+                cout << format_UTF8(utf8_length, utf8_bytes);
 
             }
             break;
+
+            case CONSTANT_METHOD_REF:
+            {
+                cout << "Methodref";
+                cout << "\t\t #" << element.class_index << ".#" << element.name_and_type_index;
+                
+                // display class
+                u2 class_index = constant_pool[element.class_index].name_index;
+                u2 utf8_length = constant_pool[class_index].utf8_length;
+                vector <u1> utf8_bytes = constant_pool[class_index].utf8_bytes;
+                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << ".";
+
+                // get name and type information
+                u2 name_index = constant_pool[element.name_and_type_index].name_index;
+                utf8_length = constant_pool[name_index].utf8_length;
+                utf8_bytes = constant_pool[name_index].utf8_bytes;
+                cout << format_UTF8(utf8_length, utf8_bytes) << ":";
+
+                u2 descriptor_index = constant_pool[element.name_and_type_index].descriptor_index;
+                utf8_length = constant_pool[descriptor_index].utf8_length;
+                utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
+                cout << format_UTF8(utf8_length, utf8_bytes);
+
+            }
+            break;
+
+            case CONSTANT_INTERFACE_METHOD_REF:
+            break;
             
             case CONSTANT_NAME_AND_TYPE:
+            {
+                cout << "NameAndType";
+                u2 name_index = element.name_index;
+                u2 descriptor_index = element.descriptor_index;
+
+                cout << "\t #" << name_index << ":#" << descriptor_index;
+
+                u2 utf8_length = constant_pool[name_index].utf8_length;
+                vector <u1> utf8_bytes = constant_pool[name_index].utf8_bytes;
+                cout << "\t // " << format_UTF8(utf8_length, utf8_bytes) << ":";
+
+                utf8_length = constant_pool[descriptor_index].utf8_length;
+                utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
+                cout << format_UTF8(utf8_length, utf8_bytes);
+            }
             break;
 
             case CONSTANT_UTF8:
+            {
+                cout << "Utf8";
+                cout << "\t\t " << format_UTF8(element.utf8_length, element.utf8_bytes);
+            }
             break;
 
             case CONSTANT_STRING:
+            {
+                cout << "String";
+                cout << "\t\t #" << element.string_index;
+
+
+                u2 utf8_length = constant_pool[element.string_index].utf8_length;
+                vector <u1> utf8_bytes = constant_pool[element.string_index].utf8_bytes;
+                cout << "\t\t // " << format_UTF8(utf8_length, utf8_bytes);
+            }
             break;
 
             case CONSTANT_INTEGER:

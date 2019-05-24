@@ -27,10 +27,10 @@ class Class_file{
 		std::vector<u2> interfaces;
 		
 		u2 fields_count;
-		std::vector<field_info> fields;
+		std::vector<FieldInfo> fields;
 		
 		u2 methods_count;
-		std::vector<method_info> methods;
+		std::vector<MethodInfo> methods;
 		
 		u2 attributes_count;
 

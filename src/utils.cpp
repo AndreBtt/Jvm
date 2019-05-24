@@ -36,8 +36,8 @@ void check_magic_number(u4 magic_number) {
     }
 }
 
-Exception_table get_exception_table(FILE *file_pointer) {
-    Exception_table result;
+ExceptionTable get_exception_table(FILE *file_pointer) {
+    ExceptionTable result;
     result.start_pc = Reader::read_u2(file_pointer);
     result.end_pc = Reader::read_u2(file_pointer);
     result.handler_pc = Reader::read_u2(file_pointer);
@@ -45,8 +45,8 @@ Exception_table get_exception_table(FILE *file_pointer) {
     return result;
 }
 
-Code_attribute get_code_attribute(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
-    Code_attribute result;
+CodeAttribute get_code_attribute(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
+    CodeAttribute result;
     result.max_stack = Reader::read_u2(file_pointer);
     result.max_locals = Reader::read_u2(file_pointer);
     
@@ -58,13 +58,13 @@ Code_attribute get_code_attribute(FILE* file_pointer, std::vector<constant_pool_
     }
     
     result.exception_table_length = Reader::read_u2(file_pointer);
-    result.exception_table = std::vector<Exception_table>(result.exception_table_length);
+    result.exception_table = std::vector<ExceptionTable>(result.exception_table_length);
     for (u2 i = 0; i < result.exception_table_length; i++) {
         result.exception_table[i] = get_exception_table(file_pointer);
     }
     
     result.attributes_count = Reader::read_u2(file_pointer);
-    result.attributes = std::vector<attribute_info>(result.attributes_count);
+    result.attributes = std::vector<AttributeInfo>(result.attributes_count);
     for (u2 i = 0; i < result.attributes_count; i++) {
         result.attributes[i] = get_attribute_info(file_pointer, constant_pool);
     }
@@ -72,8 +72,8 @@ Code_attribute get_code_attribute(FILE* file_pointer, std::vector<constant_pool_
     return result;
 }
 
-attribute_info get_attribute_info(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
-    attribute_info result;
+AttributeInfo get_attribute_info(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
+    AttributeInfo result;
     result.attribute_name_index = Reader::read_u2(file_pointer);
     result.attribute_length = Reader::read_u4(file_pointer);
 
@@ -82,8 +82,9 @@ attribute_info get_attribute_info(FILE* file_pointer, std::vector<constant_pool_
 
     std::string attribute_name = format_UTF8(utf8_length, utf8_bytes);
 
+    std::cout << attribute_name << std::endl;
+
     if(attribute_name == "ConstantValue") {
-        std::cout << "opa" << std::endl;
     } else if(attribute_name == "Code") {
         result.code_attribute = get_code_attribute(file_pointer, constant_pool);
     } else if(attribute_name == "LineNumberTable") {

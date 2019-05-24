@@ -13,5 +13,5 @@ void check_magic_number(u4);
 
 std::string format_UTF8(u2, std::vector <u1> );
 
-attribute_info get_attribute_info(FILE*, std::vector<constant_pool_variables>);
-std::vector<method_info> create_methods(u2, FILE*);
+AttributeInfo get_attribute_info(FILE*, std::vector<constant_pool_variables>);
+std::vector<MethodInfo> create_methods(u2, FILE*);

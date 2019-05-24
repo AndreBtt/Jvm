@@ -101,18 +101,18 @@ void Class_file::set_interfaces(FILE* file_pointer) {
 void Class_file::set_fields(FILE* file_pointer) {
     // get field size
     fields_count = Reader::read_u2(file_pointer);
-    fields = std::vector<field_info>(fields_count);
+    fields = std::vector<FieldInfo>(fields_count);
 
     // create each field
     for (u2 i = 0; i < fields_count; i++) {
-        field_info field;
+        FieldInfo field;
         
         field.access_flags = Reader::read_u2(file_pointer);
         field.name_index = Reader::read_u2(file_pointer);
         field.descriptor_index = Reader::read_u2(file_pointer);
         field.attributes_count = Reader::read_u2(file_pointer);
 
-        field.attributes = std::vector<attribute_info>(field.attributes_count);
+        field.attributes = std::vector<AttributeInfo>(field.attributes_count);
         
         for (u2 j = 0; j < field.attributes_count; j++) {
             field.attributes[j] = get_attribute_info(file_pointer, constant_pool);
@@ -125,18 +125,18 @@ void Class_file::set_fields(FILE* file_pointer) {
 void Class_file::set_methods(FILE* file_pointer) {
     // get method size
     methods_count = Reader::read_u2(file_pointer);
-    methods = std::vector<method_info>(methods_count);
+    methods = std::vector<MethodInfo>(methods_count);
 
     // create each method
     for (u2 i = 0; i < methods_count; i++) {
-        method_info method;
+        MethodInfo method;
         
         method.access_flags = Reader::read_u2(file_pointer);
         method.name_index = Reader::read_u2(file_pointer);
         method.descriptor_index = Reader::read_u2(file_pointer);
         method.attributes_count = Reader::read_u2(file_pointer);
 
-        method.attributes = std::vector<attribute_info>(method.attributes_count);
+        method.attributes = std::vector<AttributeInfo>(method.attributes_count);
         
         for (u2 j = 0; j < method.attributes_count; j++) {
             method.attributes[j] = get_attribute_info(file_pointer, constant_pool);

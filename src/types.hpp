@@ -53,36 +53,21 @@ struct constant_pool_variables{
 };
 
 // declare here since all attributes will use it inside of their declarations
-typedef struct attribute_info attribute_info;
+typedef struct AttributeInfo AttributeInfo;
 
-struct Exception_table {
+struct ExceptionTable {
     u2 start_pc;
     u2 end_pc;
     u2 handler_pc;
     u2 catch_type;
 };
 
-struct Class {
-    u2 inner_class_info_index;	     
-    u2 outer_class_info_index;	     
-    u2 inner_name_index;	     
-    u2 inner_class_access_flags;	
-};
-
-struct Line_number_table {
+struct LineNumberTable {
     u2 start_pc;	     
     u2 line_number;
 };
 
-struct Local_variable_table {
-    u2 start_pc;
-    u2 length;
-    u2 name_index;
-    u2 descriptor_index;
-    u2 index;
-};
-
-struct Code_attribute {
+struct CodeAttribute {
     u2 attribute_name_index;
     u4 attribute_length;
 	u2 max_stack;
@@ -90,30 +75,30 @@ struct Code_attribute {
 	u4 code_length;
 	std::vector<u1> code;
 	u2 exception_table_length;
-    std::vector<Exception_table> exception_table;
+    std::vector<ExceptionTable> exception_table;
     u2 attributes_count;
-    std::vector<attribute_info> attributes;
+    std::vector<AttributeInfo> attributes;
 };
 
-struct attribute_info {
+struct AttributeInfo {
     u2 attribute_name_index;
     u4 attribute_length;
 
-    Code_attribute code_attribute;
+    CodeAttribute code_attribute;
 };
 
-struct field_info {
+struct FieldInfo {
     u2 access_flags;
     u2 name_index;
     u2 descriptor_index;
     u2 attributes_count;
-    std::vector<attribute_info> attributes;
+    std::vector<AttributeInfo> attributes;
 };
 
-struct method_info {
+struct MethodInfo {
     u2 access_flags;
     u2 name_index;
     u2 descriptor_index;
     u2 attributes_count;
-    std::vector<attribute_info> attributes;
+    std::vector<AttributeInfo> attributes;
 };
