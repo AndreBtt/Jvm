@@ -38,6 +38,6 @@ int main(int argc, char* argv[]) {
     // set attributes size and create it
     class_file.set_attributes(file_pointer);
 
-    display_class_file(class_file);
+    display::class_file(class_file);
 }
 

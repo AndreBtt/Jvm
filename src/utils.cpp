@@ -35,3 +35,50 @@ void check_magic_number(u4 magic_number) {
         exit(1);
     }
 }
+
+std::string get_constant_pool_element(std::vector<constant_pool_variables> constant_pool, u2 index) {
+    u2 tag  = constant_pool[index].tag;
+
+    switch (tag) {
+            case CONSTANT_CLASS:
+            {
+            // braces nescessary since we are declaring a vector inside a switch
+
+                // constant pool index to a CONSTANT_UTF8 where the class name is located
+                u2 name_index = constant_pool[index].name_index;
+
+                u2 utf8_length = constant_pool[name_index].utf8_length;
+                std::vector <u1> utf8_bytes = constant_pool[name_index].utf8_bytes;
+                return format_UTF8(utf8_length, utf8_bytes);
+            }
+
+            case CONSTANT_FIELD_REF:
+            case CONSTANT_METHOD_REF:
+            case CONSTANT_INTERFACE_METHOD_REF:
+            break;
+            
+            case CONSTANT_NAME_AND_TYPE:
+            break;
+
+            case CONSTANT_UTF8:
+            {
+                u2 utf8_length = constant_pool[index].utf8_length;
+                std::vector <u1> utf8_bytes = constant_pool[index].utf8_bytes;
+                return format_UTF8(utf8_length, utf8_bytes);
+            }
+            break;
+
+            case CONSTANT_STRING:
+            break;
+
+            case CONSTANT_INTEGER:
+            case CONSTANT_FLOAT:
+            break;
+            
+            case CONSTANT_LONG:
+            case CONSTANT_DOUBLE:
+            break;
+            
+    }
+    
+}

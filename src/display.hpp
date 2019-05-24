@@ -11,33 +11,34 @@
 
 using namespace std;
 
-// display utils
-string get_constant_pool_element(vector<constant_pool_variables>, u2);
-void display_indentation(int);
+namespace display{
+    void class_file(ClassFile);
+    void general_information(ClassFile);
+    void access_flags(u2);
+    void constant_pool(ClassFile);
+
+    // display attributes
+    void attributes(ClassFile, int);
+    void attribute_info(AttributeInfo, vector<constant_pool_variables>, int);
+    void code_attribute(CodeAttribute, vector<constant_pool_variables>, int);
+    void line_number_table_attribute(LineNumberTableAttribute, vector<constant_pool_variables>, int);
+    void source_file_attribute(SourceFileAttribute, vector<constant_pool_variables>, int);
 
 
-void display_class_file(ClassFile);
-void display_general_information(ClassFile);
+    // display interfaces
+    void interfaces(ClassFile);
 
 
-void display_access_flags(u2);
-void display_constant_pool(ClassFile);
-
-// display attributes
-void display_attribute_info(AttributeInfo, vector<constant_pool_variables>, int);
-void display_code_attribute(CodeAttribute, vector<constant_pool_variables>, int);
-void display_line_number_table_attribute(LineNumberTableAttribute, vector<constant_pool_variables>, int);
-
-// display interfaces
-void display_interfaces(ClassFile);
-
-// display methods
-void display_methods(ClassFile, int);
-void display_method(MethodInfo, vector<constant_pool_variables>, int);
-
-// display fields
-void display_fields(ClassFile, int);
-void display_field(FieldInfo, vector<constant_pool_variables>, int);
+    // display methods
+    void methods(ClassFile, int);
+    void method(MethodInfo, vector<constant_pool_variables>, int);
 
 
+    // display fields
+    void fields(ClassFile, int);
+    void field(FieldInfo, vector<constant_pool_variables>, int);
 
+
+    // display utils
+    void indentation(int);
+}
