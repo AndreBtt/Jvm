@@ -328,18 +328,17 @@ void display::constant_pool(ClassFile class_file) {
             case CONSTANT_LONG:
             {
                 int64_t number = ((int64_t) element.high_bytes << 32) + element.low_bytes;
-                cout << "Long" << endl;
+                printf("Long\n");
                 display::indentation(2);
-                printf("High Bytes: \t0x%.8X\n", element.high_bytes);
+                printf("%-15s 0x%-30.8X\n", "High Bytes:", element.high_bytes);
                 display::indentation(2);
-                printf("Low Bytes: \t0x%.8X\n", element.low_bytes);
+                printf("%-15s 0x%-30.8X\n", "Low Bytes:", element.low_bytes);
                 display::indentation(2);
-                cout << "Long: \t\t" << number << endl;
+                printf("%-15s %-30ld\n", "Long:", number);
 
                 i++;
-                printf("\n");
                 display::indentation(1);
-                cout << "#" << i << " Long continued" << endl;
+                printf("#%d Long continued\n", i);
             }
             break;
 
@@ -352,18 +351,18 @@ void display::constant_pool(ClassFile class_file) {
                 int64_t mantissa = (exponent == 0) ? (bytes & 0xfffffffffffffL) << 1 : (bytes & 0xfffffffffffffL) | 0x10000000000000L;
                 double number = sig * mantissa * pow(2, exponent-1075);
 
-                cout << "Double" << endl;
+                printf("Double\n");
                 display::indentation(2);
-                printf("High Bytes: \t0x%.8X\n", element.high_bytes);
+                printf("%-15s 0x%-30.8X\n", "High Bytes:", element.high_bytes);
                 display::indentation(2);
-                printf("Low Bytes: \t0x%.8X\n", element.low_bytes);
+                printf("%-15s 0x%-30.8X\n", "Low Bytes:", element.low_bytes);
                 display::indentation(2);
-                cout << "Double: \t" << number << endl;
+                printf("%-15s %-30f\n", "Double:", number);
 
                 i++;
                 printf("\n");
                 display::indentation(1);
-                cout << "#" << i << " Double continued" << endl;
+                printf("#%d Double continued\n", i);
 
             }
             break;
