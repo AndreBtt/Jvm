@@ -78,7 +78,5 @@ std::string get_constant_pool_element(std::vector<constant_pool_variables> const
             case CONSTANT_LONG:
             case CONSTANT_DOUBLE:
             break;
-            
     }
-    
 }

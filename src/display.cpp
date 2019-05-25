@@ -11,7 +11,7 @@ void display::class_file(ClassFile class_file) {
     cout << endl;
 
     cout << "Interfaces:" << endl;
-    // display::interfaces(class_file);
+    display::interfaces(class_file);
     cout << endl;
 
     cout << "Fields:" << endl;
@@ -382,19 +382,24 @@ void display::constant_pool(ClassFile class_file) {
 
 void display::interfaces(ClassFile class_file) {	
 	for (u2 i = 0; i < class_file.interfaces_count; i++) {
-		cout << get_constant_pool_element(class_file.constant_pool, class_file.interfaces[i]);
+        display::indentation(1);
+        cout << "Interface " << i << endl;
+        display::indentation(2);
+        string class_name = get_constant_pool_element(class_file.constant_pool, class_file.interfaces[i]);
+		cout << "Interface: " << class_name;
+        cout << "\tcp_index #" << class_file.interfaces[i] << endl;
 	}
 }
 
 void display::method(MethodInfo method, vector<constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     cout << "Name: " << get_constant_pool_element(constant_pool, method.name_index);;
-    cout << "\t # #" << method.name_index;
+    cout << "\tcp_index #" << method.name_index;
     cout << endl;
     
     display::indentation(indentation);
     cout << "Descriptor: " << get_constant_pool_element(constant_pool, method.descriptor_index);
-    cout << "\t # #" << method.descriptor_index << endl;
+    cout << "\tcp_index #" << method.descriptor_index << endl;
 
     display::indentation(indentation);
     printf("Access Flags: (0x%.4X) ", method.access_flags);
