@@ -79,29 +79,28 @@ void display::code_attribute(CodeAttribute attribute_info, vector<constant_pool_
     CodeAttribute code = attribute_info;
 
     display::indentation(indentation);
-    cout << "Maximum stack: " << code.max_stack << endl;
+    printf("%-30s %d\n", "Maximum stack:", code.max_stack);
     display::indentation(indentation);
-    cout << "Maximum local variables: " << code.max_locals << endl;
+    printf("%-30s %d\n", "Maximum local variables:", code.max_locals);
     display::indentation(indentation);
-    cout << "Code length: " << code.code_length << endl;
+    printf("%-30s %d\n", "Code length:", code.code_length);
     display::indentation(indentation);
-    cout << "Exception table: " << endl;
+    printf("Exception table:\n");
     if (code.exception_table_length > 0) {
         // TODO
     } else {
-        display::indentation(indentation);
-        cout << "\tException table is empty" << endl;
+        display::indentation(indentation+1);
+        printf("Exception table is empty.\n");
     }
 
-
     display::indentation(indentation);
-    cout << "Bytecode: " << endl;
+    printf("Bytecode:\n");
     // TODO
     display::indentation(indentation+1);
-    cout << "sei fazer ainda nao" << endl;
+    printf("TODO\n");
 
     display::indentation(indentation);
-    cout << "Attributes: " << endl;
+    printf("Attributes:\n");
     for (u2 i = 0; i < code.attributes_count; i++) {
         display::attribute_info(code.attributes[i], constant_pool, indentation+1);
     }
@@ -131,7 +130,7 @@ void display::constant_value_attribute(ConstantValueAttribute attribute_info, ve
 }
 
 void display::exceptions_attribute(ExceptionsAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
-    display::indentation(indentation);
+    display::indentation(indentation);;
     cout <<"\texception\tverbose" << endl;
     for (u2 i = 0; i < attribute_info.number_of_exceptions; i++) {
         display::indentation(indentation);
@@ -143,11 +142,11 @@ void display::exceptions_attribute(ExceptionsAttribute attribute_info, vector<co
 void display::attribute_info(AttributeInfo attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
     string attribute_name = get_constant_pool_element(constant_pool, attribute_info.attribute_name_index);
     display::indentation(indentation);
-    cout << attribute_name << endl;
-    display::indentation(indentation);
-    cout << "\tAttribute name index: #" << attribute_info.attribute_name_index << endl;
-    display::indentation(indentation);
-    cout << "\tAttribute length: " << attribute_info.attribute_length << endl;
+    printf("%s\n", attribute_name.c_str());
+    display::indentation(indentation+1);
+    printf("%-30s #%d\n", "Attribute name index:", attribute_info.attribute_name_index);
+    display::indentation(indentation+1);
+    printf("%-30s #%d\n", "Attribute length:", attribute_info.attribute_length);
 
     if(attribute_name == "ConstantValue") {
         display::constant_value_attribute(attribute_info.constant_value_attribute, constant_pool, indentation+1);
