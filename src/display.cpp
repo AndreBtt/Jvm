@@ -187,8 +187,7 @@ void display::constant_pool(ClassFile class_file) {
                 display::indentation(2);
                 u2 utf8_length = constant_pool[element.name_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[element.name_index].utf8_bytes;
-                cout << "Class name: \t" << format_UTF8(utf8_length, utf8_bytes);
-                cout << "\tcp_index #" << element.name_index << endl;
+                printf("%-15s %-30s cp_index #%d\n", "Class name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), element.name_index);
             }
             break;
 
@@ -280,14 +279,12 @@ void display::constant_pool(ClassFile class_file) {
                 u2 utf8_length = constant_pool[name_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[name_index].utf8_bytes;
                 display::indentation(2);
-                cout << "Name: \t\t" << format_UTF8(utf8_length, utf8_bytes);
-                cout << "\tcp_index #" << name_index << endl;
+                printf("%-15s %-30s cp_index #%d\n", "Name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), name_index);
 
                 utf8_length = constant_pool[descriptor_index].utf8_length;
                 utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
                 display::indentation(2);
-                cout << "Descriptor: \t" << format_UTF8(utf8_length, utf8_bytes);
-                cout << "\tcp_index #" << name_index << endl;
+                printf("%-15s %-30s cp_index #%d\n", "Descriptor: ", format_UTF8(utf8_length, utf8_bytes).c_str(), name_index);
             }
             break;
 
