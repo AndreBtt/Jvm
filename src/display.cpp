@@ -1,73 +1,68 @@
 #include "display.hpp"
 
 void display::class_file(ClassFile class_file) {
-    cout << endl;
+    printf("\n");
 
-    cout << "Informações gerais:\n" << endl;
+    printf("Informações gerais:\n");
     display::general_information(class_file);
 
-    cout << "Constant Pool:" << endl;
+    printf("Constant Pool:\n");
     display::constant_pool(class_file);
-    cout << endl;
 
-    cout << "Interfaces:" << endl;
+    printf("Interfaces:\n");
     display::interfaces(class_file);
-    cout << endl;
 
-    cout << "Fields:" << endl;
+    printf("Fields:\n");
     display::fields(class_file, 1);
-    cout << endl;
 
-    cout << "Methods:" << endl;
+    printf("Methods:\n");
     display::methods(class_file, 1);
-    cout << endl;
 
-    cout << "Attributes:" << endl;
+    printf("Attributes:\n");
     display::attributes(class_file, 1);
-    cout << endl;
 }
 
 void display::general_information(ClassFile class_file) {
-    cout << "\tMinor Version: " << class_file.min_version << endl;
-    cout << endl;
+    display::indentation(1);
+    printf("%-23s %d\n", "Minor Version:", class_file.min_version);
 
-    cout << "\tMajor Version: " << class_file.major_version << endl;
-    cout << endl;
+    display::indentation(1);
+    printf("%-23s %d\n", "Major Version:", class_file.major_version);
 
-    cout << "\tConstant pool count: " << class_file.constant_pool_length << endl;
-    cout << endl;
+    display::indentation(1);
+    printf("%-23s %d\n", "Constant pool count:", class_file.constant_pool_length);
 
-    printf("\tAccess Flags: (0x%.4X) ", class_file.access_flags);
+    display::indentation(1);
+    printf("%-23s (0x%.4X)\n", "Access Flags:", class_file.access_flags);
+    display::indentation(2);
     display::access_flags(class_file.access_flags);
-    cout << endl;
+    printf("\n");
 
     string class_name = get_constant_pool_element(class_file.constant_pool, class_file.this_class);
-    cout << "\tThis class: " << class_name;
-    cout << "\tcp_index #" << class_file.this_class << endl;
-    cout << endl;
+    display::indentation(1);
+    printf("%-23s %-30s cp_index #%d\n", "This class:", class_name.c_str(), class_file.this_class);
 
+    display::indentation(1);
     if(class_file.super_class == 0) {
-        cout << "\tSuper class: none" << endl;
+        printf("%-23s %-30s\n", "Super class:", "none");
     } else {
         string super_class_name = get_constant_pool_element(class_file.constant_pool, class_file.super_class);
-        cout << "\tSuper class: " << super_class_name;
-        cout << "\tcp_index #" << class_file.super_class << endl;
+        printf("%-23s %-30s cp_index #%d\n", "Super class: ", super_class_name.c_str(), class_file.super_class);
     }
-    cout << endl;
 
-    cout << "\tInterfaces count: " << class_file.interfaces_count << endl;
-    cout << endl;
+    display::indentation(1);
+    printf("%-23s %d\n", "Interfaces count:", class_file.interfaces_count);
 
-    cout << "\tFields count: " <<  class_file.fields_count << endl;
-    cout << endl;
+    display::indentation(1);
+    printf("%-23s %d\n", "Fields count:", class_file.fields_count);
 
-    cout << "\tMethods pool count: " << class_file.methods_count << endl;
-    cout << endl;
+    display::indentation(1);
+    printf("%-23s %d\n", "Methods pool count:", class_file.methods_count);
 
-    cout << "\tAttributes pool count: " << class_file.attributes_count << endl;
-    cout << endl;
+    display::indentation(1);
+    printf("%-23s %d\n", "Attributes pool count:", class_file.attributes_count);
 
-    cout << endl;
+    printf("\n");
 }
 
 void display::access_flags(u2 accessFlags) {
@@ -79,7 +74,7 @@ void display::access_flags(u2 accessFlags) {
             cout << flags[i];
         }
     }
-    cout << endl;
+    printf("\n");
 }
 
 void display::code_attribute(CodeAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
@@ -176,7 +171,6 @@ void display::constant_pool(ClassFile class_file) {
     for (int i = 1; i < class_file.constant_pool_length; i++) {
         constant_pool_variables element = constant_pool[i];
 
-        cout << endl;
         display::indentation(1);
         cout << "#" << i << " ";
 
@@ -346,7 +340,7 @@ void display::constant_pool(ClassFile class_file) {
                 cout << "Long: \t\t" << number << endl;
 
                 i++;
-                cout << endl;
+                printf("\n");
                 display::indentation(1);
                 cout << "#" << i << " Long continued" << endl;
             }
@@ -370,7 +364,7 @@ void display::constant_pool(ClassFile class_file) {
                 cout << "Double: \t" << number << endl;
 
                 i++;
-                cout << endl;
+                printf("\n");
                 display::indentation(1);
                 cout << "#" << i << " Double continued" << endl;
 
@@ -396,7 +390,7 @@ void display::method(MethodInfo method, vector<constant_pool_variables> constant
     display::indentation(indentation);
     cout << "Name: " << get_constant_pool_element(constant_pool, method.name_index);;
     cout << "\tcp_index #" << method.name_index;
-    cout << endl;
+    printf("\n");
 
     display::indentation(indentation);
     cout << "Descriptor: " << get_constant_pool_element(constant_pool, method.descriptor_index);
@@ -425,7 +419,7 @@ void display::methods(ClassFile class_file, int indentation) {
         string method_name = get_constant_pool_element(class_file.constant_pool, method.name_index);
 		cout << method_name << endl;
 		display::method(method, class_file.constant_pool, indentation+1);
-        cout << endl;
+        printf("\n");
     }
 
 }
@@ -463,14 +457,14 @@ void display::fields(ClassFile class_file, int indentation) {
         string field_name = get_constant_pool_element(class_file.constant_pool, field.name_index);
 		cout << field_name << endl;
 		display::field(field, class_file.constant_pool, indentation+1);
-        cout << endl;
+        printf("\n");
 	}
 }
 
 void display::attributes(ClassFile class_file, int indentation) {
     for (u2 i = 0; i < class_file.attributes_count; i++) {
         display::attribute_info(class_file.attributes[i], class_file.constant_pool, indentation);
-        cout << endl;
+        printf("\n");
     }
 }
 
