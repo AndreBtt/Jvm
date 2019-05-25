@@ -107,20 +107,18 @@ void display::code_attribute(CodeAttribute attribute_info, vector<constant_pool_
 }
 
 void display::line_number_table_attribute(LineNumberTableAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
-    display::indentation(indentation);
-    cout <<"\tstart_pc\tline_number" << endl;
+    display::indentation(indentation+1);
+    printf("%15s %s\n", "start_pc", "line_number");
     for (u2 i = 0; i < attribute_info.line_number_table_length; i++) {
         LineNumberTable table = attribute_info.line_number_table[i];
-        display::indentation(indentation);
-        cout << "\t" << table.start_pc;
-        cout << "\t\t" << table.line_number << endl;
+        display::indentation(indentation+1);
+        printf("%9d %14d\n", table.start_pc, table.line_number);
     }
 }
 
 void display::source_file_attribute(SourceFileAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
-    cout << "SourceFile: " << get_constant_pool_element(constant_pool, attribute_info.source_file_index);
-    cout << "\tcp_index #" << attribute_info.source_file_index << endl;
+    printf("%-30s %15s cp_index #%d\n", "SourceFile:", get_constant_pool_element(constant_pool, attribute_info.source_file_index).c_str(), attribute_info.source_file_index);
 }
 
 void display::constant_value_attribute(ConstantValueAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
