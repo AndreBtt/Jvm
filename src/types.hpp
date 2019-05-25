@@ -67,6 +67,11 @@ struct LineNumberTable {
     u2 line_number;
 };
 
+struct ExceptionsAttribute {
+    u2 number_of_exceptions;
+    std::vector<u2> exception_index_table;
+};
+
 struct LineNumberTableAttribute {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -103,7 +108,7 @@ struct AttributeInfo {
     LineNumberTableAttribute line_number_table_attribute;
     SourceFileAttribute source_file_attribute;
     ConstantValueAttribute constant_value_attribute;
-
+    ExceptionsAttribute exceptions_attribute;
 };
 
 struct FieldInfo {

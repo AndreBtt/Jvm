@@ -25,6 +25,7 @@ namespace display{
     void line_number_table_attribute(LineNumberTableAttribute, vector<constant_pool_variables>, int);
     void source_file_attribute(SourceFileAttribute, vector<constant_pool_variables>, int);
     void constant_value_attribute(ConstantValueAttribute, vector<constant_pool_variables>, int);
+    void exceptions_attribute(ExceptionsAttribute, vector<constant_pool_variables>, int);
 
 
     // display interfaces

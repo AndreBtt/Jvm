@@ -137,6 +137,16 @@ void display::constant_value_attribute(ConstantValueAttribute attribute_info, ve
     cout << "\tcp_index #" << attribute_info.constant_value_index << endl;
 }
 
+void display::exceptions_attribute(ExceptionsAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+    display::indentation(indentation);        
+    cout <<"\texception\tverbose" << endl;
+    for (u2 i = 0; i < attribute_info.number_of_exceptions; i++) {
+        display::indentation(indentation); 
+        cout << "\tcp_index #" << attribute_info.exception_index_table[i];
+        cout << "\t\t" << get_constant_pool_element(constant_pool, attribute_info.exception_index_table[i]) << endl;
+    }
+}
+
 void display::attribute_info(AttributeInfo attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {    
     string attribute_name = get_constant_pool_element(constant_pool, attribute_info.attribute_name_index);
     display::indentation(indentation);
@@ -154,6 +164,8 @@ void display::attribute_info(AttributeInfo attribute_info, vector<constant_pool_
         display::line_number_table_attribute(attribute_info.line_number_table_attribute, constant_pool, indentation+1);
     } else if(attribute_name == "SourceFile") {
         display::source_file_attribute(attribute_info.source_file_attribute, constant_pool, indentation+1);
+    } else if(attribute_name == "Exceptions") {
+        display::exceptions_attribute(attribute_info.exceptions_attribute, constant_pool, indentation+1);
     }
 
 }

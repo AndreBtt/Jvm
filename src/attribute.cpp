@@ -66,6 +66,16 @@ ConstantValueAttribute get_constant_value_attribute(FILE* file_pointer) {
     return result;
 }
 
+ExceptionsAttribute get_exceptions_attribute(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
+    ExceptionsAttribute result;
+    result.number_of_exceptions = Reader::read_u2(file_pointer);
+    result.exception_index_table = std::vector<u2>(result.number_of_exceptions);
+    for (u2 i = 0; i < result.number_of_exceptions; i++) {
+        result.exception_index_table[i] = Reader::read_u2(file_pointer);
+    }
+    return result;
+}
+
 AttributeInfo get_attribute_info(FILE* file_pointer, std::vector<constant_pool_variables> constant_pool) {
     AttributeInfo result;
     result.attribute_name_index = Reader::read_u2(file_pointer);
@@ -84,6 +94,8 @@ AttributeInfo get_attribute_info(FILE* file_pointer, std::vector<constant_pool_v
         result.line_number_table_attribute = get_line_number_table_attribute(file_pointer, constant_pool);
     } else if(attribute_name == "SourceFile") {
         result.source_file_attribute = get_source_file_attribute(file_pointer, constant_pool);
+    } else if(attribute_name == "Exceptions") {
+        result.exceptions_attribute = get_exceptions_attribute(file_pointer, constant_pool);
     }
 
     return result;
