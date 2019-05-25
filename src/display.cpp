@@ -6,19 +6,19 @@ void display::class_file(ClassFile class_file) {
     printf("Informações gerais:\n");
     display::general_information(class_file);
 
-    printf("Constant Pool:\n");
+    printf("\nConstant Pool:\n");
     display::constant_pool(class_file);
 
-    printf("Interfaces:\n");
+    printf("\nInterfaces:\n");
     display::interfaces(class_file);
 
-    printf("Fields:\n");
+    printf("\nFields:\n");
     display::fields(class_file, 1);
 
-    printf("Methods:\n");
+    printf("\nMethods:\n");
     display::methods(class_file, 1);
 
-    printf("Attributes:\n");
+    printf("\nAttributes:\n");
     display::attributes(class_file, 1);
 }
 
@@ -61,8 +61,6 @@ void display::general_information(ClassFile class_file) {
 
     display::indentation(1);
     printf("%-23s %d\n", "Attributes pool count:", class_file.attributes_count);
-
-    printf("\n");
 }
 
 void display::access_flags(u2 accessFlags) {
@@ -266,7 +264,7 @@ void display::constant_pool(ClassFile class_file) {
 
             case CONSTANT_NAME_AND_TYPE:
             {
-                cout << "NameAndType" << endl;
+                printf("NameAndType\n");
                 u2 name_index = element.name_index;
                 u2 descriptor_index = element.descriptor_index;
 
@@ -284,18 +282,17 @@ void display::constant_pool(ClassFile class_file) {
 
             case CONSTANT_UTF8:
             {
-                cout << "Utf8" << endl;
+                printf("Utf8\n");
                 display::indentation(2);
-                cout << "Utf8 Length: \t" << element.utf8_length << endl;
+                printf("%-15s %-30d\n", "Utf8 Length:", element.utf8_length);
                 display::indentation(2);
-                cout << "Value: \t\t" << format_UTF8(element.utf8_length, element.utf8_bytes) << endl;
+                printf("%-15s %-30s\n", "Value:", format_UTF8(element.utf8_length, element.utf8_bytes).c_str());
             }
             break;
 
             case CONSTANT_STRING:
             {
-                cout << "String" << endl;
-
+                printf("String\n");
                 u2 utf8_length = constant_pool[element.string_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[element.string_index].utf8_bytes;
                 display::indentation(2);
@@ -305,7 +302,7 @@ void display::constant_pool(ClassFile class_file) {
 
             case CONSTANT_INTEGER:
             {
-                cout << "Integer" << endl;
+                printf("Integer\n");
                 display::indentation(2);
                 printf("Bytes: \t\t0x%.8X\n", element.bytes);
                 display::indentation(2);
@@ -320,11 +317,11 @@ void display::constant_pool(ClassFile class_file) {
                 int32_t mantissa = (exponent == 0) ? (element.bytes & 0x7fffff) << 1 : (element.bytes & 0x7fffff) | 0x800000;
                 float number = sig * mantissa * pow(2, exponent-150);
 
-                cout << "Float" << endl;
+                printf("Float\n");
                 display::indentation(2);
-                printf("Bytes: \t\t0x%.8X\n", element.bytes);
+                printf("%-15s 0x%-30.8X\n", "Bytes:", element.bytes);
                 display::indentation(2);
-                printf("Float: \t\t%f\n", number);
+                printf("%-15s %-30f\n", "Float:", number);
             }
             break;
 
