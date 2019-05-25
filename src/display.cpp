@@ -69,7 +69,7 @@ void display::access_flags(u2 accessFlags) {
 
     for (uint8_t i = 0; i < 10; i++) {
         if ((accessFlags & masks[i]) != 0) {
-            cout << flags[i];
+            printf("%s ", flags[i].c_str());
         }
     }
     printf("\n");
@@ -384,23 +384,21 @@ void display::interfaces(ClassFile class_file) {
 
 void display::method(MethodInfo method, vector<constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
-    cout << "Name: " << get_constant_pool_element(constant_pool, method.name_index);;
-    cout << "\tcp_index #" << method.name_index;
-    printf("\n");
+    printf("%-15s %-30s cp_index #%d\n", "Name:", get_constant_pool_element(constant_pool, method.name_index).c_str(), method.name_index);
 
     display::indentation(indentation);
-    cout << "Descriptor: " << get_constant_pool_element(constant_pool, method.descriptor_index);
-    cout << "\tcp_index #" << method.descriptor_index << endl;
+    printf("%-15s %-30s cp_index #%d\n", "Descriptor:", get_constant_pool_element(constant_pool, method.descriptor_index).c_str(), method.descriptor_index);
 
     display::indentation(indentation);
-    printf("Access Flags: (0x%.4X) ", method.access_flags);
+    printf("%-15s (0x%.4X)\n", "Access Flags:", method.access_flags);
+    display::indentation(indentation+1);
     display::access_flags(method.access_flags);
 
     display::indentation(indentation);
-    cout << "Attributes:" << endl;
+    printf("%s\n", "Attributes:");
     if(method.attributes_count == 0) {
         display::indentation(indentation+1);
-        cout << "Attributes is empty.";
+        printf("%s\n", "Attributes is empty.");
     }
 
     for (u2 j = 0; j < method.attributes_count; j++) {
@@ -411,11 +409,10 @@ void display::method(MethodInfo method, vector<constant_pool_variables> constant
 void display::methods(ClassFile class_file, int indentation) {
     for (u2 i = 0; i < class_file.methods_count; i++) {
         MethodInfo method = class_file.methods[i];
-        display::indentation(indentation);
         string method_name = get_constant_pool_element(class_file.constant_pool, method.name_index);
-		cout << method_name << endl;
+        display::indentation(indentation);
+		printf("%s\n", method_name.c_str());
 		display::method(method, class_file.constant_pool, indentation+1);
-        printf("\n");
     }
 
 }
