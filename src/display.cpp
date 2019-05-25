@@ -167,12 +167,12 @@ void display::constant_pool(ClassFile class_file) {
         constant_pool_variables element = constant_pool[i];
 
         display::indentation(1);
-        cout << "#" << i << " ";
+        printf("#%d ", i);
 
         switch (element.tag) {
             case CONSTANT_CLASS:
             {
-                cout << "Class" << endl;
+                printf("Class\n");
                 display::indentation(2);
                 u2 utf8_length = constant_pool[element.name_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[element.name_index].utf8_bytes;
@@ -182,7 +182,7 @@ void display::constant_pool(ClassFile class_file) {
 
             case CONSTANT_FIELD_REF:
             {
-                cout << "Fieldref" << endl;
+                printf("Fieldref\n");
 
                 // display class
                 u2 class_index = constant_pool[element.class_index].name_index;
