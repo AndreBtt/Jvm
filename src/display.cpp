@@ -241,7 +241,29 @@ void display::constant_pool(ClassFile class_file) {
             break;
 
             case CONSTANT_INTERFACE_METHOD_REF:
-                // TODO
+            {
+                cout << "Interface Method ref" << endl;
+                u2 class_index = constant_pool[element.class_index].name_index;
+                u2 utf8_length = constant_pool[class_index].utf8_length;
+                vector <u1> utf8_bytes = constant_pool[class_index].utf8_bytes;
+                display::indentation(2);
+                cout << "Class name: \t" << format_UTF8(utf8_length, utf8_bytes);
+                cout << "\tcp_index #" << element.class_index << endl;
+
+                u2 name_index = constant_pool[element.name_and_type_index].name_index;
+                utf8_length = constant_pool[name_index].utf8_length;
+                utf8_bytes = constant_pool[name_index].utf8_bytes;
+                string name = format_UTF8(utf8_length, utf8_bytes);
+
+                u2 descriptor_index = constant_pool[element.name_and_type_index].descriptor_index;
+                utf8_length = constant_pool[descriptor_index].utf8_length;
+                utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
+                string descriptor = format_UTF8(utf8_length, utf8_bytes);
+
+                display::indentation(2);
+                cout << "Name and type: \t" << name + descriptor;
+                cout << "\tcp_index #" << element.name_and_type_index << endl;
+            }
             break;
             
             case CONSTANT_NAME_AND_TYPE:
@@ -276,23 +298,26 @@ void display::constant_pool(ClassFile class_file) {
 
             case CONSTANT_STRING:
             {
-                cout << "String";
-                cout << "\t\t #" << element.string_index;
-
+                cout << "String" << endl;
 
                 u2 utf8_length = constant_pool[element.string_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[element.string_index].utf8_bytes;
-                cout << "\t\t // " << format_UTF8(utf8_length, utf8_bytes);
+                display::indentation(2);
+                cout << "String: \t" << format_UTF8(utf8_length, utf8_bytes);                
+                cout << "\tcp_index #" << element.string_index << endl;
             }
             break;
 
             case CONSTANT_INTEGER:
+            {
                 cout << "Integer" << endl;
                 display::indentation(2);
                 printf("Bytes: \t\t0x%.8X\n", element.bytes);
                 display::indentation(2);
                 cout << "Integer: \t" << int32_t(element.bytes) << endl;
+            }
             break;
+
             case CONSTANT_FLOAT:
             {
                 int32_t sig = ((element.bytes >> 31) == 0) ? 1 : -1;
@@ -309,11 +334,48 @@ void display::constant_pool(ClassFile class_file) {
             break;
             
             case CONSTANT_LONG:
+            {
+                int64_t number = ((int64_t) element.high_bytes << 32) + element.low_bytes;
+                cout << "Long" << endl;
+                display::indentation(2);
+                printf("High Bytes: \t0x%.8X\n", element.high_bytes);
+                display::indentation(2);
+                printf("Low Bytes: \t0x%.8X\n", element.low_bytes);
+                display::indentation(2);
+                cout << "Long: \t\t" << number << endl;
+
+                i++;
+                cout << endl;
+                display::indentation(1);
+                cout << "#" << i << " Long continued" << endl;
+            }
+            break;
+
             case CONSTANT_DOUBLE:
-                // TODO
+            {
+                int64_t bytes = ((int64_t) element.high_bytes << 32) + element.low_bytes;
+                
+                int32_t sig = ((bytes >> 63) == 0) ? 1 : -1;
+                int32_t exponent = (int32_t)((bytes >> 52) & 0x7ffL);
+                int64_t mantissa = (exponent == 0) ? (bytes & 0xfffffffffffffL) << 1 : (bytes & 0xfffffffffffffL) | 0x10000000000000L;
+                double number = sig * mantissa * pow(2, exponent-1075);
+
+                cout << "Double" << endl;
+                display::indentation(2);
+                printf("High Bytes: \t0x%.8X\n", element.high_bytes);
+                display::indentation(2);
+                printf("Low Bytes: \t0x%.8X\n", element.low_bytes);
+                display::indentation(2);
+                cout << "Double: \t" << number << endl;
+
+                i++;
+                cout << endl;
+                display::indentation(1);
+                cout << "#" << i << " Double continued" << endl;
+                
+            }
             break;
 		}
-        cout << endl;
     }
 
 }

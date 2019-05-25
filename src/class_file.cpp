@@ -24,8 +24,10 @@ void ClassFile::set_constant_pool(FILE* file_pointer) {
     // create constant pool
     for(u2 i = 1; i < constant_pool_length; i++) {
         constant_pool_variables current_variable;
-        
+
         current_variable.tag = Reader::read_u1(file_pointer);
+
+        // std::cout << i << " = " << int(current_variable.tag) << std::endl;
 
         switch (current_variable.tag) {
             case CONSTANT_CLASS:
@@ -65,7 +67,6 @@ void ClassFile::set_constant_pool(FILE* file_pointer) {
             case CONSTANT_DOUBLE:
                 current_variable.high_bytes = Reader::read_u4(file_pointer);
                 current_variable.low_bytes = Reader::read_u4(file_pointer);
-                i++;
             break;
             default:
                 std::cout << "Tag invalida no pool de constantes" << std::endl;
@@ -73,6 +74,7 @@ void ClassFile::set_constant_pool(FILE* file_pointer) {
 		}
 
         constant_pool[i] = current_variable;
+        if(current_variable.tag == CONSTANT_LONG || current_variable.tag == CONSTANT_DOUBLE) i++;
     }
 
 }
