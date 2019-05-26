@@ -123,12 +123,11 @@ void display::source_file_attribute(SourceFileAttribute attribute_info, vector<c
 
 void display::constant_value_attribute(ConstantValueAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
-    cout << "Constant value: " << get_constant_pool_element(constant_pool, attribute_info.constant_value_index);
-    cout << "\tcp_index #" << attribute_info.constant_value_index << endl;
+    printf("%-30s %15s cp_index #%d\n", "Constant value:", get_constant_pool_element(constant_pool, attribute_info.constant_value_index).c_str(), attribute_info.constant_value_index);
 }
 
 void display::exceptions_attribute(ExceptionsAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
-    display::indentation(indentation);;
+    display::indentation(indentation);
     cout <<"\texception\tverbose" << endl;
     for (u2 i = 0; i < attribute_info.number_of_exceptions; i++) {
         display::indentation(indentation);
@@ -237,7 +236,7 @@ void display::constant_pool(ClassFile class_file) {
 
             case CONSTANT_INTERFACE_METHOD_REF:
             {
-                cout << "Interface Method ref" << endl;
+                printf("Interface Method ref\n");
                 u2 class_index = constant_pool[element.class_index].name_index;
                 u2 utf8_length = constant_pool[class_index].utf8_length;
                 vector <u1> utf8_bytes = constant_pool[class_index].utf8_bytes;
@@ -301,9 +300,9 @@ void display::constant_pool(ClassFile class_file) {
             {
                 printf("Integer\n");
                 display::indentation(2);
-                printf("Bytes: \t\t0x%.8X\n", element.bytes);
+                printf("%-15s 0x%-30.8X\n", "Bytes:", element.bytes);
                 display::indentation(2);
-                cout << "Integer: \t" << int32_t(element.bytes) << endl;
+                printf("%-15s %-30d\n", "Integer:", int32_t(element.bytes));
             }
             break;
 
@@ -371,11 +370,10 @@ void display::constant_pool(ClassFile class_file) {
 void display::interfaces(ClassFile class_file) {
 	for (u2 i = 0; i < class_file.interfaces_count; i++) {
         display::indentation(1);
-        cout << "Interface " << i << endl;
+        printf("%s %d\n", "Interface", i);
         display::indentation(2);
         string class_name = get_constant_pool_element(class_file.constant_pool, class_file.interfaces[i]);
-		cout << "Interface: " << class_name;
-        cout << "\tcp_index #" << class_file.interfaces[i] << endl;
+        printf("%-15s %-30s cp_index #%d\n", "Interface:", class_name.c_str(), class_file.interfaces[i]);
 	}
 }
 
