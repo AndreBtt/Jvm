@@ -416,22 +416,21 @@ void display::methods(ClassFile class_file, int indentation) {
 
 void display::field(FieldInfo field, vector<constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
-    cout << "Name: " << get_constant_pool_element(constant_pool, field.name_index);
-    cout << "\tcp_index #" << field.name_index << endl;
+    printf("%-15s %-30s cp_index #%d\n", "Name:", get_constant_pool_element(constant_pool, field.name_index).c_str(), field.name_index);
 
     display::indentation(indentation);
-    cout << "Descriptor: " << get_constant_pool_element(constant_pool, field.descriptor_index);
-    cout << "\tcp_index #" << field.descriptor_index << endl;
+    printf("%-15s %-30s cp_index #%d\n", "Descriptor:", get_constant_pool_element(constant_pool, field.descriptor_index).c_str(), field.descriptor_index);
 
     display::indentation(indentation);
-    printf("Access Flags: (0x%.4X) ", field.access_flags);
+    printf("%-15s (0x%.4X)\n", "Access Flags:", field.access_flags);
+    display::indentation(indentation+1);
     display::access_flags(field.access_flags);
 
     display::indentation(indentation);
-    cout << "Attributes:" << endl;
+    printf("%s\n", "Attributes:");
     if(field.attributes_count == 0) {
         display::indentation(indentation+1);
-        cout << "Attributes is empty.";
+        printf("%s\n", "Attributes is empty.");
     }
 
     for (u2 j = 0; j < field.attributes_count; j++) {
@@ -442,12 +441,10 @@ void display::field(FieldInfo field, vector<constant_pool_variables> constant_po
 void display::fields(ClassFile class_file, int indentation) {
 	for (u2 i = 0; i < class_file.fields_count; i++) {
         FieldInfo field = class_file.fields[i];
-
         display::indentation(indentation);
         string field_name = get_constant_pool_element(class_file.constant_pool, field.name_index);
-		cout << field_name << endl;
+		printf("%s\n", field_name.c_str());
 		display::field(field, class_file.constant_pool, indentation+1);
-        printf("\n");
 	}
 }
 
