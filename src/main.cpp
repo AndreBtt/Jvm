@@ -2,8 +2,17 @@
 #include "display.hpp"
 
 int main(int argc, char* argv[]) {
+    if(argc < 2) {
+        printf("[FALHA] Formato invalido. Utilize o caminho do arquivo \".class\" como argumento.\n");
+        exit(1);
+    }
+
     char* file_name = argv[1];
     FILE* file_pointer = fopen(file_name, "rb");
+    if(file_pointer == NULL) {
+        perror("[FALHA] O seguinte erro ocorreu ao tentar abrir o arquivo");
+        exit(1);
+    }
 
     // this variable holds all the information about .class file
     ClassFile class_file;
@@ -42,4 +51,3 @@ int main(int argc, char* argv[]) {
 
     fclose(file_pointer);
 }
-
