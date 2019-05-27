@@ -19,11 +19,11 @@ void ClassFile::set_version(FILE* file_pointer) {
 void ClassFile::set_constant_pool(FILE* file_pointer) {
     // get constant pool length
     constant_pool_length = Reader::read_u2(file_pointer);
-    constant_pool = std::vector<constant_pool_variables>(constant_pool_length);
+    constant_pool = std::vector<Constant_pool_variables>(constant_pool_length);
 
     // create constant pool
     for(u2 i = 1; i < constant_pool_length; i++) {
-        constant_pool_variables current_variable;
+        Constant_pool_variables current_variable;
 
         current_variable.tag = Reader::read_u1(file_pointer);
 
@@ -31,43 +31,59 @@ void ClassFile::set_constant_pool(FILE* file_pointer) {
 
         switch (current_variable.tag) {
             case CONSTANT_CLASS:
-                current_variable.name_index = Reader::read_u2(file_pointer);
+                current_variable.info.class_info.name_index = Reader::read_u2(file_pointer);
             break;
 
             case CONSTANT_FIELD_REF:
+                current_variable.info.field_ref_info.class_index = Reader::read_u2(file_pointer);            
+                current_variable.info.field_ref_info.name_and_type_index = Reader::read_u2(file_pointer);            
+            break;
+
             case CONSTANT_METHOD_REF:
+                current_variable.info.method_ref_info.class_index = Reader::read_u2(file_pointer);            
+                current_variable.info.method_ref_info.name_and_type_index = Reader::read_u2(file_pointer);
+            break;
+
             case CONSTANT_INTERFACE_METHOD_REF:
-                current_variable.class_index = Reader::read_u2(file_pointer);
-                current_variable.name_and_type_index = Reader::read_u2(file_pointer);
+                current_variable.info.interface_method_ref_info.class_index = Reader::read_u2(file_pointer);            
+                current_variable.info.interface_method_ref_info.name_and_type_index = Reader::read_u2(file_pointer);
             break;
             
             case CONSTANT_NAME_AND_TYPE:
-                current_variable.name_index = Reader::read_u2(file_pointer);
-                current_variable.descriptor_index = Reader::read_u2(file_pointer);
+                current_variable.info.name_and_type_info.name_index = Reader::read_u2(file_pointer);
+                current_variable.info.name_and_type_info.descriptor_index = Reader::read_u2(file_pointer);
             break;
 
             case CONSTANT_UTF8:
-                current_variable.utf8_length = Reader::read_u2(file_pointer);
-                current_variable.utf8_bytes.resize(current_variable.utf8_length);
-                for (u2 i = 0; i < current_variable.utf8_length; i++) {
-                    current_variable.utf8_bytes[i] = Reader::read_u1(file_pointer);
+                current_variable.utf8_info.length = Reader::read_u2(file_pointer);
+                current_variable.utf8_info.bytes.resize(current_variable.utf8_info.length);
+                for (u2 i = 0; i < current_variable.utf8_info.length; i++) {
+                    current_variable.utf8_info.bytes[i] = Reader::read_u1(file_pointer);
                 }
             break;
 
             case CONSTANT_STRING:
-                current_variable.string_index = Reader::read_u2(file_pointer);
+                current_variable.info.string_info.string_index = Reader::read_u2(file_pointer);
             break;
 
             case CONSTANT_INTEGER:
+                current_variable.info.integer_info.bytes = Reader::read_u4(file_pointer);
+            break;
+
             case CONSTANT_FLOAT:
-                current_variable.bytes = Reader::read_u4(file_pointer);
+                current_variable.info.float_info.bytes = Reader::read_u4(file_pointer);
             break;
             
             case CONSTANT_LONG:
-            case CONSTANT_DOUBLE:
-                current_variable.high_bytes = Reader::read_u4(file_pointer);
-                current_variable.low_bytes = Reader::read_u4(file_pointer);
+                current_variable.info.long_info.high_bytes = Reader::read_u4(file_pointer);
+                current_variable.info.long_info.low_bytes = Reader::read_u4(file_pointer);
             break;
+
+            case CONSTANT_DOUBLE:
+                current_variable.info.double_info.high_bytes = Reader::read_u4(file_pointer);
+                current_variable.info.double_info.low_bytes = Reader::read_u4(file_pointer);
+            break;
+            
             default:
                 std::cout << "Tag invalida no pool de constantes" << std::endl;
                 exit(1);

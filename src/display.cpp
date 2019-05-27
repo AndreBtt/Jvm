@@ -37,7 +37,7 @@ void display::general_information(ClassFile class_file) {
     display::indentation(2);
     display::access_flags(class_file.access_flags);
     printf("\n");
-
+    
     string class_name = get_constant_pool_element(class_file.constant_pool, class_file.this_class);
     display::indentation(1);
     printf("%-23s %-30s cp_index #%d\n", "This class:", class_name.c_str(), class_file.this_class);
@@ -75,7 +75,125 @@ void display::access_flags(u2 accessFlags) {
     printf("\n");
 }
 
-void display::code_attribute(CodeAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+void display::byte_code(CodeAttribute code_attribute, vector<Constant_pool_variables> constant_pool, int indentation) {
+    u4 code_length = code_attribute.code_length;
+    vector <u1> code = code_attribute.code;
+    
+    for(u4 i = 0; i < code_length;) {
+        display::indentation(indentation);
+        printf("\t%d\t%s ", i, display::instructions[code[i]].c_str());
+        
+        if (code[i] <= 0x0f || (code[i] >= 0x1a && code[i] <= 0x35) || (code[i] >= 0x3b && code[i] <= 0x83) || (code[i] >= 0x85 && code[i] <= 0x98) ||
+            (code[i] >= 0xac && code[i] <= 0xb1) || code[i] == 0xbe || code[i] == 0xbf || code[i] == 0xc2 || code[i] == 0xc3) {
+            printf("\n");
+            i++;
+        } else if (code[i] == 0x12) { 
+            printf(" #%d %s\n",code[i+1],get_constant_pool_element(constant_pool, code[i+1]).c_str());
+            i += 2;
+        } else if (code[i] == 0xbc) { // newarray
+            u1 atype = code[i+1];
+            const string types[] = {"boolean", "char", "float", "double", "byte", "short", "int", "long"};
+            printf(" #%d (%s)\n",atype, types[atype-4].c_str());
+            i += 2;
+        } else if (code[i] == 0x10 || (code[i] >= 0x15 && code[i] <= 0x19) || (code[i] >= 0x36 && code[i] <= 0x3a) || code[i] == 0xa9) {
+            printf("%d\n",code[i+1]);
+            i += 2;
+        } else if (code[i] == 0x11) { // sipush
+            int16_t number = (code[i+1] << 8) | code[i+2];
+            printf(" %d\n", number);
+            i += 3;
+        } else if (code[i] == 0x84) { // iinc
+            printf(" %d by %d\n", code[i+1], code[i+2]);
+            i += 3;
+        } else if (code[i] == 0x13 || code[i] == 0x14 || (code[i] >= 0xb2 && code[i] <= 0xb8) ||
+                   code[i] == 0xbb || code[i] == 0xbd || code[i] == 0xc0 || code[i] == 0xc1) { // usa CP
+            u2 number = (code[i+1] << 8) | code[i+2];
+            printf(" #%d %s\n", number, get_constant_pool_element(constant_pool, number).c_str());
+            i += 3;
+        } else if ((code[i] >= 0x99 && code[i] <= 0xa8) || code[i] == 0xc6 || code[i] == 0xc7) {
+            int16_t number = (code[i+1] << 8) | code[i+2];
+            printf(" %d (%+d)\n", i+number, number);
+            i += 3;
+        } else if (code[i] == 0xc5) { // multianewarray
+            u2 number = (code[i+1] << 8) | code[i+2];
+            printf(" #%d %s dim %d\n", number, get_constant_pool_element(constant_pool, number).c_str(), code[i+3]);
+            i += 4;
+        } else if (code[i] == 0xb9) { // invokeinterface
+            u2 number = (code[i+1] << 8) | code[i+2];
+            printf(" #%d %s count %d\n", number, get_constant_pool_element(constant_pool, number).c_str(), code[i+3]);
+            i += 5;
+        } else if (code[i] == 0xc8 || code[i] == 0xc9) { // goto_w e jsr_w
+            int32_t number = (code[i+1] << 24) | (code[i+2] << 16) | (code[i+3] << 8) | code[i+4];
+            printf(" %d (%+d)\n", i+number, number);
+            i += 5;
+        } else if (code[i] == 0xc4) { // wide
+            u2 indexbyte = (code[i+2] << 8) | code[i+3];
+            
+            printf("\n");
+            display::indentation(indentation);
+            printf("%d\t%s %d", i+1, instructions[code[i+1]].c_str(), indexbyte);
+            
+            if (code[i+1] == 0x84) { // format 2 (iinc)
+                int16_t constbyte = (code[i+4] << 8) | code[i+5];
+                printf(" by %d", constbyte);
+                i += 6;
+            } else {
+                i += 4;
+            }
+            
+            printf("\n");
+        } else if (code[i] == 0xaa) { // tableswitch
+            u1 padding = (i+1) % 4;
+            int32_t defaultbytes = (code[padding+i+1] << 24) | (code[padding+i+2] << 16) | (code[padding+i+3] << 8) | code[padding+i+4];
+            int32_t lowbytes = (code[padding+i+5] << 24) | (code[padding+i+6] << 16) | (code[padding+i+7] << 8) | code[padding+i+8];
+            int32_t highbytes = (code[padding+i+9] << 24) | (code[padding+i+10] << 16) | (code[padding+i+11] << 8) | code[padding+i+12];
+            
+            printf(" %d to %d\n", lowbytes, highbytes);
+            
+            u4 howManyBytes = 1 + padding + 12; // 1 (instruction) + padding + 12 (the 12 bytes above)
+            int32_t offsets = highbytes - lowbytes + 1;
+            
+            for (u4 n = 0; n < offsets; n++) {
+                int32_t offset = (code[i+howManyBytes] << 24) | (code[i+howManyBytes+1] << 16) | (code[i+howManyBytes+2] << 8) | code[i+howManyBytes+3];
+                display::indentation(indentation);
+                printf("\t\t\t%d: %d (%+d)\n", lowbytes, i + offset, offset);
+                
+                lowbytes++;
+                howManyBytes += 4;
+            }
+
+            display::indentation(indentation);
+            printf("\t\t\tdefault: %d (%+d)\n", i + defaultbytes, defaultbytes);
+            
+            i += howManyBytes;
+        } else if (code[i] == 0xab) { // lookupswitch
+            u1 padding = (i+1) % 4;
+            int32_t defaultbytes = (code[padding+i+1] << 24) | (code[padding+i+2] << 16) | (code[padding+i+3] << 8) | code[padding+i+4];
+            int32_t npairs = (code[padding+i+5] << 24) | (code[padding+i+6] << 16) | (code[padding+i+7] << 8) | code[padding+i+8];
+            
+            u4 howManyBytes = 1 + padding + 8; // 1 (instruction) + padding + 8 (the 8 bytes above)
+            
+            printf(" %d\n", npairs);
+            
+            for (u4 n = 0; n < npairs; n++) {
+                int32_t match = (code[i+howManyBytes] << 24) | (code[i+howManyBytes+1] << 16) | (code[i+howManyBytes+2] << 8) | code[i+howManyBytes+3];
+                int32_t offset = (code[i+howManyBytes+4] << 24) | (code[i+howManyBytes+5] << 16) | (code[i+howManyBytes+6] << 8) | code[i+howManyBytes+7];
+                display::indentation(indentation);
+                printf("\t\t\t%d: %d (%+d)\n",match, i + offset, offset);
+                howManyBytes += 8;
+            }
+            display::indentation(indentation);
+            printf("\t\t\tdefault: %d (%+d)\n", i + defaultbytes, defaultbytes);
+            
+            i += howManyBytes;
+        } else {
+            printf("Invalid instruction opcode.\n");
+            exit(7);
+        }
+    }
+}
+
+void display::code_attribute(CodeAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     CodeAttribute code = attribute_info;
 
     display::indentation(indentation);
@@ -95,9 +213,7 @@ void display::code_attribute(CodeAttribute attribute_info, vector<constant_pool_
 
     display::indentation(indentation);
     printf("Bytecode:\n");
-    // TODO
-    display::indentation(indentation+1);
-    printf("TODO\n");
+    display::byte_code(code, constant_pool, indentation);
 
     display::indentation(indentation);
     printf("Attributes:\n");
@@ -106,7 +222,7 @@ void display::code_attribute(CodeAttribute attribute_info, vector<constant_pool_
     }
 }
 
-void display::line_number_table_attribute(LineNumberTableAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+void display::line_number_table_attribute(LineNumberTableAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation+1);
     printf("%15s %s\n", "start_pc", "line_number");
     for (u2 i = 0; i < attribute_info.line_number_table_length; i++) {
@@ -116,17 +232,17 @@ void display::line_number_table_attribute(LineNumberTableAttribute attribute_inf
     }
 }
 
-void display::source_file_attribute(SourceFileAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+void display::source_file_attribute(SourceFileAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     printf("%-30s %15s cp_index #%d\n", "SourceFile:", get_constant_pool_element(constant_pool, attribute_info.source_file_index).c_str(), attribute_info.source_file_index);
 }
 
-void display::constant_value_attribute(ConstantValueAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+void display::constant_value_attribute(ConstantValueAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     printf("%-30s %15s cp_index #%d\n", "Constant value:", get_constant_pool_element(constant_pool, attribute_info.constant_value_index).c_str(), attribute_info.constant_value_index);
 }
 
-void display::exceptions_attribute(ExceptionsAttribute attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+void display::exceptions_attribute(ExceptionsAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     cout <<"\texception\tverbose" << endl;
     for (u2 i = 0; i < attribute_info.number_of_exceptions; i++) {
@@ -136,7 +252,7 @@ void display::exceptions_attribute(ExceptionsAttribute attribute_info, vector<co
     }
 }
 
-void display::attribute_info(AttributeInfo attribute_info, vector<constant_pool_variables> constant_pool, int indentation) {
+void display::attribute_info(AttributeInfo attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     string attribute_name = get_constant_pool_element(constant_pool, attribute_info.attribute_name_index);
     display::indentation(indentation);
     printf("%s\n", attribute_name.c_str());
@@ -160,10 +276,10 @@ void display::attribute_info(AttributeInfo attribute_info, vector<constant_pool_
 }
 
 void display::constant_pool(ClassFile class_file) {
-    vector<constant_pool_variables> constant_pool = class_file.constant_pool;
+    vector<Constant_pool_variables> constant_pool = class_file.constant_pool;
 
     for (int i = 1; i < class_file.constant_pool_length; i++) {
-        constant_pool_variables element = constant_pool[i];
+        Constant_pool_variables element = constant_pool[i];
 
         display::indentation(1);
         printf("#%d ", i);
@@ -173,9 +289,10 @@ void display::constant_pool(ClassFile class_file) {
             {
                 printf("Class\n");
                 display::indentation(2);
-                u2 utf8_length = constant_pool[element.name_index].utf8_length;
-                vector <u1> utf8_bytes = constant_pool[element.name_index].utf8_bytes;
-                printf("%-15s %-30s cp_index #%d\n", "Class name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), element.name_index);
+                u2 name_index = element.info.class_info.name_index;
+                u2 utf8_length = constant_pool[name_index].utf8_info.length;
+                vector <u1> utf8_bytes = constant_pool[name_index].utf8_info.bytes;
+                printf("%-15s %-30s cp_index #%d\n", "Class name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), name_index);
             }
             break;
 
@@ -184,26 +301,29 @@ void display::constant_pool(ClassFile class_file) {
                 printf("Fieldref\n");
 
                 // display class
-                u2 class_index = constant_pool[element.class_index].name_index;
-                u2 utf8_length = constant_pool[class_index].utf8_length;
-                vector <u1> utf8_bytes = constant_pool[class_index].utf8_bytes;
+                u2 class_index = element.info.field_ref_info.class_index;
+                u2 name_index = constant_pool[class_index].info.class_info.name_index;
+                u2 utf8_length = constant_pool[name_index].utf8_info.length;
+                vector <u1> utf8_bytes = constant_pool[name_index].utf8_info.bytes;
                 display::indentation(2);
-                printf("%-15s %-30s cp_index #%d\n", "Class name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), element.class_index);
+                printf("%-15s %-30s cp_index #%d\n", "Class name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), class_index);
 
 
                 // get name and type information
-                u2 name_index = constant_pool[element.name_and_type_index].name_index;
-                utf8_length = constant_pool[name_index].utf8_length;
-                utf8_bytes = constant_pool[name_index].utf8_bytes;
+                u2 name_and_type_index = element.info.field_ref_info.name_and_type_index;
+
+                name_index = constant_pool[name_and_type_index].info.name_and_type_info.name_index;
+                utf8_length = constant_pool[name_index].utf8_info.length;
+                utf8_bytes = constant_pool[name_index].utf8_info.bytes;
                 string name = format_UTF8(utf8_length, utf8_bytes);
 
-                u2 descriptor_index = constant_pool[element.name_and_type_index].descriptor_index;
-                utf8_length = constant_pool[descriptor_index].utf8_length;
-                utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
+                u2 descriptor_index = constant_pool[name_and_type_index].info.name_and_type_info.descriptor_index;
+                utf8_length = constant_pool[descriptor_index].utf8_info.length;
+                utf8_bytes = constant_pool[descriptor_index].utf8_info.bytes;
                 name += format_UTF8(utf8_length, utf8_bytes); // descriptor
 
                 display::indentation(2);
-                printf("%-15s %-30s cp_index #%d\n", "Name and type: ", name.c_str(), element.name_and_type_index);
+                printf("%-15s %-30s cp_index #%d\n", "Name and type: ", name.c_str(), name_and_type_index);
             }
             break;
 
@@ -212,65 +332,69 @@ void display::constant_pool(ClassFile class_file) {
                 printf("Methodref\n");
 
                 // display class
-                u2 class_index = constant_pool[element.class_index].name_index;
-                u2 utf8_length = constant_pool[class_index].utf8_length;
-                vector <u1> utf8_bytes = constant_pool[class_index].utf8_bytes;
+                u2 class_index = element.info.method_ref_info.class_index;
+                u2 name_index = constant_pool[class_index].info.class_info.name_index;
+                u2 utf8_length = constant_pool[name_index].utf8_info.length;
+                vector <u1> utf8_bytes = constant_pool[name_index].utf8_info.bytes;
                 display::indentation(2);
-                printf("%-15s %-30s cp_index #%d\n", "Class name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), element.class_index);
+                printf("%-15s %-30s cp_index #%d\n", "Class name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), class_index);
 
                 // get name and type information
-                u2 name_index = constant_pool[element.name_and_type_index].name_index;
-                utf8_length = constant_pool[name_index].utf8_length;
-                utf8_bytes = constant_pool[name_index].utf8_bytes;
+                u2 name_and_type_index = element.info.method_ref_info.name_and_type_index;
+                name_index = constant_pool[name_and_type_index].info.name_and_type_info.name_index;
+                utf8_length = constant_pool[name_index].utf8_info.length;
+                utf8_bytes = constant_pool[name_index].utf8_info.bytes;
                 string name = format_UTF8(utf8_length, utf8_bytes);
 
-                u2 descriptor_index = constant_pool[element.name_and_type_index].descriptor_index;
-                utf8_length = constant_pool[descriptor_index].utf8_length;
-                utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
+                u2 descriptor_index = constant_pool[name_and_type_index].info.name_and_type_info.descriptor_index;
+                utf8_length = constant_pool[descriptor_index].utf8_info.length;
+                utf8_bytes = constant_pool[descriptor_index].utf8_info.bytes;
                 name += format_UTF8(utf8_length, utf8_bytes); // descriptor
 
                 display::indentation(2);
-                printf("%-15s %-30s cp_index #%d\n", "Name and type: ", name.c_str(), element.name_and_type_index);
+                printf("%-15s %-30s cp_index #%d\n", "Name and type: ", name.c_str(), name_and_type_index);
             }
             break;
 
             case CONSTANT_INTERFACE_METHOD_REF:
             {
                 printf("Interface Method ref\n");
-                u2 class_index = constant_pool[element.class_index].name_index;
-                u2 utf8_length = constant_pool[class_index].utf8_length;
-                vector <u1> utf8_bytes = constant_pool[class_index].utf8_bytes;
+                u2 class_index = element.info.interface_method_ref_info.class_index;
+                u2 name_index = constant_pool[class_index].info.class_info.name_index;
+                u2 utf8_length = constant_pool[name_index].utf8_info.length;
+                vector <u1> utf8_bytes = constant_pool[name_index].utf8_info.bytes;
                 display::indentation(2);
-                printf("%-15s %-30s cp_index #%d\n", "Class name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), element.class_index);
+                printf("%-15s %-30s cp_index #%d\n", "Class name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), class_index);
 
-                u2 name_index = constant_pool[element.name_and_type_index].name_index;
-                utf8_length = constant_pool[name_index].utf8_length;
-                utf8_bytes = constant_pool[name_index].utf8_bytes;
+                u2 name_and_type_index = element.info.interface_method_ref_info.name_and_type_index;
+                name_index = constant_pool[name_and_type_index].info.name_and_type_info.name_index;
+                utf8_length = constant_pool[name_index].utf8_info.length;
+                utf8_bytes = constant_pool[name_index].utf8_info.bytes;
                 string name = format_UTF8(utf8_length, utf8_bytes);
 
-                u2 descriptor_index = constant_pool[element.name_and_type_index].descriptor_index;
-                utf8_length = constant_pool[descriptor_index].utf8_length;
-                utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
+                u2 descriptor_index = constant_pool[name_and_type_index].info.name_and_type_info.descriptor_index;
+                utf8_length = constant_pool[descriptor_index].utf8_info.length;
+                utf8_bytes = constant_pool[descriptor_index].utf8_info.bytes;
                 name += format_UTF8(utf8_length, utf8_bytes); // descriptor
 
                 display::indentation(2);
-                printf("%-15s %-30s cp_index #%d\n", "Name and type: ", name.c_str(), element.name_and_type_index);
+                printf("%-15s %-30s cp_index #%d\n", "Name and type: ", name.c_str(), name_and_type_index);
             }
             break;
 
             case CONSTANT_NAME_AND_TYPE:
             {
                 printf("NameAndType\n");
-                u2 name_index = element.name_index;
-                u2 descriptor_index = element.descriptor_index;
+                u2 name_index = element.info.name_and_type_info.name_index;
+                u2 descriptor_index = element.info.name_and_type_info.descriptor_index;
 
-                u2 utf8_length = constant_pool[name_index].utf8_length;
-                vector <u1> utf8_bytes = constant_pool[name_index].utf8_bytes;
+                u2 utf8_length = constant_pool[name_index].utf8_info.length;
+                vector <u1> utf8_bytes = constant_pool[name_index].utf8_info.bytes;
                 display::indentation(2);
                 printf("%-15s %-30s cp_index #%d\n", "Name: ", format_UTF8(utf8_length, utf8_bytes).c_str(), name_index);
 
-                utf8_length = constant_pool[descriptor_index].utf8_length;
-                utf8_bytes = constant_pool[descriptor_index].utf8_bytes;
+                utf8_length = constant_pool[descriptor_index].utf8_info.length;
+                utf8_bytes = constant_pool[descriptor_index].utf8_info.bytes;
                 display::indentation(2);
                 printf("%-15s %-30s cp_index #%d\n", "Descriptor: ", format_UTF8(utf8_length, utf8_bytes).c_str(), name_index);
             }
@@ -280,19 +404,20 @@ void display::constant_pool(ClassFile class_file) {
             {
                 printf("Utf8\n");
                 display::indentation(2);
-                printf("%-15s %-30d\n", "Utf8 Length:", element.utf8_length);
+                printf("%-15s %-30d\n", "Utf8 Length:", element.utf8_info.length);
                 display::indentation(2);
-                printf("%-15s %-30s\n", "Value:", format_UTF8(element.utf8_length, element.utf8_bytes).c_str());
+                printf("%-15s %-30s\n", "Value:", format_UTF8(element.utf8_info.length, element.utf8_info.bytes).c_str());
             }
             break;
 
             case CONSTANT_STRING:
             {
                 printf("String\n");
-                u2 utf8_length = constant_pool[element.string_index].utf8_length;
-                vector <u1> utf8_bytes = constant_pool[element.string_index].utf8_bytes;
+                u2 string_index = element.info.string_info.string_index;
+                u2 utf8_length = constant_pool[string_index].utf8_info.length;
+                vector <u1> utf8_bytes = constant_pool[string_index].utf8_info.bytes;
                 display::indentation(2);
-                printf("%-15s %-30s cp_index #%d\n", "String: ", format_UTF8(utf8_length, utf8_bytes).c_str(), element.string_index);
+                printf("%-15s %-30s cp_index #%d\n", "String: ", format_UTF8(utf8_length, utf8_bytes).c_str(), string_index);
             }
             break;
 
@@ -300,22 +425,23 @@ void display::constant_pool(ClassFile class_file) {
             {
                 printf("Integer\n");
                 display::indentation(2);
-                printf("%-15s 0x%-30.8X\n", "Bytes:", element.bytes);
+                printf("%-15s 0x%-30.8X\n", "Bytes:", element.info.integer_info.bytes);
                 display::indentation(2);
-                printf("%-15s %-30d\n", "Integer:", int32_t(element.bytes));
+                printf("%-15s %-30d\n", "Integer:", int32_t(element.info.integer_info.bytes));
             }
             break;
 
             case CONSTANT_FLOAT:
             {
-                int32_t sig = ((element.bytes >> 31) == 0) ? 1 : -1;
-                int32_t exponent = ((element.bytes >> 23) & 0xff);
-                int32_t mantissa = (exponent == 0) ? (element.bytes & 0x7fffff) << 1 : (element.bytes & 0x7fffff) | 0x800000;
+                u4 bytes = element.info.float_info.bytes;
+                int32_t sig = ((bytes >> 31) == 0) ? 1 : -1;
+                int32_t exponent = ((bytes >> 23) & 0xff);
+                int32_t mantissa = (exponent == 0) ? (bytes & 0x7fffff) << 1 : (bytes & 0x7fffff) | 0x800000;
                 float number = sig * mantissa * pow(2, exponent-150);
 
                 printf("Float\n");
                 display::indentation(2);
-                printf("%-15s 0x%-30.8X\n", "Bytes:", element.bytes);
+                printf("%-15s 0x%-30.8X\n", "Bytes:", bytes);
                 display::indentation(2);
                 printf("%-15s %-30f\n", "Float:", number);
             }
@@ -323,12 +449,12 @@ void display::constant_pool(ClassFile class_file) {
 
             case CONSTANT_LONG:
             {
-                int64_t number = ((int64_t) element.high_bytes << 32) + element.low_bytes;
+                int64_t number = ((int64_t) element.info.long_info.high_bytes << 32) + element.info.long_info.low_bytes;
                 printf("Long\n");
                 display::indentation(2);
-                printf("%-15s 0x%-30.8X\n", "High Bytes:", element.high_bytes);
+                printf("%-15s 0x%-30.8X\n", "High Bytes:", element.info.long_info.high_bytes);
                 display::indentation(2);
-                printf("%-15s 0x%-30.8X\n", "Low Bytes:", element.low_bytes);
+                printf("%-15s 0x%-30.8X\n", "Low Bytes:", element.info.long_info.low_bytes);
                 display::indentation(2);
                 printf("%-15s %-30ld\n", "Long:", number);
 
@@ -340,7 +466,7 @@ void display::constant_pool(ClassFile class_file) {
 
             case CONSTANT_DOUBLE:
             {
-                int64_t bytes = ((int64_t) element.high_bytes << 32) + element.low_bytes;
+                int64_t bytes = ((int64_t) element.info.double_info.high_bytes << 32) + element.info.double_info.low_bytes;
 
                 int32_t sig = ((bytes >> 63) == 0) ? 1 : -1;
                 int32_t exponent = (int32_t)((bytes >> 52) & 0x7ffL);
@@ -349,9 +475,9 @@ void display::constant_pool(ClassFile class_file) {
 
                 printf("Double\n");
                 display::indentation(2);
-                printf("%-15s 0x%-30.8X\n", "High Bytes:", element.high_bytes);
+                printf("%-15s 0x%-30.8X\n", "High Bytes:", element.info.double_info.high_bytes);
                 display::indentation(2);
-                printf("%-15s 0x%-30.8X\n", "Low Bytes:", element.low_bytes);
+                printf("%-15s 0x%-30.8X\n", "Low Bytes:", element.info.double_info.low_bytes);
                 display::indentation(2);
                 printf("%-15s %-30f\n", "Double:", number);
 
@@ -377,7 +503,7 @@ void display::interfaces(ClassFile class_file) {
 	}
 }
 
-void display::method(MethodInfo method, vector<constant_pool_variables> constant_pool, int indentation) {
+void display::method(MethodInfo method, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     printf("%-15s %-30s cp_index #%d\n", "Name:", get_constant_pool_element(constant_pool, method.name_index).c_str(), method.name_index);
 
@@ -412,7 +538,7 @@ void display::methods(ClassFile class_file, int indentation) {
 
 }
 
-void display::field(FieldInfo field, vector<constant_pool_variables> constant_pool, int indentation) {
+void display::field(FieldInfo field, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     printf("%-15s %-30s cp_index #%d\n", "Name:", get_constant_pool_element(constant_pool, field.name_index).c_str(), field.name_index);
 

@@ -21,35 +21,72 @@ typedef uint8_t u1;
 typedef uint16_t u2;
 typedef uint32_t u4;
 
-struct constant_pool_variables{
-    u1 tag;
+struct Class_info {
+	u2 name_index;
+};
 
-    /* declare all possible variables 
-    but not all of them will be used,
-    it depends on the tag value */
-
-    // Class info --- Name and Type
-    u2 name_index;
-    // descriptor just to Name and Type
-    u2 descriptor_index;
-
-    // Field ref info --- Method ref info --- Interface Method ref info
+struct Field_ref_info {
     u2 class_index;
     u2 name_and_type_index;
+};
 
-    // String
+struct Method_ref_info {
+    u2 class_index;
+    u2 name_and_type_index;
+};
+
+struct Interface_Method_ref_info {
+    u2 class_index;
+    u2 name_and_type_index;
+};
+
+struct String_info {
     u2 string_index;
+};
 
-    // Integer --- Float
+struct Integer_info {
     u4 bytes;
+};
 
-    // Long --- Double    
+struct Float_info {
+    u4 bytes;
+};
+
+struct Long_info {
     u4 high_bytes;
     u4 low_bytes;
+};
 
-    // UTF8
-    u2 utf8_length;
-    std::vector <u1> utf8_bytes;
+struct Double_info {
+    u4 high_bytes;
+    u4 low_bytes;
+};
+
+struct Name_and_Type_info {
+	u2 name_index;
+	u2 descriptor_index;
+};
+
+struct Utf8_info {
+    u2 length;
+    std::vector<u1> bytes;
+};
+
+struct Constant_pool_variables{
+    u1 tag;
+    union {
+        Class_info class_info;
+        Field_ref_info field_ref_info;
+        Method_ref_info method_ref_info;
+        Interface_Method_ref_info interface_method_ref_info;
+        String_info string_info;
+        Integer_info integer_info;
+        Float_info float_info;
+        Long_info long_info;
+        Double_info double_info;
+        Name_and_Type_info name_and_type_info;
+    } info;
+    Utf8_info utf8_info;
 };
 
 // declare here since all attributes will use it inside of their declarations
@@ -80,8 +117,6 @@ struct LineNumberTableAttribute {
 };
 
 struct CodeAttribute {
-    u2 attribute_name_index;
-    u4 attribute_length;
 	u2 max_stack;
 	u2 max_locals;
 	u4 code_length;
@@ -98,6 +133,15 @@ struct SourceFileAttribute {
 
 struct ConstantValueAttribute {
     u2 constant_value_index;
+};
+
+struct StackMapFrame {
+
+};
+
+struct StackMapTableAttribute {
+    u2 number_of_entries;
+    std::vector<StackMapFrame> entries;
 };
 
 struct AttributeInfo {

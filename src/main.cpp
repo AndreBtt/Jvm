@@ -46,6 +46,17 @@ int main(int argc, char* argv[]) {
 
     // set attributes size and create it
     class_file.set_attributes(file_pointer);
+    
+    // string class_name = get_constant_pool_element(class_file.constant_pool, class_file.this_class);
+    // string str_file_name(file_name);
+    // if (str_file_name.find(".class") != str_file_name.npos) {
+    //     str_file_name = str_file_name.substr(0, str_file_name.size() - 6);
+    // }
+    // if (class_name != str_file_name) {
+    //     cout << class_name << " " << str_file_name << endl;
+    //     cerr << "Nome do arquivo diferente do nome da classe." << endl;
+    //     exit(1);
+    // }
 
     display::class_file(class_file);
 
