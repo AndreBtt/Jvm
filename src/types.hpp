@@ -153,6 +153,7 @@ struct AttributeInfo {
     SourceFileAttribute source_file_attribute;
     ConstantValueAttribute constant_value_attribute;
     ExceptionsAttribute exceptions_attribute;
+    StackMapTableAttribute stack_map_table_attribute;
 };
 
 struct FieldInfo {

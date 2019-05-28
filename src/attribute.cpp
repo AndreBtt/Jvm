@@ -96,6 +96,10 @@ AttributeInfo get_attribute_info(FILE* file_pointer, std::vector<Constant_pool_v
         result.source_file_attribute = get_source_file_attribute(file_pointer, constant_pool);
     } else if(attribute_name == "Exceptions") {
         result.exceptions_attribute = get_exceptions_attribute(file_pointer, constant_pool);
+    } else {
+        for(u4 i = 0; i < result.attribute_length; i++) {
+            u2 j = Reader::read_u1(file_pointer);
+        }
     }
 
     return result;
