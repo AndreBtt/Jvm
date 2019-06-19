@@ -69,7 +69,7 @@ struct Name_and_Type_info {
 
 struct Utf8_info {
     u2 length;
-    std::vector<u1> bytes;
+    u1 *bytes;
 };
 
 struct Constant_pool_variables{
@@ -85,8 +85,8 @@ struct Constant_pool_variables{
         Long_info long_info;
         Double_info double_info;
         Name_and_Type_info name_and_type_info;
+        Utf8_info utf8_info;
     } info;
-    Utf8_info utf8_info;
 };
 
 // declare here since all attributes will use it inside of their declarations
