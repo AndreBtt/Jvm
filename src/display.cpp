@@ -75,7 +75,7 @@ void display::access_flags(u2 accessFlags) {
     printf("\n");
 }
 
-void display::byte_code(CodeAttribute code_attribute, Constant_pool_variables *constant_pool, int indentation) {
+void display::byte_code(CodeAttribute code_attribute, vector<Constant_pool_variables> constant_pool, int indentation) {
     u4 code_length = code_attribute.code_length;
     vector <u1> code = code_attribute.code;
     
@@ -193,7 +193,7 @@ void display::byte_code(CodeAttribute code_attribute, Constant_pool_variables *c
     }
 }
 
-void display::code_attribute(CodeAttribute attribute_info, Constant_pool_variables *constant_pool, int indentation) {
+void display::code_attribute(CodeAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     CodeAttribute code = attribute_info;
 
     display::indentation(indentation);
@@ -222,7 +222,7 @@ void display::code_attribute(CodeAttribute attribute_info, Constant_pool_variabl
     }
 }
 
-void display::line_number_table_attribute(LineNumberTableAttribute attribute_info, Constant_pool_variables *constant_pool, int indentation) {
+void display::line_number_table_attribute(LineNumberTableAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation+1);
     printf("%15s %s\n", "start_pc", "line_number");
     for (u2 i = 0; i < attribute_info.line_number_table_length; i++) {
@@ -232,17 +232,17 @@ void display::line_number_table_attribute(LineNumberTableAttribute attribute_inf
     }
 }
 
-void display::source_file_attribute(SourceFileAttribute attribute_info, Constant_pool_variables *constant_pool, int indentation) {
+void display::source_file_attribute(SourceFileAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     printf("%-30s %15s cp_index #%d\n", "SourceFile:", get_constant_pool_element(constant_pool, attribute_info.source_file_index).c_str(), attribute_info.source_file_index);
 }
 
-void display::constant_value_attribute(ConstantValueAttribute attribute_info, Constant_pool_variables *constant_pool, int indentation) {
+void display::constant_value_attribute(ConstantValueAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     printf("%-30s %15s cp_index #%d\n", "Constant value:", get_constant_pool_element(constant_pool, attribute_info.constant_value_index).c_str(), attribute_info.constant_value_index);
 }
 
-void display::exceptions_attribute(ExceptionsAttribute attribute_info, Constant_pool_variables *constant_pool, int indentation) {
+void display::exceptions_attribute(ExceptionsAttribute attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     cout <<"\texception\tverbose" << endl;
     for (u2 i = 0; i < attribute_info.number_of_exceptions; i++) {
@@ -252,7 +252,7 @@ void display::exceptions_attribute(ExceptionsAttribute attribute_info, Constant_
     }
 }
 
-void display::attribute_info(AttributeInfo attribute_info, Constant_pool_variables *constant_pool, int indentation) {
+void display::attribute_info(AttributeInfo attribute_info, vector<Constant_pool_variables> constant_pool, int indentation) {
     string attribute_name = get_constant_pool_element(constant_pool, attribute_info.attribute_name_index);
     display::indentation(indentation);
     printf("%s\n", attribute_name.c_str());
@@ -276,7 +276,7 @@ void display::attribute_info(AttributeInfo attribute_info, Constant_pool_variabl
 }
 
 void display::constant_pool(ClassFile class_file) {
-    Constant_pool_variables *constant_pool = class_file.constant_pool;
+    vector<Constant_pool_variables> constant_pool = class_file.constant_pool;
 
     for (int i = 1; i < class_file.constant_pool_length; i++) {
         Constant_pool_variables element = constant_pool[i];
@@ -503,7 +503,7 @@ void display::interfaces(ClassFile class_file) {
 	}
 }
 
-void display::method(MethodInfo method, Constant_pool_variables *constant_pool, int indentation) {
+void display::method(MethodInfo method, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     printf("%-15s %-30s cp_index #%d\n", "Name:", get_constant_pool_element(constant_pool, method.name_index).c_str(), method.name_index);
 
@@ -538,7 +538,7 @@ void display::methods(ClassFile class_file, int indentation) {
 
 }
 
-void display::field(FieldInfo field, Constant_pool_variables *constant_pool, int indentation) {
+void display::field(FieldInfo field, vector<Constant_pool_variables> constant_pool, int indentation) {
     display::indentation(indentation);
     printf("%-15s %-30s cp_index #%d\n", "Name:", get_constant_pool_element(constant_pool, field.name_index).c_str(), field.name_index);
 

@@ -36,7 +36,7 @@ void check_magic_number(u4 magic_number) {
     }
 }
 
-std::string get_constant_pool_element(Constant_pool_variables *constant_pool, u2 index) {
+std::string get_constant_pool_element(std::vector<Constant_pool_variables> constant_pool, u2 index) {
     u2 tag  = constant_pool[index].tag;
 
     switch (tag) {

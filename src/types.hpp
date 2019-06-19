@@ -72,7 +72,7 @@ struct Utf8_info {
     u1 *bytes;
 };
 
-struct Constant_pool_variables{
+struct Constant_pool_variables {
     u1 tag;
     union {
         Class_info class_info;

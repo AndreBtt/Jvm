@@ -19,7 +19,7 @@ void ClassFile::set_version(FILE* file_pointer) {
 void ClassFile::set_constant_pool(FILE* file_pointer) {
     // get constant pool length
     constant_pool_length = Reader::read_u2(file_pointer);
-    constant_pool = (Constant_pool_variables*) malloc(sizeof(Constant_pool_variables) * constant_pool_length);
+    constant_pool = std::vector<Constant_pool_variables>(constant_pool_length);
 
     // create constant pool
     for(u2 i = 1; i < constant_pool_length; i++) {

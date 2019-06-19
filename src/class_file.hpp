@@ -15,7 +15,7 @@ class ClassFile{
 		u2 major_version;
 
 		u2 constant_pool_length;
-		Constant_pool_variables *constant_pool;
+		std::vector<Constant_pool_variables> constant_pool;
 		
 		u2 access_flags;
 		

@@ -16,7 +16,7 @@ LineNumberTable get_line_number_table(FILE *file_pointer) {
     return result;
 }
 
-CodeAttribute get_code_attribute(FILE* file_pointer, Constant_pool_variables *constant_pool) {
+CodeAttribute get_code_attribute(FILE* file_pointer, std::vector<Constant_pool_variables> constant_pool) {
     CodeAttribute result;
     result.max_stack = Reader::read_u2(file_pointer);
     result.max_locals = Reader::read_u2(file_pointer);
@@ -43,7 +43,7 @@ CodeAttribute get_code_attribute(FILE* file_pointer, Constant_pool_variables *co
     return result;
 }
 
-LineNumberTableAttribute get_line_number_table_attribute(FILE* file_pointer, Constant_pool_variables *constant_pool) {
+LineNumberTableAttribute get_line_number_table_attribute(FILE* file_pointer, std::vector<Constant_pool_variables> constant_pool) {
     LineNumberTableAttribute result;
     result.line_number_table_length = Reader::read_u2(file_pointer);
     result.line_number_table = std::vector<LineNumberTable>(result.line_number_table_length);
@@ -54,7 +54,7 @@ LineNumberTableAttribute get_line_number_table_attribute(FILE* file_pointer, Con
     return result;
 }
 
-SourceFileAttribute get_source_file_attribute(FILE* file_pointer, Constant_pool_variables *constant_pool) {
+SourceFileAttribute get_source_file_attribute(FILE* file_pointer, std::vector<Constant_pool_variables> constant_pool) {
     SourceFileAttribute result;
     result.source_file_index = Reader::read_u2(file_pointer);
     return result;
@@ -66,7 +66,7 @@ ConstantValueAttribute get_constant_value_attribute(FILE* file_pointer) {
     return result;
 }
 
-ExceptionsAttribute get_exceptions_attribute(FILE* file_pointer, Constant_pool_variables *constant_pool) {
+ExceptionsAttribute get_exceptions_attribute(FILE* file_pointer, std::vector<Constant_pool_variables> constant_pool) {
     ExceptionsAttribute result;
     result.number_of_exceptions = Reader::read_u2(file_pointer);
     result.exception_index_table = std::vector<u2>(result.number_of_exceptions);
@@ -76,7 +76,7 @@ ExceptionsAttribute get_exceptions_attribute(FILE* file_pointer, Constant_pool_v
     return result;
 }
 
-AttributeInfo get_attribute_info(FILE* file_pointer, Constant_pool_variables *constant_pool) {
+AttributeInfo get_attribute_info(FILE* file_pointer, std::vector<Constant_pool_variables> constant_pool) {
     AttributeInfo result;
     result.attribute_name_index = Reader::read_u2(file_pointer);
     result.attribute_length = Reader::read_u4(file_pointer);
