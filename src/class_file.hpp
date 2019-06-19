@@ -24,16 +24,16 @@ class ClassFile{
 		u2 super_class;
 		
 		u2 interfaces_count;
-		u2 *interfaces;
+		std::vector<u2> interfaces;
 		
 		u2 fields_count;
-		FieldInfo *fields;
+		std::vector<FieldInfo> fields;
 		
 		u2 methods_count;
-		MethodInfo *methods;
+		std::vector<MethodInfo> methods;
 		
 		u2 attributes_count;
-		AttributeInfo *attributes;
+		std::vector<AttributeInfo> attributes;
 
 		void set_magic_number(FILE*);
 		void set_version(FILE*);

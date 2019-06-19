@@ -113,7 +113,7 @@ void ClassFile::set_interfaces(FILE* file_pointer) {
     interfaces_count = Reader::read_u2(file_pointer);
 
     // create each interface
-    interfaces = (u2*) malloc(sizeof(u2) * interfaces_count);
+    interfaces = std::vector<u2>(interfaces_count);
     for (u2 i = 0; i < interfaces_count; i++) {
         interfaces[i] = Reader::read_u2(file_pointer);
     }
@@ -122,7 +122,7 @@ void ClassFile::set_interfaces(FILE* file_pointer) {
 void ClassFile::set_fields(FILE* file_pointer) {
     // get field size
     fields_count = Reader::read_u2(file_pointer);
-    fields = (FieldInfo*) malloc(sizeof(FieldInfo) * fields_count);
+    fields = std::vector<FieldInfo>(fields_count);
 
     // create each field
     for (u2 i = 0; i < fields_count; i++) {
@@ -146,7 +146,7 @@ void ClassFile::set_fields(FILE* file_pointer) {
 void ClassFile::set_methods(FILE* file_pointer) {
     // get method size
     methods_count = Reader::read_u2(file_pointer);
-    methods = (MethodInfo*) malloc(sizeof(MethodInfo) * methods_count);
+    methods = std::vector<MethodInfo>(methods_count);
 
     // create each method
     for (u2 i = 0; i < methods_count; i++) {
@@ -170,7 +170,7 @@ void ClassFile::set_methods(FILE* file_pointer) {
 void ClassFile::set_attributes(FILE* file_pointer) {
     // get attributes size
     attributes_count = Reader::read_u2(file_pointer);
-    attributes = (AttributeInfo*) malloc(sizeof(AttributeInfo) * attributes_count);
+    attributes = std::vector<AttributeInfo>(attributes_count);
 
     // create each attribute
     for (u2 i = 0; i < attributes_count; i++) {
