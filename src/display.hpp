@@ -20,16 +20,16 @@ namespace display{
 
     // display attributes
     void attributes(ClassFile, int);
-    void attribute_info(AttributeInfo, vector<Constant_pool_variables>, int);
-    void code_attribute(CodeAttribute, vector<Constant_pool_variables>, int);
-    void line_number_table_attribute(LineNumberTableAttribute, vector<Constant_pool_variables>, int);
-    void source_file_attribute(SourceFileAttribute, vector<Constant_pool_variables>, int);
-    void constant_value_attribute(ConstantValueAttribute, vector<Constant_pool_variables>, int);
-    void exceptions_attribute(ExceptionsAttribute, vector<Constant_pool_variables>, int);
+    void attribute_info(AttributeInfo, Constant_pool_variables*, int);
+    void code_attribute(CodeAttribute, Constant_pool_variables*, int);
+    void line_number_table_attribute(LineNumberTableAttribute, Constant_pool_variables*, int);
+    void source_file_attribute(SourceFileAttribute, Constant_pool_variables*, int);
+    void constant_value_attribute(ConstantValueAttribute, Constant_pool_variables*, int);
+    void exceptions_attribute(ExceptionsAttribute, Constant_pool_variables*, int);
 
 
     // byte code
-    void byte_code(CodeAttribute, vector<Constant_pool_variables>, int);
+    void byte_code(CodeAttribute, Constant_pool_variables*, int);
 
     // display interfaces
     void interfaces(ClassFile);
@@ -37,12 +37,12 @@ namespace display{
 
     // display methods
     void methods(ClassFile, int);
-    void method(MethodInfo, vector<Constant_pool_variables>, int);
+    void method(MethodInfo, Constant_pool_variables*, int);
 
 
     // display fields
     void fields(ClassFile, int);
-    void field(FieldInfo, vector<Constant_pool_variables>, int);
+    void field(FieldInfo, Constant_pool_variables*, int);
 
 
     // display utils

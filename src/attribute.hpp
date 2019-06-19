@@ -13,8 +13,8 @@ ExceptionTable get_exception_table(FILE);
 
 LineNumberTable get_line_number_table(FILE);
 
-CodeAttribute get_code_attribute(FILE*, std::vector<Constant_pool_variables>);
+CodeAttribute get_code_attribute(FILE*, Constant_pool_variables*);
 
-LineNumberTableAttribute get_line_number_table_attribute(FILE*, std::vector<Constant_pool_variables>);
+LineNumberTableAttribute get_line_number_table_attribute(FILE*, Constant_pool_variables*);
 
-AttributeInfo get_attribute_info(FILE*, std::vector<Constant_pool_variables>);
+AttributeInfo get_attribute_info(FILE*, Constant_pool_variables*);

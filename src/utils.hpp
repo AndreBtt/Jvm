@@ -13,4 +13,4 @@ void check_magic_number(u4);
 
 std::string format_UTF8(u2, u1*);
 
-std::string get_constant_pool_element(std::vector<Constant_pool_variables>, u2);
+std::string get_constant_pool_element(Constant_pool_variables*, u2);
