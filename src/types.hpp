@@ -89,7 +89,7 @@ struct Constant_pool_variables {
     } info;
 };
 
-// declare here since all attributes will use it inside of their declarations
+// declare here since some attributes will use it inside of their declarations
 typedef struct AttributeInfo AttributeInfo;
 
 struct ExceptionTable {
