@@ -21,6 +21,39 @@ typedef uint8_t u1;
 typedef uint16_t u2;
 typedef uint32_t u4;
 
+class Object;
+
+enum VariableType {
+    BOOLEAN,
+    BYTE,
+    CHAR,
+    SHORT,
+    INT,
+    FLOAT,
+    LONG,
+    DOUBLE,
+    RETURN_ADDR,
+    REFERENCE,
+    PADDING // usado quando o Value anterior (em uma lista) ou o Value abaixo (em uma pilha) é um long/double
+};
+
+struct Variable {
+    VariableType printType; // usado para printar o valor de maneira correta (somente para int, short, byte, boolean)
+    VariableType type;
+    union {
+        bool booleanValue;
+        int8_t byteValue;
+        uint8_t charValue;
+        int16_t shortValue;
+        int32_t intValue;
+        float floatValue;
+        int64_t longValue;
+        double doubleValue;
+        u4 returnAddress;
+        Object *object;
+    } data;
+};
+
 struct Class_info {
 	u2 name_index;
 };
