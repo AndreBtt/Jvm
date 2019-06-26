@@ -1,11 +1,13 @@
 #include <stack>
+#include <iostream>
+#include <cstdlib>
 
 #include "frame.hpp"
 #include "types.hpp"
 
 using namespace std;
 
-class Frame_stack {
+class FrameStack {
     
 public:
 

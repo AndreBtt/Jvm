@@ -1,5 +1,6 @@
 #include "class_file.hpp"
 #include "display.hpp"
+#include "engine.hpp"
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
@@ -70,6 +71,10 @@ int main(int argc, char* argv[]) {
     // }
 
     display::class_file(class_file);
+
+    Engine engine;
+
+    engine.start();
 
     fclose(file_pointer);
 }
