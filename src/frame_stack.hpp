@@ -17,8 +17,6 @@ public:
     
     Frame get_top_frame();
     
-    bool destroy_top_frame();
-    
     u4 size();
     
     stack<Frame> frame_stack;

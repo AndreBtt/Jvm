@@ -4,7 +4,6 @@ ClassRuntime::ClassRuntime(ClassFile class_file) : class_file(class_file) {
     
     std::vector<FieldInfo> fields = class_file.fields;
 
-
     for (u2 i = 0; i < class_file.fields_count; i++) {
         FieldInfo field = fields[i];
         u2 static_flag = 0x0008;
@@ -60,10 +59,6 @@ ClassRuntime::ClassRuntime(ClassFile class_file) : class_file(class_file) {
         }
     }
 }
-
-// ClassFile* ClassRuntime::getClassFile() {
-//     return _classFile;
-// }
 
 // void ClassRuntime::putValueIntoField(Value value, string fieldName) {
 //     _staticFields[fieldName] = value;

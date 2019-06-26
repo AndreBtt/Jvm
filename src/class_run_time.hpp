@@ -16,19 +16,11 @@ class ClassRuntime {
 public:
 
     ClassRuntime(ClassFile);
-    
-    ClassFile get_class_file();
-    
-    void put_variable_field(Variable, string field_name);
-    
-    Variable get_variable_field(string field_name);
-    
-    bool field_exists(string field_name);
-    
-private:
 
     ClassFile class_file;
-    
     map<string, Variable> static_fields;
     
+    void put_variable_field(Variable, string field_name);
+    Variable get_variable_field(string field_name);
+    bool field_exists(string field_name);
 };

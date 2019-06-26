@@ -1,17 +1,33 @@
 #include "frame.hpp"
 
+MethodInfo get_method_by_name(ClassFile class_file, std::string method_name, std::string method_descriptor) {
+    
+    MethodInfo method;
+
+    for (int i = 0; i < class_file.methods_count; i++) {
+        method = class_file.methods[i];
+        string current_method_name = get_constant_pool_element(class_file.constant_pool, method.name_index);
+        string current_method_descriptor = get_constant_pool_element(class_file.constant_pool, method.descriptor_index);
+        
+        if (current_method_name == method_name && current_method_descriptor == current_method_name) {
+            break;
+        }
+    }
+
+    return method;
+}
+
 Frame::Frame() {}
 
-// Frame::Frame(ClassRuntime *classRuntime, string methodName, string methodDescriptor, vector<Value> arguments) : pc(0), _object(NULL) {
+Frame::Frame(ClassRuntime class_run_time, string method_name, string method_descriptor, std::vector<Variable> arguments) : pc(0) {
     
-//     for (int i = 0; i < arguments.size(); i++) {
-//         _localVariables[i] = arguments[i];
-//     }
+    for (int i = 0; i < arguments.size(); i++) {
+        local_variables[i] = arguments[i];
+    }
     
-//     method_info *method = getMethodNamed(classRuntime, methodName, methodDescriptor);
-//     assert(method != NULL);
-//     _method = *method;
-//     assert((_method.access_flags & 0x0008) != 0); // o método precisa ser estático
+    ClassFile current_class = class_run_time.class_file;
+    method = get_method_by_name(current_class, method_name, method_descriptor);
     
-//     findAttributes();
-// }
+    // findAttributes();
+}
+

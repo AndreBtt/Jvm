@@ -6,7 +6,9 @@ void Engine::start(ClassFile class_file) {
 
     std::vector<Variable> arguments;
 
-    // frame_stack.add_frame(Frame(class_run_time, "main", "([Ljava/lang/String;)V", arguments));
+    frame_stack.add_frame(Frame(class_run_time, "main", "([Ljava/lang/String;)V", arguments));
+
+    // PAREI NA PARTE DE ACHAR O ATRIBUTOS DO METODO NA HORA DE INSTANCIAR O FRAME 
 
     // if (doesMethodExist(classRuntime, "<clinit>", "()V")) {
     //     stackFrame.addFrame(new Frame(classRuntime, "<clinit>", "()V", arguments));
