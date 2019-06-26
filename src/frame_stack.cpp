@@ -10,8 +10,8 @@ Frame FrameStack::get_top_frame() {
         return frame_stack.top();
     }
     
-    // TODO return null
-    return;
+    // TODO avisar que esse valor é invalido
+    return Frame();
 }
 
 // bool FrameStack::destroyTopFrame() {

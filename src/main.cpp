@@ -70,11 +70,10 @@ int main(int argc, char* argv[]) {
     
     // }
 
-    display::class_file(class_file);
+    // display::class_file(class_file);
 
     Engine engine;
-
-    engine.start();
+    engine.start(class_file);
 
     fclose(file_pointer);
 }

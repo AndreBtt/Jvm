@@ -1,3 +1,5 @@
+#pragma once
+
 #include <stack>
 #include <iostream>
 #include <cstdlib>
@@ -11,7 +13,7 @@ class FrameStack {
     
 public:
 
-    void add_frame(Frame frame);
+    void add_frame(Frame);
     
     Frame get_top_frame();
     
