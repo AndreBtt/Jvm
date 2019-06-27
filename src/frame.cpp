@@ -61,4 +61,3 @@ Frame::Frame(ClassRuntime curr_class_run_time, string method_name, string method
 u1 Frame::get_method_code(u4 index) {
     return code_attribute.code[index];
 }
-

@@ -9,7 +9,7 @@ void Engine::start(ClassFile class_file) {
     frame_stack.add_frame(Frame(class_run_time, "main", "([Ljava/lang/String;)V", arguments));
 
     // if (doesMethodExist(classRuntime, "<clinit>", "()V")) {
-    //     stackFrame.addFrame(new Frame(classRuntime, "<clinit>", "()V", arguments));
+    //     stackFrame.addFrame(Frame(classRuntime, "<clinit>", "()V", arguments));
     // }
 
     // PENSAR AGORA NAS INSTRUCOES EM COMO IMPLEMENTAR !!

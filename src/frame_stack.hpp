@@ -14,10 +14,7 @@ class FrameStack {
 public:
 
     void add_frame(Frame);
-    
     Frame get_top_frame();
-    
     u4 size();
-    
     stack<Frame> frame_stack;
 };
