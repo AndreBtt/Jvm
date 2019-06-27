@@ -5,12 +5,14 @@ void FrameStack::add_frame(Frame frame) {
 }
 
 Frame FrameStack::get_top_frame() {
-    if (!frame_stack.empty()) {
-        return frame_stack.top();
-    }
+    // arrumar isso alguma hora
+    // if (!frame_stack.empty()) {
+    // }
     
-    // TODO avisar que esse valor é invalido
-    return Frame();
+    // // TODO avisar que esse valor é invalido
+    // return Frame();
+
+    return frame_stack.top();
 }
 
 u4 FrameStack::size() {

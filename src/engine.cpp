@@ -8,15 +8,17 @@ void Engine::start(ClassFile class_file) {
 
     frame_stack.add_frame(Frame(class_run_time, "main", "([Ljava/lang/String;)V", arguments));
 
-    // PAREI NA PARTE DE ACHAR O ATRIBUTOS DO METODO NA HORA DE INSTANCIAR O FRAME 
-
     // if (doesMethodExist(classRuntime, "<clinit>", "()V")) {
     //     stackFrame.addFrame(new Frame(classRuntime, "<clinit>", "()V", arguments));
     // }
 
-    // while (stackFrame.size() > 0) {
-    //     Frame *topFrame = stackFrame.getTopFrame();
-    //     u1 *code = topFrame->getCode(topFrame->pc);
-    //     (*this.*_instructionFunctions[code[0]])();
-    // }
+    // PENSAR AGORA NAS INSTRUCOES EM COMO IMPLEMENTAR !!
+
+    while (frame_stack.size() > 0) {
+        Frame curr_frame = frame_stack.get_top_frame();
+        std::cout << int(curr_frame.get_method_code(3));
+        break;
+        // u1 code = curr_frame.get_method_code(curr_frame.pc);
+        // std::cout << int(code) << std::endl;
+    }
 }

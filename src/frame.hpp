@@ -10,7 +10,6 @@ class Frame {
 
 public:
 
-    Frame();
     Frame(ClassRuntime, string, string, vector<Variable>);
 
     u4 pc;
@@ -19,6 +18,9 @@ public:
     ClassRuntime class_run_time;
     CodeAttribute code_attribute;
     ExceptionsAttribute exceptions_attribute;
+
+    
+    u1 get_method_code(u4 index);
 
 private:
 
