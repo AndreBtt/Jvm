@@ -15,6 +15,7 @@ class ClassRuntime {
 
 public:
 
+    ClassRuntime();
     ClassRuntime(ClassFile);
 
     ClassFile class_file;
