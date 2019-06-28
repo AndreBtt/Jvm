@@ -1,29 +1,26 @@
 #include "engine.hpp"
 
-void execute_instruction(FrameStack*, u1);
-
 void Engine::start(ClassFile class_file) {
     ClassRuntime class_run_time(class_file);
-    FrameStack frame_stack;
+    stack<Frame> frame_stack;
 
     std::vector<Variable> arguments;
 
-    frame_stack.add_frame(Frame(class_run_time, "main", "([Ljava/lang/String;)V", arguments));
+    frame_stack.push(Frame(class_run_time, "main", "([Ljava/lang/String;)V", arguments));
 
     // if (doesMethodExist(classRuntime, "<clinit>", "()V")) {
     //     stackFrame.addFrame(Frame(classRuntime, "<clinit>", "()V", arguments));
     // }
 
-    // PENSAR AGORA NAS INSTRUCOES EM COMO IMPLEMENTAR !!
-
     while (frame_stack.size() > 0) {
-        Frame curr_frame = frame_stack.get_top_frame();
+        Frame curr_frame = frame_stack.top();
         u1 code = curr_frame.get_method_code(curr_frame.pc);
         execute_instruction(&frame_stack, code);
+        break;
     }
 }
 
-void execute_instruction(FrameStack* frame_stack, u1 code) {
+void execute_instruction(stack<Frame>* frame_stack, u1 code) {
     switch (code) {
         case 0x00:
             break;
@@ -66,6 +63,7 @@ void execute_instruction(FrameStack* frame_stack, u1 code) {
         case 0x13:
             break;
         case 0x14:
+            ldc2_w(frame_stack);
             break;
         case 0x15:
             break;

@@ -1,10 +1,14 @@
 #include "frame_stack.hpp"
 
-void FrameStack::add_frame(Frame frame) {
+void FrameStack::push(Frame frame) {
     frame_stack.push(frame);
 }
 
-Frame FrameStack::get_top_frame() {
+void FrameStack::pop() {
+    frame_stack.pop();
+}
+
+Frame FrameStack::top() {
     // arrumar isso alguma hora
     // if (!frame_stack.empty()) {
     // }

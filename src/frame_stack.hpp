@@ -12,9 +12,10 @@ using namespace std;
 class FrameStack {
     
 public:
-
-    void add_frame(Frame);
-    Frame get_top_frame();
-    u4 size();
     stack<Frame> frame_stack;
+
+    void push(Frame);
+    Frame top();
+    void pop();
+    u4 size();
 };
