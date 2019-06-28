@@ -1,6 +1,7 @@
 #pragma once
 
 #include <map>
+#include <stack>
 
 #include "types.hpp"
 #include "class_run_time.hpp"
@@ -14,6 +15,7 @@ public:
 
     u4 pc;
     map<u4, Variable> local_variables;
+    stack<Variable> operand_stack;
     ClassRuntime class_run_time;
     MethodInfo method;
     CodeAttribute code_attribute;

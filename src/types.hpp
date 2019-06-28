@@ -34,22 +34,21 @@ enum VariableType {
     DOUBLE,
     RETURN_ADDR,
     REFERENCE,
-    PADDING // usado quando o Value anterior (em uma lista) ou o Value abaixo (em uma pilha) é um long/double
+    PADDING // previous value is long or double
 };
 
 struct Variable {
-    VariableType printType; // usado para printar o valor de maneira correta (somente para int, short, byte, boolean)
     VariableType type;
     union {
-        bool booleanValue;
-        int8_t byteValue;
-        uint8_t charValue;
-        int16_t shortValue;
-        int32_t intValue;
-        float floatValue;
-        int64_t longValue;
-        double doubleValue;
-        u4 returnAddress;
+        bool v_boolean;
+        int8_t v_byte;
+        uint8_t v_char;
+        int16_t v_short;
+        int32_t v_int;
+        float v_float;
+        int64_t v_long;
+        double v_double;
+        u4 return_address;
         Object *object;
     } data;
 };

@@ -14,14 +14,14 @@ void Engine::start(ClassFile class_file) {
 
     while (frame_stack.size() > 0) {
         Frame curr_frame = frame_stack.top();
-        u1 code = curr_frame.get_method_code(curr_frame.pc);
-        execute_instruction(&frame_stack, code);
-        break;
+        u1 instruction_code = curr_frame.get_method_code(curr_frame.pc);
+        
+        execute_instruction(&frame_stack, instruction_code);
     }
 }
 
-void execute_instruction(stack<Frame>* frame_stack, u1 code) {
-    switch (code) {
+void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
+    switch (instruction_code) {
         case 0x00:
             break;
         case 0x01:
@@ -168,6 +168,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 code) {
         case 0x47:
             break;
         case 0x48:
+            dstore_1(frame_stack);
             break;
         case 0x49:
             break;
@@ -380,6 +381,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 code) {
         case 0xb1:
             break;
         case 0xb2:
+            getstatic(frame_stack);
             break;
         case 0xb3:
             break;
