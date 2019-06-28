@@ -36,4 +36,8 @@ void return_instruction(stack<Frame>*);
 
 void bipush(stack<Frame>*);
 
+void istore_1(stack<Frame>*);
+
+void iload_1(stack<Frame>*);
+
  

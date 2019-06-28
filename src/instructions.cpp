@@ -309,3 +309,18 @@ void bipush(stack<Frame>* frame_stack) {
 
     frame_stack->top().pc += 2;
 }
+
+void istore_1(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    frame_stack->top().local_variables[1] = variable;
+    frame_stack->top().pc += 1;
+}
+
+void iload_1(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[1];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}

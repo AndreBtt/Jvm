@@ -80,6 +80,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x1a:
             break;
         case 0x1b:
+            iload_1(frame_stack);
             break;
         case 0x1c:
             break;
@@ -148,6 +149,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x3b:
             break;
         case 0x3c:
+            istore_1(frame_stack);
             break;
         case 0x3d:
             break;
