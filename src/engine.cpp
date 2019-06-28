@@ -55,6 +55,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x0f:
             break;
         case 0x10:
+            bipush(frame_stack);
             break;
         case 0x11:
             break;

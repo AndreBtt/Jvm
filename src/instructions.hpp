@@ -33,4 +33,7 @@ void dneg(stack<Frame>*);
 void drem(stack<Frame>*);
 
 void return_instruction(stack<Frame>*);
+
+void bipush(stack<Frame>*);
+
  

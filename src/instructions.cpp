@@ -293,3 +293,19 @@ void invokevirtual(stack<Frame>* frame_stack) {
 void return_instruction(stack<Frame>* frame_stack) {
     frame_stack->pop();
 }
+
+void bipush(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+
+    u1 byte = curr_frame.get_method_code(curr_frame.pc + 1);
+
+    Variable variable;
+    variable.type = VariableType::INT;
+    variable.data.v_int = (u4) (u1) byte;
+
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 2;
+}
