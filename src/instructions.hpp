@@ -19,3 +19,18 @@ void dload_1(stack<Frame>*);
 void dload_3(stack<Frame>*);
 
 void dsub(stack<Frame>*);
+
+void dadd(stack<Frame>*);
+
+void invokevirtual(stack<Frame>*);
+
+void dmul(stack<Frame>*);
+
+void ddiv(stack<Frame>*);
+
+void dneg(stack<Frame>*);
+
+void drem(stack<Frame>*);
+
+void return_instruction(stack<Frame>*);
+ 

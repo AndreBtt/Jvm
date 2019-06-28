@@ -15,8 +15,8 @@ void Engine::start(ClassFile class_file) {
     while (frame_stack.size() > 0) {
         Frame curr_frame = frame_stack.top();
         u1 instruction_code = curr_frame.get_method_code(curr_frame.pc);
-
         execute_instruction(&frame_stack, instruction_code);
+        // std::cout << std::hex << int(instruction_code) << std::endl;
     }
 }
 
@@ -176,6 +176,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x49:
             break;
         case 0x4a:
+            dstore_3(frame_stack);
             break;
         case 0x4b:
             break;
@@ -226,6 +227,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x62:
             break;
         case 0x63:
+            dadd(frame_stack);
             break;
         case 0x64:
             break;
@@ -243,6 +245,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x6a:
             break;
         case 0x6b:
+            dmul(frame_stack);
             break;
         case 0x6c:
             break;
@@ -251,6 +254,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x6e:
             break;
         case 0x6f:
+            ddiv(frame_stack);
             break;
         case 0x70:
             break;
@@ -259,6 +263,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x72:
             break;
         case 0x73:
+            drem(frame_stack); 
             break;
         case 0x74:
             break;
@@ -267,6 +272,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x76:
             break;
         case 0x77:
+        	dneg(frame_stack);
             break;
         case 0x78:
             break;
@@ -383,6 +389,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0xb0:
             break;
         case 0xb1:
+            return_instruction(frame_stack);
             break;
         case 0xb2:
             getstatic(frame_stack);
@@ -394,6 +401,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0xb5:
             break;
         case 0xb6:
+            invokevirtual(frame_stack);
             break;
         case 0xb7:
             break;
