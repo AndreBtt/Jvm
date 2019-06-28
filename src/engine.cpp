@@ -15,7 +15,7 @@ void Engine::start(ClassFile class_file) {
     while (frame_stack.size() > 0) {
         Frame curr_frame = frame_stack.top();
         u1 instruction_code = curr_frame.get_method_code(curr_frame.pc);
-        
+
         execute_instruction(&frame_stack, instruction_code);
     }
 }
@@ -72,6 +72,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x17:
             break;
         case 0x18:
+            dload(frame_stack);
             break;
         case 0x19:
             break;
@@ -102,10 +103,12 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x26:
             break;
         case 0x27:
+            dload_1(frame_stack);
             break;
         case 0x28:
             break;
         case 0x29:
+            dload_3(frame_stack);
             break;
         case 0x2a:
             break;
@@ -231,6 +234,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
         case 0x66:
             break;
         case 0x67:
+            dsub(frame_stack);
             break;
         case 0x68:
             break;

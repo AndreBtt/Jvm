@@ -86,10 +86,59 @@ void getstatic(stack<Frame>* frame_stack) {
     string field_name = get_constant_pool_element(constant_pool, field_name_and_type.name_index);
     string field_descriptor = get_constant_pool_element(constant_pool, field_name_and_type.descriptor_index);
 
-    // // special case
-    // if (class_name == "java/lang/System" && field_descriptor == "Ljava/io/PrintStream;" ) {
-    //     frame_stack->top().pc += 3;
-    //     return;
-    // }
+    if (class_name == "java/lang/System" && field_descriptor == "Ljava/io/PrintStream;" ) {
+        frame_stack->top().pc += 3;
+        return;
+    }
     
+    // falta codar o else
+}
+
+void dload(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+	u2 index = (u2) byte1;
+
+    // TODO pensar como passar se o wide foi setado ou nao !!
+
+	Variable variable = curr_frame.local_variables[index];
+	frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 2;
+}
+
+void dload_1(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+	Variable variable = curr_frame.local_variables[1];
+	frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void dload_3(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+	Variable variable = curr_frame.local_variables[3];
+	frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void dsub(stack<Frame>* frame_stack) {
+
+	Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+	Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable result;
+    result.type = DOUBLE;
+    result.data.v_double = (variable_1.data.v_double) - (variable_2.data.v_double);
+	
+    frame_stack->top().operand_stack.push(result);
+
+    frame_stack->top().pc += 1;
+
 }

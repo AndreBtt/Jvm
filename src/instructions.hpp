@@ -11,3 +11,11 @@ void dstore_1(stack<Frame>*);
 void dstore_3(stack<Frame>*);
 
 void getstatic(stack<Frame>*);
+
+void dload(stack<Frame>*);
+
+void dload_1(stack<Frame>*);
+
+void dload_3(stack<Frame>*);
+
+void dsub(stack<Frame>*);
