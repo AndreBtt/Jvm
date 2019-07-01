@@ -12,12 +12,6 @@ void dstore_3(stack<Frame>*);
 
 void getstatic(stack<Frame>*);
 
-void dload(stack<Frame>*);
-
-void dload_1(stack<Frame>*);
-
-void dload_3(stack<Frame>*);
-
 void dsub(stack<Frame>*);
 
 void dadd(stack<Frame>*);
@@ -279,3 +273,137 @@ void lor(stack<Frame>*);
 void ixor(stack<Frame>*);
 
 void lxor(stack<Frame>*);
+
+void iinc(stack<Frame>*);
+
+void i2l(stack<Frame>*);
+
+void i2f(stack<Frame>*);
+
+void i2d(stack<Frame>*);
+
+void l2i(stack<Frame>*);
+
+void l2f(stack<Frame>*);
+
+void l2d(stack<Frame>*);
+
+void f2i(stack<Frame>*);
+
+void f2l(stack<Frame>*);
+
+void f2d(stack<Frame>*);
+
+void d2i(stack<Frame>*);
+
+void d2l(stack<Frame>*);
+
+void d2f(stack<Frame>*);
+
+void i2b(stack<Frame>*);
+
+void i2c(stack<Frame>*);
+
+void i2s(stack<Frame>*);
+
+void lcmp(stack<Frame>*);
+
+void fcmpl(stack<Frame>*);
+
+void fcmpg(stack<Frame>*);
+
+void dcmpl(stack<Frame>*);
+
+void dcmpg(stack<Frame>*);
+
+void ifeq(stack<Frame>*);
+
+void ifne(stack<Frame>*);
+
+void iflt(stack<Frame>*);
+
+void ifge(stack<Frame>*);
+
+void ifgt(stack<Frame>*);
+
+void ifle(stack<Frame>*);
+
+void if_icmpeq(stack<Frame>*);
+
+void if_icmpne(stack<Frame>*);
+
+void if_icmplt(stack<Frame>*);
+
+void if_icmpge(stack<Frame>*);
+
+void if_icmpgt(stack<Frame>*);
+
+void if_icmple(stack<Frame>*);
+
+void if_acmpeq(stack<Frame>*);
+
+void if_acmpne(stack<Frame>*);
+
+void goto_instruction(stack<Frame>*);
+
+void jsr(stack<Frame>*);
+
+void ret(stack<Frame>*);
+
+void tableswitch(stack<Frame>*);
+
+void lookupswitch(stack<Frame>*);
+
+void ireturn(stack<Frame>*);
+
+void lreturn(stack<Frame>*);
+
+void freturn(stack<Frame>*);
+
+void dreturn(stack<Frame>*);
+
+void areturn(stack<Frame>*);
+
+void putstatic(stack<Frame>*);
+
+void getfield(stack<Frame>*);
+
+void putfield(stack<Frame>*);
+
+void invokespecial(stack<Frame>*);
+
+void invokestatic(stack<Frame>*);
+
+void invokeinterface(stack<Frame>*);
+
+void invokedynamic(stack<Frame>*);
+
+void new_instruction(stack<Frame>*);
+
+void newarray(stack<Frame>*);
+
+void anewarray(stack<Frame>*);
+
+void arraylength(stack<Frame>*);
+
+void athrow(stack<Frame>*);
+
+void checkcast(stack<Frame>*);
+
+void instanceof(stack<Frame>*);
+
+void monitorenter(stack<Frame>*);
+
+void monitorexit(stack<Frame>*);
+
+void wide(stack<Frame>*);
+
+void multianewarray(stack<Frame>*);
+
+void ifnull(stack<Frame>*);
+
+void ifnonnull(stack<Frame>*);
+
+void goto_w(stack<Frame>*);
+
+void jsr_w(stack<Frame>*);

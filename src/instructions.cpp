@@ -120,15 +120,6 @@ void dload_1(stack<Frame>* frame_stack) {
     frame_stack->top().pc += 1;
 }
 
-void dload_3(stack<Frame>* frame_stack) {
-    Frame curr_frame = frame_stack->top();
-
-	Variable variable = curr_frame.local_variables[3];
-	frame_stack->top().operand_stack.push(variable);
-
-    frame_stack->top().pc += 1;
-}
-
 void dsub(stack<Frame>* frame_stack) {
 	Variable variable_2 = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
@@ -563,19 +554,6 @@ void fload(stack<Frame>* frame_stack) {
     frame_stack->top().pc += 2;
 }
 
-void dload(stack<Frame>* frame_stack) {
-    Frame curr_frame = frame_stack->top();
-
-    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-	u2 index = (u2) byte1;
-
-    // TODO pensar como passar se o wide foi setado ou nao !!
-
-	Variable variable = curr_frame.local_variables[index];
-	frame_stack->top().operand_stack.push(variable);
-    frame_stack->top().pc += 2;
-}
-
 void aload(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
@@ -675,13 +653,6 @@ void fload_3(stack<Frame>* frame_stack) {
 
 void dload_0(stack<Frame>* frame_stack) {
     Variable variable = frame_stack->top().local_variables[0];
-    frame_stack->top().operand_stack.push(variable);
-
-    frame_stack->top().pc += 1;
-}
-
-void dload_1(stack<Frame>* frame_stack) {
-    Variable variable = frame_stack->top().local_variables[1];
     frame_stack->top().operand_stack.push(variable);
 
     frame_stack->top().pc += 1;
@@ -1599,3 +1570,137 @@ void lxor(stack<Frame>* frame_stack) {
 
     frame_stack->top().pc += 1;   
 }
+
+void iinc(stack<Frame>* frame_stack) {}
+
+void i2l(stack<Frame>* frame_stack) {}
+
+void i2f(stack<Frame>* frame_stack) {}
+
+void i2d(stack<Frame>* frame_stack) {}
+
+void l2i(stack<Frame>* frame_stack) {}
+
+void l2f(stack<Frame>* frame_stack) {}
+
+void l2d(stack<Frame>* frame_stack) {}
+
+void f2i(stack<Frame>* frame_stack) {}
+
+void f2l(stack<Frame>* frame_stack) {}
+
+void f2d(stack<Frame>* frame_stack) {}
+
+void d2i(stack<Frame>* frame_stack) {}
+
+void d2l(stack<Frame>* frame_stack) {}
+
+void d2f(stack<Frame>* frame_stack) {}
+
+void i2b(stack<Frame>* frame_stack) {}
+
+void i2c(stack<Frame>* frame_stack) {}
+
+void i2s(stack<Frame>* frame_stack) {}
+
+void lcmp(stack<Frame>* frame_stack) {}
+
+void fcmpl(stack<Frame>* frame_stack) {}
+
+void fcmpg(stack<Frame>* frame_stack) {}
+
+void dcmpl(stack<Frame>* frame_stack) {}
+
+void dcmpg(stack<Frame>* frame_stack) {}
+
+void ifeq(stack<Frame>* frame_stack) {}
+
+void ifne(stack<Frame>* frame_stack) {}
+
+void iflt(stack<Frame>* frame_stack) {}
+
+void ifge(stack<Frame>* frame_stack) {}
+
+void ifgt(stack<Frame>* frame_stack) {}
+
+void ifle(stack<Frame>* frame_stack) {}
+
+void if_icmpeq(stack<Frame>* frame_stack) {}
+
+void if_icmpne(stack<Frame>* frame_stack) {}
+
+void if_icmplt(stack<Frame>* frame_stack) {}
+
+void if_icmpge(stack<Frame>* frame_stack) {}
+
+void if_icmpgt(stack<Frame>* frame_stack) {}
+
+void if_icmple(stack<Frame>* frame_stack) {}
+
+void if_acmpeq(stack<Frame>* frame_stack) {}
+
+void if_acmpne(stack<Frame>* frame_stack) {}
+
+void goto_instruction(stack<Frame>* frame_stack) {}
+
+void jsr(stack<Frame>* frame_stack) {}
+
+void ret(stack<Frame>* frame_stack) {}
+
+void tableswitch(stack<Frame>* frame_stack) {}
+
+void lookupswitch(stack<Frame>* frame_stack) {}
+
+void ireturn(stack<Frame>* frame_stack) {}
+
+void lreturn(stack<Frame>* frame_stack) {}
+
+void freturn(stack<Frame>* frame_stack) {}
+
+void dreturn(stack<Frame>* frame_stack) {}
+
+void areturn(stack<Frame>* frame_stack) {}
+
+void putstatic(stack<Frame>* frame_stack) {}
+
+void getfield(stack<Frame>* frame_stack) {}
+
+void putfield(stack<Frame>* frame_stack) {}
+
+void invokespecial(stack<Frame>* frame_stack) {}
+
+void invokestatic(stack<Frame>* frame_stack) {}
+
+void invokeinterface(stack<Frame>* frame_stack) {}
+
+void invokedynamic(stack<Frame>* frame_stack) {}
+
+void new_instruction(stack<Frame>* frame_stack) {}
+
+void newarray(stack<Frame>* frame_stack) {}
+
+void anewarray(stack<Frame>* frame_stack) {}
+
+void arraylength(stack<Frame>* frame_stack) {}
+
+void athrow(stack<Frame>* frame_stack) {}
+
+void checkcast(stack<Frame>* frame_stack) {}
+
+void instanceof(stack<Frame>* frame_stack) {}
+
+void monitorenter(stack<Frame>* frame_stack) {}
+
+void monitorexit(stack<Frame>* frame_stack) {}
+
+void wide(stack<Frame>* frame_stack) {}
+
+void multianewarray(stack<Frame>* frame_stack) {}
+
+void ifnull(stack<Frame>* frame_stack) {}
+
+void ifnonnull(stack<Frame>* frame_stack) {}
+
+void goto_w(stack<Frame>* frame_stack) {}
+
+void jsr_w(stack<Frame>* frame_stack) {}
