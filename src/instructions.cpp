@@ -1,5 +1,9 @@
 #include "instructions.hpp"
 
+void nop(stack<Frame>* frame_stack) {
+    frame_stack->top().pc += 1;
+}
+
 void ldc2_w(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
     
@@ -318,9 +322,474 @@ void istore_1(stack<Frame>* frame_stack) {
     frame_stack->top().pc += 1;
 }
 
+
+void aconst_null(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::REFERENCE;
+    variable.data.object = NULL;
+
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void iconst_m1(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::INT;
+    variable.data.v_int = -1;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void iconst_0(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::INT;
+    variable.data.v_int = 0;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void iconst_1(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::INT;
+    variable.data.v_int = 1;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void iconst_2(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::INT;
+    variable.data.v_int = 2;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void iconst_3(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::INT;
+    variable.data.v_int = 3;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void iconst_4(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::INT;
+    variable.data.v_int = 4;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void iconst_5(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::INT;
+    variable.data.v_int = 5;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void lconst_0(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::LONG;
+    variable.data.v_long = 0;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void lconst_1(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::LONG;
+    variable.data.v_long = 1;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void fconst_0(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::FLOAT;
+    variable.data.v_float = 0;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void fconst_1(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::FLOAT;
+    variable.data.v_float = 1;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void fconst_2(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::FLOAT;
+    variable.data.v_float = 2;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void dconst_0(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::DOUBLE;
+    variable.data.v_float = 0;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void dconst_1(stack<Frame>* frame_stack) {
+    Variable variable;
+    variable.type = VariableType::DOUBLE;
+    variable.data.v_float = 1;
+
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 1;
+}
+
+void sipush(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    uint16_t short_value = (byte1 << 8) | byte2;
+
+    Variable variable;
+    variable.type = VariableType::INT;
+    variable.data.v_int = (int32_t) (int16_t) short_value; 
+
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 3;
+}
+
+void ldc(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "falta implementar ldc" << std::endl;
+    exit(1);
+}
+
+void ldc_w(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+    
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    u2 index = (byte1 << 8) | byte2;
+    
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    Constant_pool_variables cp_element = constant_pool[index];
+
+    Variable variable;
+
+    if (cp_element.tag == CONSTANT_STRING) {
+        Constant_pool_variables utf8_variable = constant_pool[cp_element.info.string_info.string_index];
+        
+        u1* bytes = utf8_variable.info.utf8_info.bytes;
+        string utf8_string;
+
+        for (int i = 0; i < utf8_variable.info.utf8_info.length; i++) {
+            utf8_string += char(bytes[i]);
+        }
+        
+        // TODO
+        std::cout << "preciso transformar string em objeto" << std::endl;
+        exit(1);
+        
+    } else if (cp_element.tag == CONSTANT_INTEGER) {
+        variable.type = VariableType::INT;
+        variable.data.v_int = cp_element.info.integer_info.bytes;
+    } else if (cp_element.tag == CONSTANT_FLOAT) {
+        u4 float_bytes = cp_element.info.float_info.bytes;
+        int s = ((float_bytes >> 31) == 0) ? 1 : -1;
+        int e = ((float_bytes >> 23) & 0xff);
+        int m = (e == 0) ? (float_bytes & 0x7fffff) << 1 : (float_bytes & 0x7fffff) | 0x800000;
+        
+        float number = s*m*pow(2, e-150);
+        variable.type = VariableType::FLOAT;
+        variable.data.v_float = number;
+    }
+    
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 3;
+}
+
+void iload(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+	u2 index = (u2) byte1;
+
+    // TODO pensar como passar se o wide foi setado ou nao !!
+
+	Variable variable = curr_frame.local_variables[index];
+	frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 2;
+}
+
+void lload(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+	u2 index = (u2) byte1;
+
+    // TODO pensar como passar se o wide foi setado ou nao !!
+
+	Variable variable = curr_frame.local_variables[index];
+	frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 2;
+}
+
+void fload(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+	u2 index = (u2) byte1;
+
+    // TODO pensar como passar se o wide foi setado ou nao !!
+
+	Variable variable = curr_frame.local_variables[index];
+	frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 2;
+}
+
+void dload(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+	u2 index = (u2) byte1;
+
+    // TODO pensar como passar se o wide foi setado ou nao !!
+
+	Variable variable = curr_frame.local_variables[index];
+	frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 2;
+}
+
+void aload(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+	u2 index = (u2) byte1;
+
+    // TODO pensar como passar se o wide foi setado ou nao !!
+
+	Variable variable = curr_frame.local_variables[index];
+	frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 2;
+}
+
+void iload_0(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[0];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
 void iload_1(stack<Frame>* frame_stack) {
     Variable variable = frame_stack->top().local_variables[1];
     frame_stack->top().operand_stack.push(variable);
 
     frame_stack->top().pc += 1;
+}
+
+void iload_2(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[2];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void iload_3(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[3];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void lload_0(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[0];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void lload_1(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[1];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void lload_2(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[2];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void lload_3(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[3];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void fload_0(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[0];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void fload_1(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[1];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void fload_2(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[2];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void fload_3(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[3];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void dload_0(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[0];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void dload_1(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[1];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void dload_2(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[2];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void dload_3(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[3];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void aload_0(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[0];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void aload_1(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[1];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void aload_2(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[2];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void aload_3(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().local_variables[3];
+    frame_stack->top().operand_stack.push(variable);
+
+    frame_stack->top().pc += 1;
+}
+
+void iaload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "iaload nao implementado" << std::endl;
+    exit(1);
+}
+
+void laload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "laload nao implementado" << std::endl;
+    exit(1);
+}
+
+void faload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "faload nao implementado" << std::endl;
+    exit(1);
+}
+
+void daload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "daload nao implementado" << std::endl;
+    exit(1);
+}
+
+void aaload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "aaload nao implementado" << std::endl;
+    exit(1);
+}
+
+void baload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "baload nao implementado" << std::endl;
+    exit(1);
+}
+
+void caload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "caload nao implementado" << std::endl;
+    exit(1);
+}
+
+void saload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "saload nao implementado" << std::endl;
+    exit(1);
+}
+
+void istore(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+	Variable variable = curr_frame.operand_stack.top(); 
+    frame_stack->top().operand_stack.pop();
+
+    u1 byte = curr_frame.get_method_code(curr_frame.pc + 1);
+    u2 index = (u2) byte;
+
+    frame_stack->top().local_variables[index] = variable;
+    
+    // TODO pensar como passar se o wide foi setado ou nao !!
+
+    frame_stack->top().pc += 2;
 }
