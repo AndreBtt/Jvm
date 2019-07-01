@@ -15,6 +15,21 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
+    bool interpretador = false;
+    bool exibidor = false;
+
+    for (size_t optind = 2; optind < argc && argv[optind][0] == '-'; optind++) {
+        switch (argv[optind][1]) {
+            case 'i':
+                interpretador = true;
+            break;
+        
+            case 'e': 
+                exibidor = true;
+            break;
+        }
+    }
+
     // this variable holds all the information about .class file
     ClassFile class_file;
 
@@ -70,10 +85,14 @@ int main(int argc, char* argv[]) {
     
     // }
 
-    display::class_file(class_file);
+    if(exibidor){
+        display::class_file(class_file);
+    }
 
-    Engine engine;
-    // engine.start(class_file);
+    if(interpretador) {
+        Engine engine;
+        engine.start(class_file);
+    }
 
     fclose(file_pointer);
 }

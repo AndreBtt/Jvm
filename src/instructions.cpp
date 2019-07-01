@@ -272,7 +272,7 @@ void invokevirtual(stack<Frame>* frame_stack) {
                 printf("%lld", (long long) variable.data.v_long);
                 break;
             case VariableType::REFERENCE:
-                // TODO
+                printf("%s", variable.data.v_string);
                 break;
         }
 
@@ -466,9 +466,49 @@ void sipush(stack<Frame>* frame_stack) {
 }
 
 void ldc(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "falta implementar ldc" << std::endl;
-    exit(1);
+    Frame curr_frame = frame_stack->top();
+
+    u1 index = curr_frame.get_method_code(curr_frame.pc + 1);
+    
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    Constant_pool_variables cp_element = constant_pool[index];
+
+    Variable variable;
+    
+    if (cp_element.tag == CONSTANT_STRING) {
+        Constant_pool_variables utf8_variable = constant_pool[cp_element.info.string_info.string_index];
+        
+        u1* bytes = utf8_variable.info.utf8_info.bytes;
+        string utf8_string;
+
+        for (int i = 0; i < utf8_variable.info.utf8_info.length; i++) {
+            utf8_string += char(bytes[i]);
+        }
+
+        variable.data.v_string = (char*) malloc(sizeof(char) * (utf8_string.size() + 1));
+        variable.type = REFERENCE;
+        for(int i = 0; i < utf8_string.size(); i++) {
+            variable.data.v_string[i] = char(utf8_string[i]);
+        }
+        variable.data.v_string[utf8_string.size()] = '\0';
+
+    } else if (cp_element.tag == CONSTANT_INTEGER) {
+        variable.type = VariableType::INT;
+        variable.data.v_int = cp_element.info.integer_info.bytes;
+
+    } else if (cp_element.tag == CONSTANT_FLOAT) {
+        u4 float_bytes = cp_element.info.float_info.bytes;
+        int s = ((float_bytes >> 31) == 0) ? 1 : -1;
+        int e = ((float_bytes >> 23) & 0xff);
+        int m = (e == 0) ? (float_bytes & 0x7fffff) << 1 : (float_bytes & 0x7fffff) | 0x800000;
+        
+        float number = s*m*pow(2, e-150);
+        variable.type = VariableType::FLOAT;
+        variable.data.v_float = number;
+    }
+    
+    frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().pc += 2;
 }
 
 void ldc_w(stack<Frame>* frame_stack) {
@@ -1605,25 +1645,143 @@ void i2s(stack<Frame>* frame_stack) {}
 
 void lcmp(stack<Frame>* frame_stack) {}
 
-void fcmpl(stack<Frame>* frame_stack) {}
+void fcmpl(stack<Frame>* frame_stack) {
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
 
-void fcmpg(stack<Frame>* frame_stack) {}
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+	Variable result;
+	result.type = VariableType::INT;
+
+	if (isnan(variable_1.data.v_float) || isnan(variable_2.data.v_float)) {
+		result.data.v_int = -1;
+	} else if (variable_1.data.v_float > variable_2.data.v_float) {
+		result.data.v_int = 1;
+	} else if (variable_1.data.v_float == variable_2.data.v_float) {
+		result.data.v_int = 0;
+	} else {
+		result.data.v_int = -1;
+	}
+
+	frame_stack->top().operand_stack.push(result);
+
+	frame_stack->top().pc += 1;
+}
+
+void fcmpg(stack<Frame>* frame_stack) {
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+	Variable result;
+	result.type = VariableType::INT;
+
+	if (isnan(variable_1.data.v_float) || isnan(variable_2.data.v_float)) {
+		result.data.v_int = 1;
+	} else if (variable_1.data.v_float > variable_2.data.v_float) {
+		result.data.v_int = 1;
+	} else if (variable_1.data.v_float == variable_2.data.v_float) {
+		result.data.v_int = 0;
+	} else {
+		result.data.v_int = -1;
+	}
+
+	frame_stack->top().operand_stack.push(result);
+
+	frame_stack->top().pc += 1;
+}
 
 void dcmpl(stack<Frame>* frame_stack) {}
 
 void dcmpg(stack<Frame>* frame_stack) {}
 
-void ifeq(stack<Frame>* frame_stack) {}
+void ifeq(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable.data.v_int == 0) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        uint16_t branch_off_set = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_off_set;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void ifne(stack<Frame>* frame_stack) {}
+void ifne(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable.data.v_int != 0) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        uint16_t branch_off_set = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_off_set;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void iflt(stack<Frame>* frame_stack) {}
+void iflt(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable.data.v_int < 0) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        uint16_t branch_off_set = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_off_set;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void ifge(stack<Frame>* frame_stack) {}
+void ifge(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable.data.v_int >= 0) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        uint16_t branch_off_set = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_off_set;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void ifgt(stack<Frame>* frame_stack) {}
+void ifgt(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable.data.v_int > 0) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        uint16_t branch_off_set = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_off_set;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void ifle(stack<Frame>* frame_stack) {}
+void ifle(stack<Frame>* frame_stack) {
+	Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	if (variable.data.v_int <= 0) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        uint16_t branch_off_set = (byte1 << 8) | byte2;
+        // std::cout << int(variable.data.v_int) << " " << int(byte1) << " " << int(byte2) << " " << int(branch_off_set) << std::endl; 
+		frame_stack->top().pc += branch_off_set;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
 void if_icmpeq(stack<Frame>* frame_stack) {}
 
