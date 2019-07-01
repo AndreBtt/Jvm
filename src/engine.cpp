@@ -236,7 +236,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
             fstore_3(frame_stack);
             break;
         case 0x47:
-            fstore_0(frame_stack);
+            dstore_0(frame_stack);
             break;
         case 0x48:
             dstore_1(frame_stack);
@@ -350,7 +350,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
             idiv(frame_stack);
             break;
         case 0x6d:
-            ldiv(frame_stack);
+            ldiv_instruction(frame_stack);
             break;
         case 0x6e:
             fdiv(frame_stack);
@@ -380,7 +380,7 @@ void execute_instruction(stack<Frame>* frame_stack, u1 instruction_code) {
             fneg(frame_stack);
             break;
         case 0x77:
-         dneg(frame_stack);
+            dneg(frame_stack);
             break;
         case 0x78:
             ishl(frame_stack);

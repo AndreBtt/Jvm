@@ -144,10 +144,138 @@ void saload(stack<Frame>*);
 
 void istore(stack<Frame>*);
 
+void lstore(stack<Frame>*);
 
+void fstore(stack<Frame>*);
 
+void dstore(stack<Frame>*);
 
+void astore(stack<Frame>*);
 
- 
+void istore_0(stack<Frame>*);
 
- 
+void istore_2(stack<Frame>*);
+
+void istore_3(stack<Frame>*);
+
+void lstore_0(stack<Frame>*);
+
+void lstore_1(stack<Frame>*);
+
+void lstore_2(stack<Frame>*);
+
+void lstore_3(stack<Frame>*);
+
+void fstore_0(stack<Frame>*);
+
+void fstore_1(stack<Frame>*);
+
+void fstore_2(stack<Frame>*);
+
+void fstore_3(stack<Frame>*);
+
+void dstore_0(stack<Frame>*);
+
+void dstore_2(stack<Frame>*);
+
+void astore_0(stack<Frame>*);
+
+void astore_1(stack<Frame>*);
+
+void astore_2(stack<Frame>*);
+
+void astore_3(stack<Frame>*);
+
+void iastore(stack<Frame>*);
+
+void lastore(stack<Frame>*);
+
+void fastore(stack<Frame>*);
+
+void dastore(stack<Frame>*);
+
+void aastore(stack<Frame>*);
+
+void bastore(stack<Frame>*);
+
+void castore(stack<Frame>*);
+
+void sastore(stack<Frame>*);
+
+void pop(stack<Frame>*);
+
+void pop2(stack<Frame>*);
+
+void dup(stack<Frame>*);
+
+void dup_x1(stack<Frame>*);
+
+void dup_x2(stack<Frame>*);
+
+void dup2(stack<Frame>*);
+
+void dup2_x1(stack<Frame>*);
+
+void dup2_x2(stack<Frame>*);
+
+void swap(stack<Frame>*);
+
+void iadd(stack<Frame>*);
+
+void ladd(stack<Frame>*);
+
+void fadd(stack<Frame>*);
+
+void isub(stack<Frame>*);
+
+void lsub(stack<Frame>*);
+
+void fsub(stack<Frame>*);
+
+void imul(stack<Frame>*);
+
+void lmul(stack<Frame>*);
+
+void fmul(stack<Frame>*);
+
+void idiv(stack<Frame>*);
+
+void ldiv_instruction(stack<Frame>*);
+
+void fdiv(stack<Frame>*);
+
+void irem(stack<Frame>*);
+
+void lrem(stack<Frame>*);
+
+void frem(stack<Frame>*);
+
+void ineg(stack<Frame>*);
+
+void lneg(stack<Frame>*);
+
+void fneg(stack<Frame>*);
+
+void ishl(stack<Frame>*);
+
+void lshl(stack<Frame>*);
+
+void ishr(stack<Frame>*);
+
+void lshr(stack<Frame>*);
+
+void iushr(stack<Frame>*);
+
+void lushr(stack<Frame>*);
+
+void iand(stack<Frame>*);
+
+void land(stack<Frame>*);
+
+void ior(stack<Frame>*);
+
+void lor(stack<Frame>*);
+
+void ixor(stack<Frame>*);
+
+void lxor(stack<Frame>*);
