@@ -12,7 +12,7 @@
 
 using namespace std;
 
-namespace display{
+namespace display {
     void class_file(ClassFile);
     void general_information(ClassFile);
     void access_flags(u2);
@@ -44,13 +44,9 @@ namespace display{
     void fields(ClassFile, int);
     void field(FieldInfo, vector<Constant_pool_variables>, int);
 
-
     // display utils
     void indentation(int);
 
-    /**
-     * Vetor contendo os mnemônicos de todas as instruções do bytecode Java.
-     */
     static const string instructions[] = {
         "nop",
         "aconst_null",

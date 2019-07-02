@@ -1,12 +1,11 @@
 #include "engine.hpp"
 
 void Engine::start(ClassFile class_file) {
-    ClassRuntime class_run_time(class_file);
     stack<Frame> frame_stack;
 
     std::vector<Variable> arguments;
 
-    frame_stack.push(Frame(class_run_time, "main", "([Ljava/lang/String;)V", arguments));
+    frame_stack.push(Frame(ClassRuntime(class_file), "main", "([Ljava/lang/String;)V", arguments));
 
     // if (doesMethodExist(classRuntime, "<clinit>", "()V")) {
     //     stackFrame.addFrame(Frame(classRuntime, "<clinit>", "()V", arguments));

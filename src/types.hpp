@@ -168,15 +168,6 @@ struct ConstantValueAttribute {
     u2 constant_value_index;
 };
 
-struct StackMapFrame {
-
-};
-
-struct StackMapTableAttribute {
-    u2 number_of_entries;
-    std::vector<StackMapFrame> entries;
-};
-
 struct AttributeInfo {
     u2 attribute_name_index;
     u4 attribute_length;
@@ -186,7 +177,6 @@ struct AttributeInfo {
     SourceFileAttribute source_file_attribute;
     ConstantValueAttribute constant_value_attribute;
     ExceptionsAttribute exceptions_attribute;
-    StackMapTableAttribute stack_map_table_attribute;
 };
 
 struct FieldInfo {
