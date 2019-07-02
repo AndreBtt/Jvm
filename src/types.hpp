@@ -54,53 +54,53 @@ struct Variable {
     } data;
 };
 
-struct Class_info {
+struct ClassInfo {
 	u2 name_index;
 };
 
-struct Field_ref_info {
+struct FieldRefInfo {
     u2 class_index;
     u2 name_and_type_index;
 };
 
-struct Method_ref_info {
+struct MethodRefInfo {
     u2 class_index;
     u2 name_and_type_index;
 };
 
-struct Interface_Method_ref_info {
+struct InterfaceMethodRefInfo {
     u2 class_index;
     u2 name_and_type_index;
 };
 
-struct String_info {
+struct StringInfo {
     u2 string_index;
 };
 
-struct Integer_info {
+struct IntegerInfo {
     u4 bytes;
 };
 
-struct Float_info {
+struct FloatInfo {
     u4 bytes;
 };
 
-struct Long_info {
+struct LongInfo {
     u4 high_bytes;
     u4 low_bytes;
 };
 
-struct Double_info {
+struct DoubleInfo {
     u4 high_bytes;
     u4 low_bytes;
 };
 
-struct Name_and_Type_info {
+struct NameAndTypeInfo {
 	u2 name_index;
 	u2 descriptor_index;
 };
 
-struct Utf8_info {
+struct Utf8Info {
     u2 length;
     u1 *bytes;
 };
@@ -108,17 +108,17 @@ struct Utf8_info {
 struct Constant_pool_variables {
     u1 tag;
     union {
-        Class_info class_info;
-        Field_ref_info field_ref_info;
-        Method_ref_info method_ref_info;
-        Interface_Method_ref_info interface_method_ref_info;
-        String_info string_info;
-        Integer_info integer_info;
-        Float_info float_info;
-        Long_info long_info;
-        Double_info double_info;
-        Name_and_Type_info name_and_type_info;
-        Utf8_info utf8_info;
+        ClassInfo class_info;
+        FieldRefInfo field_ref_info;
+        MethodRefInfo method_ref_info;
+        InterfaceMethodRefInfo interface_method_ref_info;
+        StringInfo string_info;
+        IntegerInfo integer_info;
+        FloatInfo float_info;
+        LongInfo long_info;
+        DoubleInfo double_info;
+        NameAndTypeInfo name_and_type_info;
+        Utf8Info utf8_info;
     } info;
 };
 

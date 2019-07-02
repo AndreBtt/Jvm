@@ -79,13 +79,13 @@ void getstatic(stack<Frame>* frame_stack) {
 
     Constant_pool_variables cp_field = constant_pool[field_index];
 
-    Field_ref_info field_ref = cp_field.info.field_ref_info;
+    FieldRefInfo field_ref = cp_field.info.field_ref_info;
 
     string class_name = get_constant_pool_element(constant_pool, field_ref.class_index);
 
     Constant_pool_variables cp_name_and_type = constant_pool[field_ref.name_and_type_index];
 
-    Name_and_Type_info field_name_and_type = cp_name_and_type.info.name_and_type_info;
+    NameAndTypeInfo field_name_and_type = cp_name_and_type.info.name_and_type_info;
 
     string field_name = get_constant_pool_element(constant_pool, field_name_and_type.name_index);
     string field_descriptor = get_constant_pool_element(constant_pool, field_name_and_type.descriptor_index);
@@ -232,12 +232,12 @@ void invokevirtual(stack<Frame>* frame_stack) {
     u2 method_index = (byte1 << 8) | byte2;
 
     Constant_pool_variables cp_method = constant_pool[method_index];
-    Method_ref_info method_info = cp_method.info.method_ref_info;
+    MethodRefInfo method_info = cp_method.info.method_ref_info;
 
     string class_name = get_constant_pool_element(constant_pool, method_info.class_index);
 
     Constant_pool_variables cp_name_and_type = constant_pool[method_info.name_and_type_index];
-    Name_and_Type_info method_name_and_type = cp_name_and_type.info.name_and_type_info;
+    NameAndTypeInfo method_name_and_type = cp_name_and_type.info.name_and_type_info;
 
     string method_name = get_constant_pool_element(constant_pool, method_name_and_type.name_index);
     string method_descriptor = get_constant_pool_element(constant_pool, method_name_and_type.descriptor_index);
