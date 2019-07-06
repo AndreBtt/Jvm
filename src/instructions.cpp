@@ -740,54 +740,6 @@ void aload_3(stack<Frame>* frame_stack) {
     frame_stack->top().pc += 1;
 }
 
-void iaload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "iaload nao implementado" << std::endl;
-    exit(1);
-}
-
-void laload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "laload nao implementado" << std::endl;
-    exit(1);
-}
-
-void faload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "faload nao implementado" << std::endl;
-    exit(1);
-}
-
-void daload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "daload nao implementado" << std::endl;
-    exit(1);
-}
-
-void aaload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "aaload nao implementado" << std::endl;
-    exit(1);
-}
-
-void baload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "baload nao implementado" << std::endl;
-    exit(1);
-}
-
-void caload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "caload nao implementado" << std::endl;
-    exit(1);
-}
-
-void saload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "saload nao implementado" << std::endl;
-    exit(1);
-}
-
 void istore(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
@@ -1004,46 +956,6 @@ void astore_3(stack<Frame>* frame_stack) {
     frame_stack->top().pc += 1;
 }
 
-void iastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao iastore nao implementada" << std::endl;
-    exit(1);   
-}
-
-void lastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao lastore nao implementada" << std::endl;
-    exit(1);   
-}
-
-void fastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao fastore nao implementada" << std::endl;
-    exit(1);   
-}
-
-void dastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao dastore nao implementada" << std::endl;
-    exit(1);   
-}
-
-void aastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao aastore nao implementada" << std::endl;
-    exit(1);   
-}
-
-void bastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao bastore nao implementada" << std::endl;
-    exit(1);   
-}
-
-void castore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao castore nao implementada" << std::endl;
-    exit(1);   
-}
-
-void sastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao sastore nao implementada" << std::endl;
-    exit(1);   
-}
-
 void pop(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
     frame_stack->top().pc += 1;
@@ -1085,32 +997,6 @@ void dup_x2(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.push(variable_1);
     
     frame_stack->top().pc += 1;
-}
-
-void dup2(stack<Frame>* frame_stack) {
-    std::cout << "instrucao dup2 nao implementada" << std::endl;
-    exit(1);
-
-    // Variable variable_1 = frame_stack->top().operand_stack.top();
-    // frame_stack->top().operand_stack.pop();
-    // if(variable_1.type == VariableType::LONG || variable_1.type == VariableType::DOUBLE) {
-    //     frame_stack->top().operand_stack.push(variable_1);
-    // } else {
-    //     Variable variable_2 = frame_stack->top().operand_stack.top();
-    //     frame_stack->top().operand_stack.pop();
-    //     frame_stack->top().operand_stack.push(variable_2);
-    //     frame_stack->top().operand_stack.push(variable_1);
-    // }
-}
-
-void dup2_x1(stack<Frame>* frame_stack) {
-    std::cout << "instrucao dup2_x1 nao implementada" << std::endl;
-    exit(1);
-}
-
-void dup2_x2(stack<Frame>* frame_stack) {
-    std::cout << "instrucao dup2_x2 nao implementada" << std::endl;
-    exit(1);
 }
 
 void swap(stack<Frame>* frame_stack) {
@@ -1806,7 +1692,28 @@ void i2s(stack<Frame>* frame_stack) {
 	frame_stack->top().pc += 1;
 }
 
-void lcmp(stack<Frame>* frame_stack) {}
+void lcmp(stack<Frame>* frame_stack) {
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+	Variable result;
+	result.type = VariableType::INT;
+
+	if (variable_1.data.v_long > variable_1.data.v_long) {
+		result.data.v_int = 1;
+	} else if (variable_1.data.v_long < variable_1.data.v_long) {
+		result.data.v_int = -1;
+	} else {
+		result.data.v_int = 0;
+	}
+
+	frame_stack->top().operand_stack.push(result);
+
+	frame_stack->top().pc += 1;
+}
 
 void fcmpl(stack<Frame>* frame_stack) {
     Variable variable_2 = frame_stack->top().operand_stack.top();
@@ -1857,10 +1764,6 @@ void fcmpg(stack<Frame>* frame_stack) {
 
 	frame_stack->top().pc += 1;
 }
-
-void dcmpl(stack<Frame>* frame_stack) {}
-
-void dcmpg(stack<Frame>* frame_stack) {}
 
 void ifeq(stack<Frame>* frame_stack) {
     Variable variable = frame_stack->top().operand_stack.top();
@@ -1946,84 +1849,470 @@ void ifle(stack<Frame>* frame_stack) {
     }
 }
 
-void if_icmpeq(stack<Frame>* frame_stack) {}
-
-void if_icmpne(stack<Frame>* frame_stack) {}
-
-void if_icmplt(stack<Frame>* frame_stack) {}
-
-void if_icmpge(stack<Frame>* frame_stack) {}
-
-void if_icmpgt(stack<Frame>* frame_stack) {}
-
-void if_icmple(stack<Frame>* frame_stack) {}
-
-void if_acmpeq(stack<Frame>* frame_stack) {}
-
-void if_acmpne(stack<Frame>* frame_stack) {}
-
-void goto_instruction(stack<Frame>* frame_stack) {}
-
-void jsr(stack<Frame>* frame_stack) {}
-
-void ret(stack<Frame>* frame_stack) {}
-
-void tableswitch(stack<Frame>* frame_stack) {}
-
-void lookupswitch(stack<Frame>* frame_stack) {}
-
-void ireturn(stack<Frame>* frame_stack) {
-    // ret_variable
+void if_icmpeq(stack<Frame>* frame_stack) {
+	Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable_1.data.v_int == variable_2.data.v_int) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+		u2 branch_offset = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_offset;
+    } else {
+		frame_stack->top().pc += 3;
+    }
 }
 
-void lreturn(stack<Frame>* frame_stack) {}
+void if_icmpne(stack<Frame>* frame_stack) {
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable_1.data.v_int != variable_2.data.v_int) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+		u2 branch_offset = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_offset;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void freturn(stack<Frame>* frame_stack) {}
+void if_icmplt(stack<Frame>* frame_stack) {
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable_1.data.v_int < variable_2.data.v_int) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+		u2 branch_offset = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_offset;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void dreturn(stack<Frame>* frame_stack) {}
+void if_icmpge(stack<Frame>* frame_stack) {
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable_1.data.v_int >= variable_2.data.v_int) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+		u2 branch_offset = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_offset;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void areturn(stack<Frame>* frame_stack) {}
+void if_icmpgt(stack<Frame>* frame_stack) {
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable_1.data.v_int > variable_2.data.v_int) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+		u2 branch_offset = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_offset;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void putstatic(stack<Frame>* frame_stack) {}
+void if_icmple(stack<Frame>* frame_stack) {
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable_1.data.v_int <= variable_2.data.v_int) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+		u2 branch_offset = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_offset;
+    } else {
+		frame_stack->top().pc += 3;
+    }
+}
 
-void getfield(stack<Frame>* frame_stack) {}
+void goto_instruction(stack<Frame>* frame_stack) {
+	u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+    u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+    u2 branch_offset = (byte1 << 8) | byte2;
+    frame_stack->top().pc += branch_offset;
+}
 
-void putfield(stack<Frame>* frame_stack) {}
+void jsr(stack<Frame>* frame_stack) {
+    u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+    u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+    u2 branch_offset = (byte1 << 8) | byte2;
+    
+    Variable return_variable;
+	return_variable.type = RETURN_ADDR;
+	return_variable.data.return_address = frame_stack->top().pc + 3;
+    frame_stack->top().operand_stack.push(return_variable);
+	
+    frame_stack->top().pc += branch_offset;
+}
 
-void invokespecial(stack<Frame>* frame_stack) {}
+void ret(stack<Frame>* frame_stack) {
+    u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+	uint16_t index = (uint16_t) byte1;
 
-void invokestatic(stack<Frame>* frame_stack) {}
+    // TODO pensar como passar se o wide foi setado ou nao !!
 
-void invokeinterface(stack<Frame>* frame_stack) {}
+	Variable variable = frame_stack->top().local_variables[index];
+	frame_stack->top().pc = variable.data.return_address;
+}
 
-void invokedynamic(stack<Frame>* frame_stack) {}
+void ireturn(stack<Frame>* frame_stack) {
+    Variable ret_variable = frame_stack->top().operand_stack.top();
+    frame_stack->pop();
 
-void new_instruction(stack<Frame>* frame_stack) {}
+    frame_stack->top().operand_stack.push(ret_variable);
+}
 
-void newarray(stack<Frame>* frame_stack) {}
+void lreturn(stack<Frame>* frame_stack) {
+    Variable ret_variable = frame_stack->top().operand_stack.top();
+    frame_stack->pop();
 
-void anewarray(stack<Frame>* frame_stack) {}
+    frame_stack->top().operand_stack.push(ret_variable);
+}
 
-void arraylength(stack<Frame>* frame_stack) {}
+void freturn(stack<Frame>* frame_stack) {
+    Variable ret_variable = frame_stack->top().operand_stack.top();
+    frame_stack->pop();
 
-void athrow(stack<Frame>* frame_stack) {}
+    frame_stack->top().operand_stack.push(ret_variable);
+}
 
-void checkcast(stack<Frame>* frame_stack) {}
+void dreturn(stack<Frame>* frame_stack) {
+    Variable ret_variable = frame_stack->top().operand_stack.top();
+    frame_stack->pop();
 
-void instanceof(stack<Frame>* frame_stack) {}
+    frame_stack->top().operand_stack.push(ret_variable);
+}
 
-void monitorenter(stack<Frame>* frame_stack) {}
+void areturn(stack<Frame>* frame_stack) {
+    Variable ret_variable = frame_stack->top().operand_stack.top();
+    frame_stack->pop();
 
-void monitorexit(stack<Frame>* frame_stack) {}
+    frame_stack->top().operand_stack.push(ret_variable);
+}
 
-void wide(stack<Frame>* frame_stack) {}
+void ifnull(stack<Frame>* frame_stack) {
+    Variable ref_variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    if (ref_variable.data.object == NULL) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+		u2 branch_offset = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_offset;
+    } else {
+        frame_stack->top().pc += 3;
+    }
+}
 
-void multianewarray(stack<Frame>* frame_stack) {}
+void ifnonnull(stack<Frame>* frame_stack) {
+    Variable ref_variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    if (ref_variable.data.object != NULL) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+		u2 branch_offset = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_offset;
+    } else {
+        frame_stack->top().pc += 3;
+    }
+}
 
-void ifnull(stack<Frame>* frame_stack) {}
+void goto_w(stack<Frame>* frame_stack) {
+    u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+    u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+    u1 byte3 = frame_stack->top().get_method_code(frame_stack->top().pc + 3);
+    u1 byte4 = frame_stack->top().get_method_code(frame_stack->top().pc + 4);
 
-void ifnonnull(stack<Frame>* frame_stack) {}
+	u4 branch_offset = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 
-void goto_w(stack<Frame>* frame_stack) {}
+    frame_stack->top().pc += branch_offset;
+}
 
-void jsr_w(stack<Frame>* frame_stack) {}
+void jsr_w(stack<Frame>* frame_stack) {
+    u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+    u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+    u1 byte3 = frame_stack->top().get_method_code(frame_stack->top().pc + 3);
+    u1 byte4 = frame_stack->top().get_method_code(frame_stack->top().pc + 4);
+
+	u4 branch_offset = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+
+	Variable return_addr;
+	return_addr.type = RETURN_ADDR;
+	return_addr.data.return_address = frame_stack->top().pc + 5;
+    frame_stack->top().operand_stack.push(return_addr);
+
+    frame_stack->top().pc += branch_offset;
+}
+
+void tableswitch(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "tableswitch nao implementado" << std::endl;
+    exit(1);
+}
+
+void lookupswitch(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "lookupswitch nao implementado" << std::endl;
+    exit(1);
+}
+
+void if_acmpeq(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "if_acmpeq nao implementado" << std::endl;
+    exit(1);
+}
+
+void if_acmpne(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "if_acmpne nao implementado" << std::endl;
+    exit(1);
+}
+
+void putstatic(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "putstatic nao implementado" << std::endl;
+    exit(1);
+}
+
+void getfield(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "getfield nao implementado" << std::endl;
+    exit(1);
+}
+
+void putfield(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "putfield nao implementado" << std::endl;
+    exit(1);
+}
+
+void invokespecial(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "invokespecial nao implementado" << std::endl;
+    exit(1);
+}
+
+void invokestatic(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "invokestatic nao implementado" << std::endl;
+    exit(1);
+}
+
+void invokeinterface(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "invokeinterface nao implementado" << std::endl;
+    exit(1);
+}
+
+void invokedynamic(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "invokedynamic nao implementado" << std::endl;
+    exit(1);
+}
+
+void new_instruction(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "new_instruction nao implementado" << std::endl;
+    exit(1);
+}
+
+void newarray(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "newarray nao implementado" << std::endl;
+    exit(1);
+}
+
+void anewarray(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "anewarray nao implementado" << std::endl;
+    exit(1);
+}
+
+void arraylength(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "arraylength nao implementado" << std::endl;
+    exit(1);
+}
+
+void athrow(stack<Frame>* frame_stack) {
+    frame_stack->top().pc += 1;
+}
+
+void checkcast(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "checkcast nao implementado" << std::endl;
+    exit(1);
+}
+
+void instanceof(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "instanceof nao implementado" << std::endl;
+    exit(1);
+}
+
+void monitorenter(stack<Frame>* frame_stack) {
+    frame_stack->top().pc += 1;
+}
+
+void monitorexit(stack<Frame>* frame_stack) {
+    frame_stack->top().pc += 1;
+}
+
+void wide(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "wide nao implementado" << std::endl;
+    exit(1);
+}
+
+void multianewarray(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "multianewarray nao implementado" << std::endl;
+    exit(1);
+}
+
+void iaload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "iaload nao implementado" << std::endl;
+    exit(1);
+}
+
+void laload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "laload nao implementado" << std::endl;
+    exit(1);
+}
+
+void faload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "faload nao implementado" << std::endl;
+    exit(1);
+}
+
+void daload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "daload nao implementado" << std::endl;
+    exit(1);
+}
+
+void aaload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "aaload nao implementado" << std::endl;
+    exit(1);
+}
+
+void baload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "baload nao implementado" << std::endl;
+    exit(1);
+}
+
+void caload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "caload nao implementado" << std::endl;
+    exit(1);
+}
+
+void saload(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "saload nao implementado" << std::endl;
+    exit(1);
+}
+
+void iastore(stack<Frame>* frame_stack) {
+    std::cout << "instrucao iastore nao implementada" << std::endl;
+    exit(1);   
+}
+
+void lastore(stack<Frame>* frame_stack) {
+    std::cout << "instrucao lastore nao implementada" << std::endl;
+    exit(1);   
+}
+
+void fastore(stack<Frame>* frame_stack) {
+    std::cout << "instrucao fastore nao implementada" << std::endl;
+    exit(1);   
+}
+
+void dastore(stack<Frame>* frame_stack) {
+    std::cout << "instrucao dastore nao implementada" << std::endl;
+    exit(1);   
+}
+
+void aastore(stack<Frame>* frame_stack) {
+    std::cout << "instrucao aastore nao implementada" << std::endl;
+    exit(1);   
+}
+
+void bastore(stack<Frame>* frame_stack) {
+    std::cout << "instrucao bastore nao implementada" << std::endl;
+    exit(1);   
+}
+
+void castore(stack<Frame>* frame_stack) {
+    std::cout << "instrucao castore nao implementada" << std::endl;
+    exit(1);   
+}
+
+void sastore(stack<Frame>* frame_stack) {
+    std::cout << "instrucao sastore nao implementada" << std::endl;
+    exit(1);   
+}
+
+void dup2(stack<Frame>* frame_stack) {
+    std::cout << "instrucao dup2 nao implementada" << std::endl;
+    exit(1);
+
+    // Variable variable_1 = frame_stack->top().operand_stack.top();
+    // frame_stack->top().operand_stack.pop();
+    // if(variable_1.type == VariableType::LONG || variable_1.type == VariableType::DOUBLE) {
+    //     frame_stack->top().operand_stack.push(variable_1);
+    // } else {
+    //     Variable variable_2 = frame_stack->top().operand_stack.top();
+    //     frame_stack->top().operand_stack.pop();
+    //     frame_stack->top().operand_stack.push(variable_2);
+    //     frame_stack->top().operand_stack.push(variable_1);
+    // }
+}
+
+void dup2_x1(stack<Frame>* frame_stack) {
+    std::cout << "instrucao dup2_x1 nao implementada" << std::endl;
+    exit(1);
+}
+
+void dup2_x2(stack<Frame>* frame_stack) {
+    std::cout << "instrucao dup2_x2 nao implementada" << std::endl;
+    exit(1);
+}
+
+void dcmpl(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "dcmpl nao implementado" << std::endl;
+    exit(1);
+}
+
+void dcmpg(stack<Frame>* frame_stack) {
+    // TODO
+    std::cout << "dcmpg nao implementado" << std::endl;
+    exit(1);
+}
