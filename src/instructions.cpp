@@ -1611,37 +1611,200 @@ void lxor(stack<Frame>* frame_stack) {
     frame_stack->top().pc += 1;   
 }
 
-void iinc(stack<Frame>* frame_stack) {}
+void iinc(stack<Frame>* frame_stack) {
+    // TODO pensar como passar se o wide foi setado ou nao !!
+    
+    u1 index = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
 
-void i2l(stack<Frame>* frame_stack) {}
+    Variable local_variable = frame_stack->top().local_variables[index];
+    
+    u4 inc = (u4) (u1) frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+    
+    local_variable.data.v_int += inc;
+    frame_stack->top().local_variables[index] = local_variable;
+    
+    frame_stack->top().pc += 3;   
+}
 
-void i2f(stack<Frame>* frame_stack) {}
+void i2l(stack<Frame>* frame_stack) {
+	Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
 
-void i2d(stack<Frame>* frame_stack) {}
+    variable.data.v_long = (int64_t) variable.data.v_int;
+	variable.type = INT;
 
-void l2i(stack<Frame>* frame_stack) {}
+    frame_stack->top().operand_stack.push(variable);
 
-void l2f(stack<Frame>* frame_stack) {}
+	frame_stack->top().pc += 1;
+}
 
-void l2d(stack<Frame>* frame_stack) {}
+void i2f(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
 
-void f2i(stack<Frame>* frame_stack) {}
+    variable.data.v_float = (float) variable.data.v_int;
+	variable.type = FLOAT;
 
-void f2l(stack<Frame>* frame_stack) {}
+    frame_stack->top().operand_stack.push(variable);
 
-void f2d(stack<Frame>* frame_stack) {}
+	frame_stack->top().pc += 1;
+}
 
-void d2i(stack<Frame>* frame_stack) {}
+void i2d(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
 
-void d2l(stack<Frame>* frame_stack) {}
+    variable.data.v_float = (double) variable.data.v_int;
+	variable.type = DOUBLE;
 
-void d2f(stack<Frame>* frame_stack) {}
+    frame_stack->top().operand_stack.push(variable);
 
-void i2b(stack<Frame>* frame_stack) {}
+	frame_stack->top().pc += 1;
+}
 
-void i2c(stack<Frame>* frame_stack) {}
+void l2i(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
 
-void i2s(stack<Frame>* frame_stack) {}
+    variable.data.v_int = (int32_t) variable.data.v_long;
+	variable.type = INT;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void l2f(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_float = (float) variable.data.v_long;
+	variable.type = FLOAT;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void l2d(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_double = (double) variable.data.v_long;
+	variable.type = DOUBLE;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void f2i(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_int = (uint32_t) variable.data.v_float;
+	variable.type = INT;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void f2l(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_long = (uint64_t) variable.data.v_float;
+	variable.type = LONG;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void f2d(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_double = (double) variable.data.v_float;
+	variable.type = DOUBLE;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void d2i(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_int = (uint32_t) variable.data.v_double;
+	variable.type = INT;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void d2l(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_long = (uint64_t) variable.data.v_double;
+	variable.type = LONG;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void d2f(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_float = (float) variable.data.v_double;
+	variable.type = FLOAT;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void i2b(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_byte = (int8_t) variable.data.v_int;
+	variable.type = BYTE;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void i2c(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_char = (char) variable.data.v_int;
+	variable.type = CHAR;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
+
+void i2s(stack<Frame>* frame_stack) {
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_short = (int16_t) variable.data.v_int;
+	variable.type = SHORT;
+
+    frame_stack->top().operand_stack.push(variable);
+
+	frame_stack->top().pc += 1;
+}
 
 void lcmp(stack<Frame>* frame_stack) {}
 
@@ -1809,7 +1972,9 @@ void tableswitch(stack<Frame>* frame_stack) {}
 
 void lookupswitch(stack<Frame>* frame_stack) {}
 
-void ireturn(stack<Frame>* frame_stack) {}
+void ireturn(stack<Frame>* frame_stack) {
+    // ret_variable
+}
 
 void lreturn(stack<Frame>* frame_stack) {}
 
