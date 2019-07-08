@@ -2274,33 +2274,63 @@ void multianewarray(stack<Frame>* frame_stack) {
 }
 
 void iaload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "iaload nao implementado" << std::endl;
-    exit(1);
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+
+    frame_stack->top().pc += 1;
 }
 
 void laload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "laload nao implementado" << std::endl;
-    exit(1);
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+
+    frame_stack->top().pc += 1;
 }
 
 void faload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "faload nao implementado" << std::endl;
-    exit(1);
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+
+    frame_stack->top().pc += 1;
 }
 
 void daload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "daload nao implementado" << std::endl;
-    exit(1);
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+
+    frame_stack->top().pc += 1;
 }
 
 void aaload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "aaload nao implementado" << std::endl;
-    exit(1);
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+
+    frame_stack->top().pc += 1;
 }
 
 void baload(stack<Frame>* frame_stack) {
@@ -2322,43 +2352,137 @@ void saload(stack<Frame>* frame_stack) {
 }
 
 void iastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao iastore nao implementada" << std::endl;
-    exit(1);   
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    array_ref.data.v_array->elements[index.data.v_int] = variable;
+
+    frame_stack->top().pc += 1;   
 }
 
 void lastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao lastore nao implementada" << std::endl;
-    exit(1);   
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    array_ref.data.v_array->elements[index.data.v_int] = variable;
+
+    frame_stack->top().pc += 1;
 }
 
 void fastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao fastore nao implementada" << std::endl;
-    exit(1);   
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    array_ref.data.v_array->elements[index.data.v_int] = variable;
+
+    frame_stack->top().pc += 1; 
 }
 
 void dastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao dastore nao implementada" << std::endl;
-    exit(1);   
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    array_ref.data.v_array->elements[index.data.v_int] = variable;
+
+    frame_stack->top().pc += 1; 
 }
 
 void aastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao aastore nao implementada" << std::endl;
-    exit(1);   
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    array_ref.data.v_array->elements[index.data.v_int] = variable;
+
+    frame_stack->top().pc += 1;  
 }
 
 void bastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao bastore nao implementada" << std::endl;
-    exit(1);   
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    if (array_ref.data.v_array->type == BOOLEAN) {
+        variable.data.v_boolean = (variable.data.v_int != 0) ? true : false;
+        variable.type = BOOLEAN;
+    } else {
+        variable.data.v_byte = (uint8_t) variable.data.v_int;
+        variable.type = BYTE;
+    }
+
+    array_ref.data.v_array->elements[index.data.v_int] = variable;
+
+    frame_stack->top().pc += 1;  
 }
 
 void castore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao castore nao implementada" << std::endl;
-    exit(1);   
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_char = (uint8_t) variable.data.v_int;
+    variable.type = CHAR;
+    
+    array_ref.data.v_array->elements[index.data.v_int] = variable;
+
+    frame_stack->top().pc += 1; 
 }
 
 void sastore(stack<Frame>* frame_stack) {
-    std::cout << "instrucao sastore nao implementada" << std::endl;
-    exit(1);   
+    Variable variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    variable.data.v_short = (int16_t) variable.data.v_int;
+    variable.type = SHORT;
+    
+    array_ref.data.v_array->elements[index.data.v_int] = variable;
+
+    frame_stack->top().pc += 1;   
 }
 
 void dup2(stack<Frame>* frame_stack) {
