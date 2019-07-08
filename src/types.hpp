@@ -21,7 +21,7 @@ typedef uint8_t u1;
 typedef uint16_t u2;
 typedef uint32_t u4;
 
-class Object;
+typedef struct Variable Variable;
 
 enum VariableType {
     BOOLEAN,
@@ -33,8 +33,15 @@ enum VariableType {
     LONG,
     DOUBLE,
     RETURN_ADDR,
-    REFERENCE,
-    PADDING // previous value is long or double
+    STRINGREF,
+    ARRAYREF
+};
+
+class Array {
+public:
+    Array(VariableType type) : type(type) {}
+    VariableType type;
+    std::vector<Variable> elements;
 };
 
 struct Variable {
@@ -49,8 +56,9 @@ struct Variable {
         int64_t v_long;
         double v_double;
         u4 return_address;
-        Object* object;
+        // Object* object;
         char* v_string;
+        Array *v_array;
     } data;
 };
 

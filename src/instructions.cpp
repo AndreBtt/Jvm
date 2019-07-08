@@ -95,7 +95,8 @@ void getstatic(stack<Frame>* frame_stack) {
         return;
     }
     
-    // falta codar o else
+    cout << "getstatic nao implementado totalmente" << endl;
+    exit(1);
 }
 
 void dload(stack<Frame>* frame_stack) {
@@ -259,7 +260,7 @@ void invokevirtual(stack<Frame>* frame_stack) {
             case VariableType::SHORT:
                 printf("%d", variable.data.v_short);
                 break;
-            default:
+            case VariableType::INT:
                 printf("%d", variable.data.v_int);
                 break;
             case VariableType::DOUBLE:
@@ -271,9 +272,11 @@ void invokevirtual(stack<Frame>* frame_stack) {
             case VariableType::LONG:
                 printf("%lld", (long long) variable.data.v_long);
                 break;
-            case VariableType::REFERENCE:
+            case VariableType::STRINGREF:
                 printf("%s", variable.data.v_string);
                 break;
+            default:
+                cout << "tipo : " << variable.type << endl;
         }
 
         if (method_name == "println") printf("\n");
@@ -314,13 +317,16 @@ void istore_1(stack<Frame>* frame_stack) {
 }
 
 void aconst_null(stack<Frame>* frame_stack) {
-    Variable variable;
-    variable.type = VariableType::REFERENCE;
-    variable.data.object = NULL;
+    // TODO
+    std::cout << "aconst_null nao implementado" << std::endl;
+    exit(1);
+    // Variable variable;
+    // variable.type = VariableType::STRINGREF;
+    // variable.data.object = NULL;
 
-    frame_stack->top().operand_stack.push(variable);
+    // frame_stack->top().operand_stack.push(variable);
 
-    frame_stack->top().pc += 1;
+    // frame_stack->top().pc += 1;
 }
 
 void iconst_m1(stack<Frame>* frame_stack) {
@@ -486,7 +492,7 @@ void ldc(stack<Frame>* frame_stack) {
         }
 
         variable.data.v_string = (char*) malloc(sizeof(char) * (utf8_string.size() + 1));
-        variable.type = REFERENCE;
+        variable.type = STRINGREF;
         for(int i = 0; i < utf8_string.size(); i++) {
             variable.data.v_string[i] = char(utf8_string[i]);
         }
@@ -1702,9 +1708,9 @@ void lcmp(stack<Frame>* frame_stack) {
 	Variable result;
 	result.type = VariableType::INT;
 
-	if (variable_1.data.v_long > variable_1.data.v_long) {
+	if (variable_1.data.v_long > variable_2.data.v_long) {
 		result.data.v_int = 1;
-	} else if (variable_1.data.v_long < variable_1.data.v_long) {
+	} else if (variable_1.data.v_long < variable_2.data.v_long) {
 		result.data.v_int = -1;
 	} else {
 		result.data.v_int = 0;
@@ -1842,7 +1848,6 @@ void ifle(stack<Frame>* frame_stack) {
         u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
         u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
         uint16_t branch_off_set = (byte1 << 8) | byte2;
-        // std::cout << int(variable.data.v_int) << " " << int(byte1) << " " << int(byte2) << " " << int(branch_off_set) << std::endl; 
 		frame_stack->top().pc += branch_off_set;
     } else {
 		frame_stack->top().pc += 3;
@@ -2011,31 +2016,37 @@ void areturn(stack<Frame>* frame_stack) {
 }
 
 void ifnull(stack<Frame>* frame_stack) {
-    Variable ref_variable = frame_stack->top().operand_stack.top();
-    frame_stack->top().operand_stack.pop();
+    // TODO
+    std::cout << "ifnull nao implementado" << std::endl;
+    exit(1);
+    // Variable ref_variable = frame_stack->top().operand_stack.top();
+    // frame_stack->top().operand_stack.pop();
     
-    if (ref_variable.data.object == NULL) {
-        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
-        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-		u2 branch_offset = (byte1 << 8) | byte2;
-		frame_stack->top().pc += branch_offset;
-    } else {
-        frame_stack->top().pc += 3;
-    }
+    // if (ref_variable.data.object == NULL) {
+    //     u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+    //     u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+	// 	u2 branch_offset = (byte1 << 8) | byte2;
+	// 	frame_stack->top().pc += branch_offset;
+    // } else {
+    //     frame_stack->top().pc += 3;
+    // }
 }
 
 void ifnonnull(stack<Frame>* frame_stack) {
-    Variable ref_variable = frame_stack->top().operand_stack.top();
-    frame_stack->top().operand_stack.pop();
+    // TODO
+    std::cout << "ifnonnull nao implementado" << std::endl;
+    exit(1);
+    // Variable ref_variable = frame_stack->top().operand_stack.top();
+    // frame_stack->top().operand_stack.pop();
     
-    if (ref_variable.data.object != NULL) {
-        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
-        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-		u2 branch_offset = (byte1 << 8) | byte2;
-		frame_stack->top().pc += branch_offset;
-    } else {
-        frame_stack->top().pc += 3;
-    }
+    // if (ref_variable.data.object != NULL) {
+    //     u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+    //     u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+	// 	u2 branch_offset = (byte1 << 8) | byte2;
+	// 	frame_stack->top().pc += branch_offset;
+    // } else {
+    //     frame_stack->top().pc += 3;
+    // }
 }
 
 void goto_w(stack<Frame>* frame_stack) {
@@ -2063,6 +2074,14 @@ void jsr_w(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.push(return_addr);
 
     frame_stack->top().pc += branch_offset;
+}
+
+void monitorenter(stack<Frame>* frame_stack) {
+    frame_stack->top().pc += 1;
+}
+
+void monitorexit(stack<Frame>* frame_stack) {
+    frame_stack->top().pc += 1;
 }
 
 void tableswitch(stack<Frame>* frame_stack) {
@@ -2138,9 +2157,80 @@ void new_instruction(stack<Frame>* frame_stack) {
 }
 
 void newarray(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "newarray nao implementado" << std::endl;
-    exit(1);
+    Variable array_size = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Array *array; 
+    Variable variable; 
+    
+    u1 array_type = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+
+    switch (array_type) {
+        case 4:
+            array = new Array(BOOLEAN);
+            variable.type = BOOLEAN;
+            for (int i = 0; i < array_size.data.v_int; i++) {
+                array->elements.push_back(variable);
+            }
+            break;
+        case 5:
+            array = new Array(CHAR);
+            variable.type = CHAR;
+            for (int i = 0; i < array_size.data.v_int; i++) {
+                array->elements.push_back(variable);
+            }
+            break;
+        case 6:
+            array = new Array(FLOAT);
+            variable.type = FLOAT;
+            for (int i = 0; i < array_size.data.v_int; i++) {
+                array->elements.push_back(variable);
+            }
+            break;
+        case 7:
+            array = new Array(DOUBLE);
+            variable.type = DOUBLE;
+            for (int i = 0; i < array_size.data.v_int; i++) {
+                array->elements.push_back(variable);
+            }
+            break;
+        case 8:
+            array = new Array(BYTE);
+            variable.type = BYTE;
+            for (int i = 0; i < array_size.data.v_int; i++) {
+                array->elements.push_back(variable);
+            }
+            break;
+        case 9:
+            array = new Array(SHORT);
+            variable.type = SHORT;
+            for (int i = 0; i < array_size.data.v_int; i++) {
+                array->elements.push_back(variable);
+            }
+            break;
+        case 10:
+            array = new Array(INT);
+            variable.type = INT;
+            for (int i = 0; i < array_size.data.v_int; i++) {
+                array->elements.push_back(variable);
+            }
+            break;
+        case 11:
+            array = new Array(LONG);
+            variable.type = LONG;
+            for (int i = 0; i < array_size.data.v_int; i++) {
+                array->elements.push_back(variable);
+            }
+            break;
+    }
+    
+    Variable array_ref;
+    array_ref.type = ARRAYREF;
+    array_ref.data.v_array = array;
+    
+    frame_stack->top().operand_stack.push(array_ref);
+
+    frame_stack->top().pc += 2;
 }
 
 void anewarray(stack<Frame>* frame_stack) {
@@ -2169,14 +2259,6 @@ void instanceof(stack<Frame>* frame_stack) {
     // TODO
     std::cout << "instanceof nao implementado" << std::endl;
     exit(1);
-}
-
-void monitorenter(stack<Frame>* frame_stack) {
-    frame_stack->top().pc += 1;
-}
-
-void monitorexit(stack<Frame>* frame_stack) {
-    frame_stack->top().pc += 1;
 }
 
 void wide(stack<Frame>* frame_stack) {
