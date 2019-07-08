@@ -2346,9 +2346,15 @@ void caload(stack<Frame>* frame_stack) {
 }
 
 void saload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "saload nao implementado" << std::endl;
-    exit(1);
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+
+    frame_stack->top().pc += 1;
 }
 
 void iastore(stack<Frame>* frame_stack) {
