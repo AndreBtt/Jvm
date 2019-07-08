@@ -103,11 +103,13 @@ void dload(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-	u2 index = (u2) byte1;
+	u2 index = (int16_t) byte1;
 
     // TODO pensar como passar se o wide foi setado ou nao !!
 
+
 	Variable variable = curr_frame.local_variables[index];
+
 	frame_stack->top().operand_stack.push(variable);
     frame_stack->top().pc += 2;
 }
@@ -295,13 +297,11 @@ void return_instruction(stack<Frame>* frame_stack) {
 void bipush(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
-
     u1 byte = curr_frame.get_method_code(curr_frame.pc + 1);
 
     Variable variable;
     variable.type = VariableType::INT;
-    variable.data.v_int = (u4) (u1) byte;
+    variable.data.v_int = (int32_t) (int8_t) byte;
 
     frame_stack->top().operand_stack.push(variable);
 
@@ -440,7 +440,7 @@ void fconst_2(stack<Frame>* frame_stack) {
 void dconst_0(stack<Frame>* frame_stack) {
     Variable variable;
     variable.type = VariableType::DOUBLE;
-    variable.data.v_float = 0;
+    variable.data.v_double = 0;
 
     frame_stack->top().operand_stack.push(variable);
     frame_stack->top().pc += 1;
@@ -449,7 +449,7 @@ void dconst_0(stack<Frame>* frame_stack) {
 void dconst_1(stack<Frame>* frame_stack) {
     Variable variable;
     variable.type = VariableType::DOUBLE;
-    variable.data.v_float = 1;
+    variable.data.v_double = 1;
 
     frame_stack->top().operand_stack.push(variable);
     frame_stack->top().pc += 1;
@@ -464,7 +464,7 @@ void sipush(stack<Frame>* frame_stack) {
 
     Variable variable;
     variable.type = VariableType::INT;
-    variable.data.v_int = (int32_t) (int16_t) short_value; 
+    variable.data.v_int = (int32_t) (int16_t) short_value;
 
     frame_stack->top().operand_stack.push(variable);
 
@@ -565,7 +565,7 @@ void iload(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-	u2 index = (u2) byte1;
+	u2 index = (int16_t) byte1;
 
     // TODO pensar como passar se o wide foi setado ou nao !!
 
@@ -578,7 +578,7 @@ void lload(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-	u2 index = (u2) byte1;
+	u2 index = (int16_t) byte1;
 
     // TODO pensar como passar se o wide foi setado ou nao !!
 
@@ -591,7 +591,7 @@ void fload(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-	u2 index = (u2) byte1;
+	u2 index = (int16_t) byte1;
 
     // TODO pensar como passar se o wide foi setado ou nao !!
 
@@ -604,7 +604,7 @@ void aload(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-	u2 index = (u2) byte1;
+	u2 index = (int16_t) byte1;
 
     // TODO pensar como passar se o wide foi setado ou nao !!
 
@@ -753,7 +753,7 @@ void istore(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     u1 byte = curr_frame.get_method_code(curr_frame.pc + 1);
-    u2 index = (u2) byte;
+    u2 index = (int16_t) byte;
 
     frame_stack->top().local_variables[index] = variable;
     
@@ -769,7 +769,7 @@ void lstore(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     u1 byte = curr_frame.get_method_code(curr_frame.pc + 1);
-    u2 index = (u2) byte;
+    u2 index = (int16_t) byte;
 
     frame_stack->top().local_variables[index] = variable;
     
@@ -785,7 +785,7 @@ void fstore(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     u1 byte = curr_frame.get_method_code(curr_frame.pc + 1);
-    u2 index = (u2) byte;
+    u2 index = (int16_t) byte;
 
     frame_stack->top().local_variables[index] = variable;
     
@@ -801,7 +801,7 @@ void dstore(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     u1 byte = curr_frame.get_method_code(curr_frame.pc + 1);
-    u2 index = (u2) byte;
+    u2 index = (int16_t) byte;
 
     frame_stack->top().local_variables[index] = variable;
     
@@ -817,7 +817,7 @@ void astore(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     u1 byte = curr_frame.get_method_code(curr_frame.pc + 1);
-    u2 index = (u2) byte;
+    u2 index = (int16_t) byte;
 
     frame_stack->top().local_variables[index] = variable;
     
@@ -1510,7 +1510,7 @@ void iinc(stack<Frame>* frame_stack) {
 
     Variable local_variable = frame_stack->top().local_variables[index];
     
-    u4 inc = (u4) (u1) frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+    u4 inc = (int32_t) (int8_t) frame_stack->top().get_method_code(frame_stack->top().pc + 2);
     
     local_variable.data.v_int += inc;
     frame_stack->top().local_variables[index] = local_variable;
@@ -1523,7 +1523,7 @@ void i2l(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     variable.data.v_long = (int64_t) variable.data.v_int;
-	variable.type = INT;
+	variable.type = LONG;
 
     frame_stack->top().operand_stack.push(variable);
 
@@ -1546,7 +1546,7 @@ void i2d(stack<Frame>* frame_stack) {
     Variable variable = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    variable.data.v_float = (double) variable.data.v_int;
+    variable.data.v_double = (double) variable.data.v_int;
 	variable.type = DOUBLE;
 
     frame_stack->top().operand_stack.push(variable);
@@ -2388,13 +2388,52 @@ void dup2_x2(stack<Frame>* frame_stack) {
 }
 
 void dcmpl(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "dcmpl nao implementado" << std::endl;
-    exit(1);
+
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+	Variable result;
+	result.type = VariableType::INT;
+
+	if (isnan(variable_1.data.v_double) || isnan(variable_2.data.v_double)) {
+		result.data.v_int = -1;
+	} else if (variable_1.data.v_double > variable_2.data.v_double) {
+		result.data.v_int = 1;
+	} else if (variable_1.data.v_double == variable_2.data.v_double) {
+		result.data.v_int = 0;
+	} else {
+		result.data.v_int = -1;
+	}
+
+	frame_stack->top().operand_stack.push(result);
+
+	frame_stack->top().pc += 1;
 }
 
 void dcmpg(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "dcmpg nao implementado" << std::endl;
-    exit(1);
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+	Variable result;
+	result.type = VariableType::INT;
+
+	if (isnan(variable_1.data.v_double) || isnan(variable_2.data.v_double)) {
+		result.data.v_int = 1;
+	} else if (variable_1.data.v_double > variable_2.data.v_double) {
+		result.data.v_int = 1;
+	} else if (variable_1.data.v_double == variable_2.data.v_double) {
+		result.data.v_int = 0;
+	} else {
+		result.data.v_int = -1;
+	}
+
+	frame_stack->top().operand_stack.push(result);
+
+	frame_stack->top().pc += 1;
 }
