@@ -1863,7 +1863,7 @@ void if_icmpeq(stack<Frame>* frame_stack) {
 	if (variable_1.data.v_int == variable_2.data.v_int) {
         u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
         u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-		u2 branch_offset = (byte1 << 8) | byte2;
+		int16_t branch_offset = (byte1 << 8) | byte2;
 		frame_stack->top().pc += branch_offset;
     } else {
 		frame_stack->top().pc += 3;
@@ -1879,7 +1879,7 @@ void if_icmpne(stack<Frame>* frame_stack) {
 	if (variable_1.data.v_int != variable_2.data.v_int) {
         u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
         u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-		u2 branch_offset = (byte1 << 8) | byte2;
+		int16_t branch_offset = (byte1 << 8) | byte2;
 		frame_stack->top().pc += branch_offset;
     } else {
 		frame_stack->top().pc += 3;
@@ -1895,7 +1895,7 @@ void if_icmplt(stack<Frame>* frame_stack) {
 	if (variable_1.data.v_int < variable_2.data.v_int) {
         u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
         u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-		u2 branch_offset = (byte1 << 8) | byte2;
+		int16_t branch_offset = (byte1 << 8) | byte2;
 		frame_stack->top().pc += branch_offset;
     } else {
 		frame_stack->top().pc += 3;
@@ -1911,7 +1911,7 @@ void if_icmpge(stack<Frame>* frame_stack) {
 	if (variable_1.data.v_int >= variable_2.data.v_int) {
         u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
         u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-		u2 branch_offset = (byte1 << 8) | byte2;
+		int16_t branch_offset = (byte1 << 8) | byte2;
 		frame_stack->top().pc += branch_offset;
     } else {
 		frame_stack->top().pc += 3;
@@ -1927,7 +1927,7 @@ void if_icmpgt(stack<Frame>* frame_stack) {
 	if (variable_1.data.v_int > variable_2.data.v_int) {
         u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
         u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-		u2 branch_offset = (byte1 << 8) | byte2;
+		int16_t branch_offset = (byte1 << 8) | byte2;
 		frame_stack->top().pc += branch_offset;
     } else {
 		frame_stack->top().pc += 3;
@@ -1943,7 +1943,7 @@ void if_icmple(stack<Frame>* frame_stack) {
 	if (variable_1.data.v_int <= variable_2.data.v_int) {
         u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
         u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-		u2 branch_offset = (byte1 << 8) | byte2;
+		int16_t branch_offset = (byte1 << 8) | byte2;
 		frame_stack->top().pc += branch_offset;
     } else {
 		frame_stack->top().pc += 3;
@@ -1953,14 +1953,14 @@ void if_icmple(stack<Frame>* frame_stack) {
 void goto_instruction(stack<Frame>* frame_stack) {
 	u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
     u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-    u2 branch_offset = (byte1 << 8) | byte2;
+    int16_t branch_offset = (byte1 << 8) | byte2;
     frame_stack->top().pc += branch_offset;
 }
 
 void jsr(stack<Frame>* frame_stack) {
     u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
     u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-    u2 branch_offset = (byte1 << 8) | byte2;
+    int16_t branch_offset = (byte1 << 8) | byte2;
     
     Variable return_variable;
 	return_variable.type = RETURN_ADDR;
@@ -2025,7 +2025,7 @@ void ifnull(stack<Frame>* frame_stack) {
     // if (ref_variable.data.object == NULL) {
     //     u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
     //     u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-	// 	u2 branch_offset = (byte1 << 8) | byte2;
+	// 	int16_t branch_offset = (byte1 << 8) | byte2;
 	// 	frame_stack->top().pc += branch_offset;
     // } else {
     //     frame_stack->top().pc += 3;
@@ -2042,7 +2042,7 @@ void ifnonnull(stack<Frame>* frame_stack) {
     // if (ref_variable.data.object != NULL) {
     //     u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
     //     u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-	// 	u2 branch_offset = (byte1 << 8) | byte2;
+	// 	int16_t branch_offset = (byte1 << 8) | byte2;
 	// 	frame_stack->top().pc += branch_offset;
     // } else {
     //     frame_stack->top().pc += 3;
@@ -2055,7 +2055,7 @@ void goto_w(stack<Frame>* frame_stack) {
     u1 byte3 = frame_stack->top().get_method_code(frame_stack->top().pc + 3);
     u1 byte4 = frame_stack->top().get_method_code(frame_stack->top().pc + 4);
 
-	u4 branch_offset = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+	int16_t branch_offset = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 
     frame_stack->top().pc += branch_offset;
 }
@@ -2066,7 +2066,7 @@ void jsr_w(stack<Frame>* frame_stack) {
     u1 byte3 = frame_stack->top().get_method_code(frame_stack->top().pc + 3);
     u1 byte4 = frame_stack->top().get_method_code(frame_stack->top().pc + 4);
 
-	u4 branch_offset = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
+	int16_t branch_offset = (byte1 << 24) | (byte2 << 16) | (byte3 << 8) | byte4;
 
 	Variable return_addr;
 	return_addr.type = RETURN_ADDR;
