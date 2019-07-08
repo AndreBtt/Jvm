@@ -28,6 +28,9 @@ void display::general_information(ClassFile class_file) {
 
     display::indentation(1);
     printf("%-23s %d\n", "Major Version:", class_file.major_version);
+    
+    display::indentation(1);
+    printf("%-23s %s\n", "Java Version:", display::java_versions[class_file.major_version].c_str());
 
     display::indentation(1);
     printf("%-23s %d\n", "Constant pool count:", class_file.constant_pool_length);

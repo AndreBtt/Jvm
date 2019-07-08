@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <string>
 #include <math.h>
+#include <map>
 
 #include "class_file.hpp"
 #include "utils.hpp"
@@ -46,6 +47,21 @@ namespace display {
 
     // display utils
     void indentation(int);
+
+    static map<u2, string> java_versions = {
+        {46, "Java 1.2"} ,
+        {47, "Java 1.3"} ,
+        {48, "Java 1.4"} ,
+        {49, "Java SE 5"} ,
+        {50, "Java SE 6"} ,
+        {51, "Java SE 7"} ,
+        {52, "Java SE 8"} ,
+        {53, "Java SE 9"} ,
+        {54, "Java SE 10"} ,
+        {55, "Java SE 11"} ,
+        {56, "Java SE 12"} ,
+        {57, "Java SE 13"}
+    };
 
     static const string instructions[] = {
         "nop",
