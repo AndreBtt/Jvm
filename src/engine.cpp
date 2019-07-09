@@ -14,7 +14,10 @@ void Engine::start(ClassFile class_file) {
     while (frame_stack.size() > 0) {
         Frame curr_frame = frame_stack.top();
         u1 instruction_code = curr_frame.get_method_code(curr_frame.pc);
-        std::cout << "pc -> " << curr_frame.pc << " code -> " << std::hex << int(instruction_code) << std::endl;
+        std::cout << "pc -> " << curr_frame.pc << " code -> " << std::hex << int(instruction_code) << endl;
+        // string current_method_name = get_constant_pool_element(curr_frame.class_run_time.class_file.constant_pool, curr_frame.method.name_index);
+        // cout << "met -> " << current_method_name << endl;
+
         // std::cout << "tamanho -> " << std::dec << curr_frame.operand_stack.size() << std::endl;
         execute_instruction(&frame_stack, instruction_code);
     }

@@ -1,8 +1,15 @@
 #include "class_loader.hpp"
 
+// global variable to save already loaded classes
+map<string, ClassFile*> loaded_classes;
+
 ClassFile* build_class_file(string class_path) {
-    
     class_path += ".class";
+    
+    if(loaded_classes.count(class_path) != 0) {
+        cout << "tbm to entrando agora" << endl;
+        return loaded_classes[class_path];
+    }
     
     FILE* file_pointer = fopen(class_path.c_str(), "rb");
     if(file_pointer == NULL) {
@@ -45,7 +52,7 @@ ClassFile* build_class_file(string class_path) {
 
     fclose(file_pointer);
 
-    return class_file;
+    return loaded_classes[class_path] = class_file;
 }
 
 void set_magic_number(FILE* file_pointer, ClassFile* class_file) {

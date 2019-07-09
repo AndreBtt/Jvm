@@ -224,31 +224,31 @@ void invokevirtual(stack<Frame>* frame_stack) {
             frame_stack->top().operand_stack.pop();
 
             switch (variable.type) {
-                case VariableType::BOOLEAN:
+                case BOOLEAN:
                     printf("%s", variable.data.v_boolean == 0 ? "false" : "true");
                     break;
-                case VariableType::BYTE:
+                case BYTE:
                     printf("%d", variable.data.v_byte);
                     break;
-                case VariableType::CHAR:
+                case CHAR:
                     printf("%c", variable.data.v_char);
                     break;
-                case VariableType::SHORT:
+                case SHORT:
                     printf("%d", variable.data.v_short);
                     break;
-                case VariableType::INT:
+                case INT:
                     printf("%d", variable.data.v_int);
                     break;
-                case VariableType::DOUBLE:
+                case DOUBLE:
                     printf("%f", variable.data.v_double);
                     break;
-                case VariableType::FLOAT:
+                case FLOAT:
                     printf("%f", variable.data.v_float);
                     break;
-                case VariableType::LONG:
+                case LONG:
                     printf("%lld", (long long) variable.data.v_long);
                     break;
-                case VariableType::STRINGREF:
+                case REFERENCE:
                     printf("%s", variable.data.v_string);
                     break;
                 default:
@@ -467,7 +467,7 @@ void ldc(stack<Frame>* frame_stack) {
         }
 
         variable.data.v_string = (char*) malloc(sizeof(char) * (utf8_string.size() + 1));
-        variable.type = STRINGREF;
+        variable.type = REFERENCE;
         for(int i = 0; i < utf8_string.size(); i++) {
             variable.data.v_string[i] = char(utf8_string[i]);
         }
@@ -2205,9 +2205,53 @@ void putstatic(stack<Frame>* frame_stack) {
 }
 
 void getfield(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "getfield nao implementado" << std::endl;
-    exit(1);
+    Frame curr_frame = frame_stack->top();
+
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    uint16_t field_index = (byte1 << 8) | byte2;
+
+    Constant_pool_variables cp_field = constant_pool[field_index];
+
+    FieldRefInfo field_ref = cp_field.info.field_ref_info;
+
+    string class_name = get_constant_pool_element(constant_pool, field_ref.class_index);
+
+    Constant_pool_variables cp_name_and_type = constant_pool[field_ref.name_and_type_index];
+
+    NameAndTypeInfo field_name_and_type = cp_name_and_type.info.name_and_type_info;
+
+    string field_name = get_constant_pool_element(constant_pool, field_name_and_type.name_index);
+    string field_descriptor = get_constant_pool_element(constant_pool, field_name_and_type.descriptor_index);
+
+    Variable object_variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    ClassFile *object = object_variable.data.v_class_file;
+
+    Variable field_var = object->static_fields[field_name];
+    switch (field_var.type) {
+        case BOOLEAN:
+            field_var.type = BOOLEAN;
+            break;
+        case BYTE:
+            field_var.type = BYTE;
+            break;
+        case SHORT:
+            field_var.type = SHORT;
+            break;
+        case INT:
+            field_var.type = INT;
+            break;
+        default:
+            break;
+    }
+    
+    frame_stack->top().operand_stack.push(field_var);
+
+    frame_stack->top().pc += 3;
 }
 
 void putfield(stack<Frame>* frame_stack) {
@@ -2437,7 +2481,7 @@ void new_instruction(stack<Frame>* frame_stack) {
 
         Variable class_ref;
         class_ref.data.v_class_file = class_file;
-        class_ref.type = CLASSREF;
+        class_ref.type = REFERENCE;
         frame_stack->top().operand_stack.push(class_ref);
     }
 
@@ -2513,7 +2557,7 @@ void newarray(stack<Frame>* frame_stack) {
     }
     
     Variable array_ref;
-    array_ref.type = ARRAYREF;
+    array_ref.type = REFERENCE;
     array_ref.data.v_array = array;
     
     frame_stack->top().operand_stack.push(array_ref);
@@ -2540,7 +2584,7 @@ void anewarray(stack<Frame>* frame_stack) {
     string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
 
     Variable array_ref;
-    array_ref.type = ARRAYREF;
+    array_ref.type = REFERENCE;
     array_ref.data.v_array = new Array(REFERENCE);
     
     Variable null_value;
@@ -2588,67 +2632,67 @@ void multianewarray(stack<Frame>* frame_stack) {
     std::cout << "multianewarray nao implementado" << std::endl;
     exit(1);
 
-    Frame curr_frame = frame_stack->top();
+    // Frame curr_frame = frame_stack->top();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    // std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
 
-    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
-    u1 dimensions = curr_frame.get_method_code(curr_frame.pc + 3);
+    // u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    // u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    // u1 dimensions = curr_frame.get_method_code(curr_frame.pc + 3);
 
-    uint16_t class_index = (byte1 << 8) | byte2;
-    Constant_pool_variables cp_class = constant_pool[class_index];
+    // uint16_t class_index = (byte1 << 8) | byte2;
+    // Constant_pool_variables cp_class = constant_pool[class_index];
 
-    ClassInfo class_info = cp_class.info.class_info;
-    string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
+    // ClassInfo class_info = cp_class.info.class_info;
+    // string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
     
-    VariableType type;
-    int i = 0;
-    while (class_name[i] == '[') i++;
+    // VariableType type;
+    // int i = 0;
+    // while (class_name[i] == '[') i++;
     
-    string multi_array_type = class_name.substr(i+1, class_name.size()-i-2);
+    // string multi_array_type = class_name.substr(i+1, class_name.size()-i-2);
     
-    switch (class_name[i]) {
-        case 'L':
-            cout << "multianewarray do tipo referencia nao implementado" << endl;
-            exit(1);
-            break;
-        case 'B':
-            type = BYTE;
-            break;
-        case 'C':
-            type = CHAR;
-            break;
-        case 'D':
-            type = DOUBLE;
-            break;
-        case 'F':
-            type = FLOAT;
-            break;
-        case 'I':
-            type = INT;
-            break;
-        case 'J':
-            type = LONG;
-            break;
-        case 'S':
-            type = SHORT;
-            break;
-        case 'Z':
-            type = BOOLEAN;
-            break;
-    }
+    // switch (class_name[i]) {
+    //     case 'L':
+    //         cout << "multianewarray do tipo referencia nao implementado" << endl;
+    //         exit(1);
+    //         break;
+    //     case 'B':
+    //         type = BYTE;
+    //         break;
+    //     case 'C':
+    //         type = CHAR;
+    //         break;
+    //     case 'D':
+    //         type = DOUBLE;
+    //         break;
+    //     case 'F':
+    //         type = FLOAT;
+    //         break;
+    //     case 'I':
+    //         type = INT;
+    //         break;
+    //     case 'J':
+    //         type = LONG;
+    //         break;
+    //     case 'S':
+    //         type = SHORT;
+    //         break;
+    //     case 'Z':
+    //         type = BOOLEAN;
+    //         break;
+    // }
     
-    stack<int> count;
-    for (int i = 0; i < dimensions; i++) {
-        Variable dim_length = frame_stack->top().operand_stack.top();
-        frame_stack->top().operand_stack.pop();
-        count.push(dim_length.data.v_int);
-    }
+    // stack<int> count;
+    // for (int i = 0; i < dimensions; i++) {
+    //     Variable dim_length = frame_stack->top().operand_stack.top();
+    //     frame_stack->top().operand_stack.pop();
+    //     count.push(dim_length.data.v_int);
+    // }
     
-    Array *array = new Array((dimensions > 1) ? ARRAYREF : type);
+    // Array *array = new Array((dimensions > 1) ? ARRAYREF : type);
 
-    // put elements in array
+    // // put elements in array
 }
 
 void iaload(stack<Frame>* frame_stack) {
@@ -2816,7 +2860,7 @@ void aastore(stack<Frame>* frame_stack) {
 
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
-    
+
     array_ref.data.v_array->elements[index.data.v_int] = variable;
 
     frame_stack->top().pc += 1;  

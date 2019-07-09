@@ -40,9 +40,6 @@ enum VariableType {
     LONG,
     DOUBLE,
     RETURN_ADDR,
-    CLASSREF,
-    STRINGREF,
-    ARRAYREF,
     REFERENCE
 };
 
