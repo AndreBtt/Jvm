@@ -22,7 +22,18 @@ int main(int argc, char* argv[]) {
         }        
     }
 
-    ClassFile* class_file = build_class_file(string(file_path));
+    std::string file_name_str(file_path);
+    const size_t last_slash_idx = file_name_str.find_last_of("\\/");
+    if (std::string::npos != last_slash_idx) {
+        file_name_str.erase(0, last_slash_idx + 1);
+    }
+    // Remove extension if present.
+    const size_t period_idx = file_name_str.rfind('.');
+    if (std::string::npos != period_idx) {
+        file_name_str.erase(period_idx);
+    } 
+
+    ClassFile* class_file = build_class_file(string(file_name_str));
 
     // //botar isso aqui em outro lugar
     // {

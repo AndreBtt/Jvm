@@ -1,6 +1,7 @@
 #pragma once
 
 #include "frame.hpp"
+#include "class_loader.hpp"
 
 #include <stack>
 #include <algorithm>

@@ -2,6 +2,8 @@
 
 ClassFile* build_class_file(string class_path) {
     
+    class_path += ".class";
+    
     FILE* file_pointer = fopen(class_path.c_str(), "rb");
     if(file_pointer == NULL) {
         cerr << "A classe " << class_path << " nao foi encontrada!" << endl;
