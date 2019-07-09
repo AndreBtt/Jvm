@@ -2181,8 +2181,11 @@ void invokestatic(stack<Frame>* frame_stack) {
     vector<Variable> args;
     for (int i = 0; i < args_count; i++) {
         Variable variable = frame_stack->top().operand_stack.top();
-        frame_stack->top().operand_stack.pop(); 
+        frame_stack->top().operand_stack.pop();
         args.push_back(variable);
+
+        // simulate a padding
+        if(variable.type == DOUBLE || variable.type == LONG) i++;
     }
 
     // update before put the new Frame
