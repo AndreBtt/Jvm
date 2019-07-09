@@ -156,3 +156,21 @@ string get_constant_pool_element(vector<Constant_pool_variables> constant_pool, 
         break;
     }
 }
+
+bool find_field(ClassFile* class_file, string field_name) {
+    
+    vector <FieldInfo> fields = class_file->fields;
+
+    for (int i = 0; i < class_file->fields_count; i++) {
+        FieldInfo field = fields[i];
+        u2 static_flag = 0x0008;
+        u2 final_flag = 0x0010;
+        
+        if ((field.access_flags & static_flag) != 0 && (field.access_flags & final_flag) == 0) {
+            string curr_field_name = get_constant_pool_element(class_file->constant_pool, field.name_index);
+            if(curr_field_name == field_name) return true;
+        }
+    }
+    
+    return false;
+}

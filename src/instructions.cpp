@@ -70,36 +70,7 @@ void dstore_3(stack<Frame>* frame_stack) {
     frame_stack->top().pc += 1;
 }
 
-void getstatic(stack<Frame>* frame_stack) {
-    Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
-
-    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
-    uint16_t field_index = (byte1 << 8) | byte2;
-
-    Constant_pool_variables cp_field = constant_pool[field_index];
-
-    FieldRefInfo field_ref = cp_field.info.field_ref_info;
-
-    string class_name = get_constant_pool_element(constant_pool, field_ref.class_index);
-
-    Constant_pool_variables cp_name_and_type = constant_pool[field_ref.name_and_type_index];
-
-    NameAndTypeInfo field_name_and_type = cp_name_and_type.info.name_and_type_info;
-
-    string field_name = get_constant_pool_element(constant_pool, field_name_and_type.name_index);
-    string field_descriptor = get_constant_pool_element(constant_pool, field_name_and_type.descriptor_index);
-
-    if (class_name == "java/lang/System" && field_descriptor == "Ljava/io/PrintStream;" ) {
-        frame_stack->top().pc += 3;
-        return;
-    }
-    
-    cout << "getstatic nao implementado totalmente" << endl;
-    exit(1);
-}
 
 void dload(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
@@ -2113,10 +2084,124 @@ void if_acmpne(stack<Frame>* frame_stack) {
     exit(1);
 }
 
+void getstatic(stack<Frame>* frame_stack) {
+    Frame curr_frame = frame_stack->top();
+
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    uint16_t field_index = (byte1 << 8) | byte2;
+
+    Constant_pool_variables cp_field = constant_pool[field_index];
+
+    FieldRefInfo field_ref = cp_field.info.field_ref_info;
+
+    string class_name = get_constant_pool_element(constant_pool, field_ref.class_index);
+
+    Constant_pool_variables cp_name_and_type = constant_pool[field_ref.name_and_type_index];
+
+    NameAndTypeInfo field_name_and_type = cp_name_and_type.info.name_and_type_info;
+
+    string field_name = get_constant_pool_element(constant_pool, field_name_and_type.name_index);
+    string field_descriptor = get_constant_pool_element(constant_pool, field_name_and_type.descriptor_index);
+
+    if (class_name == "java/lang/System" && field_descriptor == "Ljava/io/PrintStream;" ) {
+        frame_stack->top().pc += 3;
+        return;
+    }
+    
+    ClassFile *class_run_file = build_class_file(class_name);
+
+    while (class_run_file != NULL) {
+        if (find_field(class_run_file, field_name) == false) {
+            cout << "SE nao achar o field nao sei oq fazer" << endl;
+            exit(1);
+        } else {
+            break;
+        }
+    }
+
+
+    Variable static_var = class_run_file->static_fields[field_name];
+    
+    switch (static_var.type) {
+        case BOOLEAN:
+            static_var.type = BOOLEAN;
+            break;
+        case BYTE:
+            static_var.type = BYTE;
+            break;
+        case SHORT:
+            static_var.type = SHORT;
+            break;
+        case INT:
+            static_var.type = INT;
+            break;
+        default:
+            break;
+    }
+    
+    frame_stack->top().operand_stack.push(static_var);
+
+    frame_stack->top().pc += 3;
+}
+
 void putstatic(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "putstatic nao implementado" << std::endl;
-    exit(1);
+
+    Frame curr_frame = frame_stack->top();
+
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    uint16_t field_index = (byte1 << 8) | byte2;
+
+    Constant_pool_variables cp_field = constant_pool[field_index];
+
+    FieldRefInfo field_ref = cp_field.info.field_ref_info;
+
+    string class_name = get_constant_pool_element(constant_pool, field_ref.class_index);
+
+    Constant_pool_variables cp_name_and_type = constant_pool[field_ref.name_and_type_index];
+
+    NameAndTypeInfo field_name_and_type = cp_name_and_type.info.name_and_type_info;
+
+    string field_name = get_constant_pool_element(constant_pool, field_name_and_type.name_index);
+    string field_descriptor = get_constant_pool_element(constant_pool, field_name_and_type.descriptor_index);
+
+    ClassFile *class_run_file = build_class_file(class_name);
+
+    while (class_run_file != NULL) {
+        if (find_field(class_run_file, field_name) == false) {
+            cout << "SE nao achar o field nao sei oq fazer" << endl;
+            exit(1);
+        } else {
+            break;
+        }
+    }
+
+    Variable top_var = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    switch (field_descriptor[0]) {
+        case 'B':
+            top_var.type = BYTE;
+            break;
+        case 'C':
+            top_var.type = CHAR;
+            break;
+        case 'S':
+            top_var.type = SHORT;
+            break;
+        case 'Z':
+            top_var.type = BOOLEAN;
+            break;
+    }
+
+    class_run_file->static_fields[field_name] = top_var;
+
+    frame_stack->top().pc += 3;
 }
 
 void getfield(stack<Frame>* frame_stack) {
@@ -2126,9 +2211,53 @@ void getfield(stack<Frame>* frame_stack) {
 }
 
 void putfield(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "putfield nao implementado" << std::endl;
-    exit(1);
+    Frame curr_frame = frame_stack->top();
+
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    uint16_t field_index = (byte1 << 8) | byte2;
+
+    Constant_pool_variables cp_field = constant_pool[field_index];
+
+    FieldRefInfo field_ref = cp_field.info.field_ref_info;
+
+    string class_name = get_constant_pool_element(constant_pool, field_ref.class_index);
+
+    Constant_pool_variables cp_name_and_type = constant_pool[field_ref.name_and_type_index];
+
+    NameAndTypeInfo field_name_and_type = cp_name_and_type.info.name_and_type_info;
+
+    string field_name = get_constant_pool_element(constant_pool, field_name_and_type.name_index);
+    string field_descriptor = get_constant_pool_element(constant_pool, field_name_and_type.descriptor_index);
+
+    Variable insert_variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    switch (field_descriptor[0]) {
+        case 'B':
+            insert_variable.type = BYTE;
+            break;
+        case 'C':
+            insert_variable.type = CHAR;
+            break;
+        case 'S':
+            insert_variable.type = SHORT;
+            break;
+        case 'Z':
+            insert_variable.type = BOOLEAN;
+            break;
+    }
+
+    Variable object_variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    ClassFile *object = object_variable.data.v_class_file;
+
+    object->static_fields[field_name] = insert_variable;
+
+    frame_stack->top().pc += 3;
 }
 
 void invokespecial(stack<Frame>* frame_stack) {
@@ -2201,24 +2330,11 @@ void invokespecial(stack<Frame>* frame_stack) {
 
     reverse(args.begin(), args.end());
 
-    // ClassFile *class_file = object_variable.data.v_class_file;
+    ClassFile *class_file = object_variable.data.v_class_file;
 
-    display::class_file(*object_variable.data.v_class_file);
+    frame_stack->top().pc += 3;
 
-    exit(1);
-
-    // Frame *newFrame = new Frame(instance, classRuntime, methodName, methodDescriptor, args);
-
-    // // se a stack frame mudou, é porque teve <clinit> adicionado, então terminar a execução da instrução para eles serem executados.
-    // if (stackFrame.getTopFrame() != topFrame) {
-    //     topFrame->setOperandStackFromBackup(operandStackBackup);
-    //     delete newFrame;
-    //     return;
-    // }
-
-    // stackFrame.addFrame(newFrame);
-
-    // topFrame->pc += 3;
+    frame_stack->push(Frame(ClassRuntime(*class_file), method_name, method_descriptor, args));
 }
 
 void invokestatic(stack<Frame>* frame_stack) {
@@ -2406,9 +2522,37 @@ void newarray(stack<Frame>* frame_stack) {
 }
 
 void anewarray(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "anewarray nao implementado" << std::endl;
-    exit(1);
+    Frame curr_frame = frame_stack->top();
+    
+    Variable count = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+
+    uint16_t class_index = (byte1 << 8) | byte2;
+
+    Constant_pool_variables cp_class = constant_pool[class_index];
+    
+    ClassInfo class_info = cp_class.info.class_info;
+    string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
+
+    Variable array_ref;
+    array_ref.type = ARRAYREF;
+    array_ref.data.v_array = new Array(REFERENCE);
+    
+    Variable null_value;
+    null_value.type = REFERENCE;
+    null_value.data.v_array = NULL;
+    for (int i = 0; i < count.data.v_int; i++) {
+        array_ref.data.v_array->elements.push_back(null_value);
+    }
+
+    frame_stack->top().operand_stack.push(array_ref);
+
+    frame_stack->top().pc += 3;
 }
 
 void arraylength(stack<Frame>* frame_stack) {

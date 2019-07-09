@@ -4,6 +4,7 @@
 #include <vector>
 #include <stdio.h>
 #include <string>
+#include <map>
 
 using namespace std;
 
@@ -41,7 +42,8 @@ enum VariableType {
     RETURN_ADDR,
     CLASSREF,
     STRINGREF,
-    ARRAYREF
+    ARRAYREF,
+    REFERENCE
 };
 
 struct Array {
@@ -232,4 +234,7 @@ struct ClassFile {
     
     u2 attributes_count;
     vector<AttributeInfo> attributes;
+
+    // just for engine
+    map<string, Variable> static_fields;
 };
