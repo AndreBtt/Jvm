@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types.hpp"
-#include "class_file.hpp"
 #include "class_run_time.hpp"
 #include "instructions.hpp"
 

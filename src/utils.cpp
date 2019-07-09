@@ -1,7 +1,8 @@
 #include "utils.hpp"
 
-std::string format_UTF8(u2 utf8_length, u1 *utf8_bytes) {
-    std::string formated_string = "";
+
+string format_UTF8(u2 utf8_length, u1 *utf8_bytes) {
+    string formated_string = "";
 
 	for(int i = 0; i < utf8_length; i++){
         if (!(utf8_bytes[i] & 0x80)) { 
@@ -31,12 +32,12 @@ std::string format_UTF8(u2 utf8_length, u1 *utf8_bytes) {
 
 void check_magic_number(u4 magic_number) {
     if(magic_number != 0xcafebabe) {
-        std::cout << "missing cafe babe" << std::endl;
+        cout << "missing cafe babe" << endl;
         exit(1);
     }
 }
 
-std::string get_constant_pool_element(std::vector<Constant_pool_variables> constant_pool, u2 index) {
+string get_constant_pool_element(vector<Constant_pool_variables> constant_pool, u2 index) {
     u2 tag  = constant_pool[index].tag;
 
     switch (tag) {
@@ -54,8 +55,8 @@ std::string get_constant_pool_element(std::vector<Constant_pool_variables> const
             FieldRefInfo field_ref_info = constant_pool[index].info.field_ref_info;
             NameAndTypeInfo name_and_type_info = constant_pool[field_ref_info.name_and_type_index].info.name_and_type_info;
             
-            std::string class_name = get_constant_pool_element(constant_pool, field_ref_info.class_index);
-            std::string name = get_constant_pool_element(constant_pool, name_and_type_info.name_index);
+            string class_name = get_constant_pool_element(constant_pool, field_ref_info.class_index);
+            string name = get_constant_pool_element(constant_pool, name_and_type_info.name_index);
             
             return class_name + "." + name;
         }
@@ -66,8 +67,8 @@ std::string get_constant_pool_element(std::vector<Constant_pool_variables> const
             MethodRefInfo method_ref_info = constant_pool[index].info.method_ref_info;
             NameAndTypeInfo name_and_type_info = constant_pool[method_ref_info.name_and_type_index].info.name_and_type_info;
             
-            std::string class_name = get_constant_pool_element(constant_pool, method_ref_info.class_index);
-            std::string name = get_constant_pool_element(constant_pool, name_and_type_info.name_index);
+            string class_name = get_constant_pool_element(constant_pool, method_ref_info.class_index);
+            string name = get_constant_pool_element(constant_pool, name_and_type_info.name_index);
             
             return class_name + "." + name;
         }
@@ -78,8 +79,8 @@ std::string get_constant_pool_element(std::vector<Constant_pool_variables> const
             InterfaceMethodRefInfo interface_method_ref_info = constant_pool[index].info.interface_method_ref_info;
             NameAndTypeInfo name_and_type_info = constant_pool[interface_method_ref_info.name_and_type_index].info.name_and_type_info;
             
-            std::string class_name = get_constant_pool_element(constant_pool, interface_method_ref_info.class_index);
-            std::string name = get_constant_pool_element(constant_pool, name_and_type_info.name_index);
+            string class_name = get_constant_pool_element(constant_pool, interface_method_ref_info.class_index);
+            string name = get_constant_pool_element(constant_pool, name_and_type_info.name_index);
             
             return class_name + "." + name;
         }
@@ -89,8 +90,8 @@ std::string get_constant_pool_element(std::vector<Constant_pool_variables> const
         {
             NameAndTypeInfo name_and_type_info = constant_pool[index].info.name_and_type_info;
         
-            std::string name = get_constant_pool_element(constant_pool, name_and_type_info.name_index);
-            std::string descriptor = get_constant_pool_element(constant_pool, name_and_type_info.descriptor_index);
+            string name = get_constant_pool_element(constant_pool, name_and_type_info.name_index);
+            string descriptor = get_constant_pool_element(constant_pool, name_and_type_info.descriptor_index);
             
             return name + descriptor;
         }
@@ -115,7 +116,7 @@ std::string get_constant_pool_element(std::vector<Constant_pool_variables> const
         {
             IntegerInfo int_info = constant_pool[index].info.integer_info;
             int32_t number = int_info.bytes;
-            return std::to_string(number);
+            return to_string(number);
         }
         break;
 
@@ -127,7 +128,7 @@ std::string get_constant_pool_element(std::vector<Constant_pool_variables> const
             int32_t m = (e == 0) ? (float_info.bytes & 0x7fffff) << 1 : (float_info.bytes & 0x7fffff) | 0x800000;
             float number = s * m * pow(2, e-150);
             
-            return std::to_string(number);
+            return to_string(number);
         }
         break;
         
@@ -136,7 +137,7 @@ std::string get_constant_pool_element(std::vector<Constant_pool_variables> const
             LongInfo long_info = constant_pool[index].info.long_info;
             int64_t number = ((int64_t) long_info.high_bytes << 32) + long_info.low_bytes;
             
-            return std::to_string(number);
+            return to_string(number);
         }
         break;
         
@@ -150,7 +151,7 @@ std::string get_constant_pool_element(std::vector<Constant_pool_variables> const
             int64_t m = (e == 0) ? (bytes & 0xfffffffffffffL) << 1 : (bytes & 0xfffffffffffffL) | 0x10000000000000L;
             double number = s * m * pow(2, e-1075);
             
-            return std::to_string(number);
+            return to_string(number);
         }
         break;
     }

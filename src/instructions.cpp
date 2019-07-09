@@ -2133,77 +2133,77 @@ void putfield(stack<Frame>* frame_stack) {
 
 void invokespecial(stack<Frame>* frame_stack) {
 
-    Frame curr_frame = frame_stack->top();
+    // Frame curr_frame = frame_stack->top();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    // std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
 
-    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
-    uint16_t method_index = (byte1 << 8) | byte2;
+    // u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    // u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    // uint16_t method_index = (byte1 << 8) | byte2;
 
-    Constant_pool_variables cp_method = constant_pool[method_index];
+    // Constant_pool_variables cp_method = constant_pool[method_index];
 
-    MethodRefInfo method_info = cp_method.info.method_ref_info;
+    // MethodRefInfo method_info = cp_method.info.method_ref_info;
 
-    string class_name = get_constant_pool_element(constant_pool, method_info.class_index);
+    // string class_name = get_constant_pool_element(constant_pool, method_info.class_index);
 
-    Constant_pool_variables cp_name_and_type = constant_pool[method_info.name_and_type_index];
+    // Constant_pool_variables cp_name_and_type = constant_pool[method_info.name_and_type_index];
 
-    NameAndTypeInfo method_name_and_type = cp_name_and_type.info.name_and_type_info;
+    // NameAndTypeInfo method_name_and_type = cp_name_and_type.info.name_and_type_info;
 
-    string method_name = get_constant_pool_element(constant_pool, method_name_and_type.name_index);
-    string method_descriptor = get_constant_pool_element(constant_pool, method_name_and_type.descriptor_index);
+    // string method_name = get_constant_pool_element(constant_pool, method_name_and_type.name_index);
+    // string method_descriptor = get_constant_pool_element(constant_pool, method_name_and_type.descriptor_index);
 
-    // special cases
-    if ((class_name == "java/lang/Object" || class_name == "java/lang/String") && method_name == "<init>") {
-        if (class_name == "java/lang/String") {
-            frame_stack->top().operand_stack.pop();
-        }
+    // // special cases
+    // if ((class_name == "java/lang/Object" || class_name == "java/lang/String") && method_name == "<init>") {
+    //     if (class_name == "java/lang/String") {
+    //         frame_stack->top().operand_stack.pop();
+    //     }
 
-        frame_stack->top().pc += 3;        
-        return;
-    }
+    //     frame_stack->top().pc += 3;        
+    //     return;
+    // }
     
     
-    uint16_t args_count = 0; 
-    uint16_t i = 1; // skip '('
-    while (method_descriptor[i] != ')') {
-        char base_type = method_descriptor[i];
-        if (base_type == 'D' || base_type == 'J') {
-            args_count += 2;
-        } else if (base_type == 'L') {
-            args_count++;
-            while (method_descriptor[++i] != ';');
-        } else if (base_type == '[') {
-            args_count++;
-            while (method_descriptor[++i] == '[');
-            if (method_descriptor[i] == 'L') while (method_descriptor[++i] != ';');
-        } else {
-            args_count++;
-        }
-        i++;
-    }
+    // uint16_t args_count = 0; 
+    // uint16_t i = 1; // skip '('
+    // while (method_descriptor[i] != ')') {
+    //     char base_type = method_descriptor[i];
+    //     if (base_type == 'D' || base_type == 'J') {
+    //         args_count += 2;
+    //     } else if (base_type == 'L') {
+    //         args_count++;
+    //         while (method_descriptor[++i] != ';');
+    //     } else if (base_type == '[') {
+    //         args_count++;
+    //         while (method_descriptor[++i] == '[');
+    //         if (method_descriptor[i] == 'L') while (method_descriptor[++i] != ';');
+    //     } else {
+    //         args_count++;
+    //     }
+    //     i++;
+    // }
 
-    vector<Variable> args;
-    for (int i = 0; i < args_count; i++) {
-        Variable variable = frame_stack->top().operand_stack.top();
-        frame_stack->top().operand_stack.pop();
-        args.push_back(variable);
+    // vector<Variable> args;
+    // for (int i = 0; i < args_count; i++) {
+    //     Variable variable = frame_stack->top().operand_stack.top();
+    //     frame_stack->top().operand_stack.pop();
+    //     args.push_back(variable);
 
-        // simulate a padding
-        if(variable.type == DOUBLE || variable.type == LONG) i++;
-    }
+    //     // simulate a padding
+    //     if(variable.type == DOUBLE || variable.type == LONG) i++;
+    // }
 
-    Variable object_variable = frame_stack->top().operand_stack.top();
-    frame_stack->top().operand_stack.pop();
+    // Variable object_variable = frame_stack->top().operand_stack.top();
+    // frame_stack->top().operand_stack.pop();
 
-    args.push_back(object_variable);
+    // args.push_back(object_variable);
 
-    reverse(args.begin(), args.end());
+    // reverse(args.begin(), args.end());
 
-    Object *object = object_variable.data.v_class_file;
+    // Object *object = object_variable.data.v_class_file;
 
-    display::class_file(*object_variable.data.v_class_file);
+    // display::class_file(*object_variable.data.v_class_file);
 
     exit(1);
 
@@ -2298,35 +2298,35 @@ void invokedynamic(stack<Frame>* frame_stack) {
 }
 
 void new_instruction(stack<Frame>* frame_stack) {
-    Frame curr_frame = frame_stack->top();
+    // Frame curr_frame = frame_stack->top();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    // std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
 
-    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    // u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    // u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
 
-    uint16_t class_index = (byte1 << 8) | byte2;
-    Constant_pool_variables cp_class = constant_pool[class_index];
+    // uint16_t class_index = (byte1 << 8) | byte2;
+    // Constant_pool_variables cp_class = constant_pool[class_index];
     
-    ClassInfo class_info = cp_class.info.class_info;
-    string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
+    // ClassInfo class_info = cp_class.info.class_info;
+    // string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
 
-    if (class_name == "java/lang/String") {
-        cout << "precisa implementar dentro de new uma instancia para string" << endl;
-        exit(1);
-        // object = new StringObject();
-    } else {
-        ClassFile *class_file = new ClassFile();
+    // if (class_name == "java/lang/String") {
+    //     cout << "precisa implementar dentro de new uma instancia para string" << endl;
+    //     exit(1);
+    //     // object = new StringObject();
+    // } else {
+    //     ClassFile *class_file = new ClassFile();
 
-        build_class(class_name, class_file);
+    //     build_class(class_name, class_file);
 
-        Variable class_ref;
-        class_ref.data.v_class_file = class_file;
-        class_ref.type = CLASSREF;
-        frame_stack->top().operand_stack.push(class_ref);
-    }
+    //     Variable class_ref;
+    //     class_ref.data.v_class_file = class_file;
+    //     class_ref.type = CLASSREF;
+    //     frame_stack->top().operand_stack.push(class_ref);
+    // }
 
-    frame_stack->top().pc += 3;    
+    // frame_stack->top().pc += 3;    
 }
 
 void newarray(stack<Frame>* frame_stack) {

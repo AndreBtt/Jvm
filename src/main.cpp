@@ -1,6 +1,6 @@
-#include "class_file.hpp"
 #include "display.hpp"
 #include "engine.hpp"
+#include "class_loader.hpp"
 
 int main(int argc, char* argv[]) {
     if(argc < 2) {
@@ -9,11 +9,6 @@ int main(int argc, char* argv[]) {
     }
 
     char* file_name = argv[1];
-    FILE* file_pointer = fopen(file_name, "rb");
-    if(file_pointer == NULL) {
-        perror("[FALHA] O seguinte erro ocorreu ao tentar abrir o arquivo");
-        exit(1);
-    }
 
     bool interpretador = false;
     bool exibidor = false;
@@ -30,69 +25,37 @@ int main(int argc, char* argv[]) {
         }
     }
 
-    // this variable holds all the information about .class file
-    ClassFile class_file;
+    ClassFile* class_file = build_class_file(string(file_name));
 
-    // set magic number and check if it is 0xcafebabe
-    class_file.set_magic_number(file_pointer);
-
-    // set versions
-    class_file.set_version(file_pointer);
-
-    // set constant pool length and create it
-    class_file.set_constant_pool(file_pointer);
-
-    // set access flags
-    class_file.set_access_flags(file_pointer);
-
-    // set this class
-    class_file.set_this_class(file_pointer);
-
-    // set super class
-    class_file.set_super_class(file_pointer);
-
-    // set interface size and create it
-    class_file.set_interfaces(file_pointer);
-
-    // set fields size and create it
-    class_file.set_fields(file_pointer);
-
-    // set methods size and create it
-    class_file.set_methods(file_pointer);
-
-    // set attributes size and create it
-    class_file.set_attributes(file_pointer);
-
-    //botar isso aqui em outro lugar
-    {
-        // Remove directory if present.
-        // Do this before extension removal incase directory has a period character.
-        std::string file_name_str(file_name);
-        const size_t last_slash_idx = file_name_str.find_last_of("\\/");
-        if (std::string::npos != last_slash_idx) {
-            file_name_str.erase(0, last_slash_idx + 1);
-        }
-        // Remove extension if present.
-        const size_t period_idx = file_name_str.rfind('.');
-        if (std::string::npos != period_idx) {
-            file_name_str.erase(period_idx);
-        }   
-        std::string class_file_name = get_constant_pool_element(class_file.constant_pool, class_file.this_class);
-        if (file_name_str != class_file_name) {
-            std::cerr << std::endl << "Nome do arquivo ( " << file_name_str << " ) diferente do nome da classe ( " << class_file_name << " )" << std::endl << std::endl;
-            exit(1);
-        }
+    // //botar isso aqui em outro lugar
+    // {
+    //     // Remove directory if present.
+    //     // Do this before extension removal incase directory has a period character.
+    //     std::string file_name_str(file_name);
+    //     const size_t last_slash_idx = file_name_str.find_last_of("\\/");
+    //     if (std::string::npos != last_slash_idx) {
+    //         file_name_str.erase(0, last_slash_idx + 1);
+    //     }
+    //     // Remove extension if present.
+    //     const size_t period_idx = file_name_str.rfind('.');
+    //     if (std::string::npos != period_idx) {
+    //         file_name_str.erase(period_idx);
+    //     }   
+    //     std::string class_file_name = get_constant_pool_element(class_file->constant_pool, class_file->this_class);
+    //     if (file_name_str != class_file_name) {
+    //         std::cerr << std::endl << "Nome do arquivo ( " << file_name_str << " ) diferente do nome da classe ( " << class_file_name << " )" << std::endl << std::endl;
+    //         exit(1);
+    //     }
     
-    }
+    // }
 
     if(exibidor){
-        display::class_file(class_file);
+        display::class_file(*class_file);
     }
 
     if(interpretador) {
         Engine engine;
-        engine.start(class_file);
+        engine.start(*class_file);
     }
 
-    fclose(file_pointer);
 }

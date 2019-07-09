@@ -1,28 +1,70 @@
-#include "class_file.hpp"
-#include "reader.hpp"
-#include "utils.hpp"
-#include "attribute.hpp"
+#include "class_loader.hpp"
 
-void ClassFile::set_magic_number(FILE* file_pointer) {
-    magic_number = Reader::read_u4(file_pointer);
-    check_magic_number(magic_number);
+ClassFile* build_class_file(string class_path) {
+    FILE* file_pointer = fopen(class_path.c_str(), "rb");
+    if(file_pointer == NULL) {
+        cerr << "A classe " << class_path << " nao foi encontrada!" << endl;
+        exit(1);
+    }
+
+    // this variable holds all the information about .class file
+    ClassFile *class_file = new ClassFile();
+
+    // set magic number and check if it is 0xcafebabe
+    set_magic_number(file_pointer, class_file);
+
+    // set versions
+    set_version(file_pointer, class_file);
+
+    // set constant pool length and create it
+    set_constant_pool(file_pointer, class_file);
+
+    // set access flags
+    set_access_flags(file_pointer, class_file);
+
+    // set this class
+    set_this_class(file_pointer, class_file);
+
+    // set super class
+    set_super_class(file_pointer, class_file);
+
+    // set interface size and create it
+    set_interfaces(file_pointer, class_file);
+
+    // set fields size and create it
+    set_fields(file_pointer, class_file);
+
+    // set methods size and create it
+    set_methods(file_pointer, class_file);
+
+    // set attributes size and create it
+    set_attributes(file_pointer, class_file);
+
+    fclose(file_pointer);
+
+    return class_file;
 }
 
-void ClassFile::set_version(FILE* file_pointer) {
+void set_magic_number(FILE* file_pointer, ClassFile* class_file) {
+    class_file->magic_number = Reader::read_u4(file_pointer);
+    check_magic_number(class_file->magic_number);
+}
+
+void set_version(FILE* file_pointer, ClassFile* class_file) {
     // get min version
-    min_version = Reader::read_u2(file_pointer);
+    class_file->min_version = Reader::read_u2(file_pointer);
     
     // get max version
-    major_version = Reader::read_u2(file_pointer);
+    class_file->major_version = Reader::read_u2(file_pointer);
 }
 
-void ClassFile::set_constant_pool(FILE* file_pointer) {
+void set_constant_pool(FILE* file_pointer, ClassFile* class_file) {
     // get constant pool length
-    constant_pool_length = Reader::read_u2(file_pointer);
-    constant_pool = std::vector<Constant_pool_variables>(constant_pool_length);
+    class_file->constant_pool_length = Reader::read_u2(file_pointer);
+    class_file->constant_pool = std::vector<Constant_pool_variables>(class_file->constant_pool_length);
 
     // create constant pool
-    for(u2 i = 1; i < constant_pool_length; i++) {
+    for(u2 i = 1; i < class_file->constant_pool_length; i++) {
         Constant_pool_variables current_variable;
 
         current_variable.tag = Reader::read_u1(file_pointer);
@@ -90,42 +132,42 @@ void ClassFile::set_constant_pool(FILE* file_pointer) {
                 exit(1);
 		}
 
-        constant_pool[i] = current_variable;
+        class_file->constant_pool[i] = current_variable;
         if(current_variable.tag == CONSTANT_LONG || current_variable.tag == CONSTANT_DOUBLE) i++;
     }
 
 }
 
-void ClassFile::set_access_flags(FILE* file_pointer) {
-    access_flags = Reader::read_u2(file_pointer);
+void set_access_flags(FILE* file_pointer, ClassFile* class_file) {
+    class_file->access_flags = Reader::read_u2(file_pointer);
 }
 
-void ClassFile::set_this_class(FILE* file_pointer) {
-    this_class = Reader::read_u2(file_pointer);
+void set_this_class(FILE* file_pointer, ClassFile* class_file) {
+    class_file->this_class = Reader::read_u2(file_pointer);
 }
 
-void ClassFile::set_super_class(FILE* file_pointer) {
-    super_class = Reader::read_u2(file_pointer);
+void set_super_class(FILE* file_pointer, ClassFile* class_file) {
+    class_file->super_class = Reader::read_u2(file_pointer);
 }
 
-void ClassFile::set_interfaces(FILE* file_pointer) {
+void set_interfaces(FILE* file_pointer, ClassFile* class_file) {
     // get interface size
-    interfaces_count = Reader::read_u2(file_pointer);
+    class_file->interfaces_count = Reader::read_u2(file_pointer);
 
     // create each interface
-    interfaces = std::vector<u2>(interfaces_count);
-    for (u2 i = 0; i < interfaces_count; i++) {
-        interfaces[i] = Reader::read_u2(file_pointer);
+    class_file->interfaces = std::vector<u2>(class_file->interfaces_count);
+    for (u2 i = 0; i < class_file->interfaces_count; i++) {
+        class_file->interfaces[i] = Reader::read_u2(file_pointer);
     }
 }
 
-void ClassFile::set_fields(FILE* file_pointer) {
+void set_fields(FILE* file_pointer, ClassFile* class_file) {
     // get field size
-    fields_count = Reader::read_u2(file_pointer);
-    fields = std::vector<FieldInfo>(fields_count);
+    class_file->fields_count = Reader::read_u2(file_pointer);
+    class_file->fields = std::vector<FieldInfo>(class_file->fields_count);
 
     // create each field
-    for (u2 i = 0; i < fields_count; i++) {
+    for (u2 i = 0; i < class_file->fields_count; i++) {
         FieldInfo field;
         
         field.access_flags = Reader::read_u2(file_pointer);
@@ -136,20 +178,20 @@ void ClassFile::set_fields(FILE* file_pointer) {
         field.attributes = std::vector<AttributeInfo>(field.attributes_count);
         
         for (u2 j = 0; j < field.attributes_count; j++) {
-            field.attributes[j] = get_attribute_info(file_pointer, constant_pool);
+            field.attributes[j] = get_attribute_info(file_pointer, class_file->constant_pool);
         }
         
-        fields[i] = field;
+        class_file->fields[i] = field;
     }
 }
 
-void ClassFile::set_methods(FILE* file_pointer) {
+void set_methods(FILE* file_pointer, ClassFile* class_file) {
     // get method size
-    methods_count = Reader::read_u2(file_pointer);
-    methods = std::vector<MethodInfo>(methods_count);
+    class_file->methods_count = Reader::read_u2(file_pointer);
+    class_file->methods = std::vector<MethodInfo>(class_file->methods_count);
 
     // create each method
-    for (u2 i = 0; i < methods_count; i++) {
+    for (u2 i = 0; i < class_file->methods_count; i++) {
         MethodInfo method;
         
         method.access_flags = Reader::read_u2(file_pointer);
@@ -160,21 +202,20 @@ void ClassFile::set_methods(FILE* file_pointer) {
         method.attributes = std::vector<AttributeInfo>(method.attributes_count);
         
         for (u2 j = 0; j < method.attributes_count; j++) {
-            method.attributes[j] = get_attribute_info(file_pointer, constant_pool);
+            method.attributes[j] = get_attribute_info(file_pointer, class_file->constant_pool);
         }
         
-        methods[i] = method;
+        class_file->methods[i] = method;
     }
 }
 
-void ClassFile::set_attributes(FILE* file_pointer) {
+void set_attributes(FILE* file_pointer, ClassFile* class_file) {
     // get attributes size
-    attributes_count = Reader::read_u2(file_pointer);
-    attributes = std::vector<AttributeInfo>(attributes_count);
+    class_file->attributes_count = Reader::read_u2(file_pointer);
+    class_file->attributes = std::vector<AttributeInfo>(class_file->attributes_count);
 
     // create each attribute
-    for (u2 i = 0; i < attributes_count; i++) {
-        attributes[i] = get_attribute_info(file_pointer, constant_pool);
+    for (u2 i = 0; i < class_file->attributes_count; i++) {
+        class_file->attributes[i] = get_attribute_info(file_pointer, class_file->constant_pool);
     }
 }
-

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "types.hpp"
-#include "class_file.hpp"
 #include "utils.hpp"
 
 #include <map>

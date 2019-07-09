@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string>
 
+using namespace std;
+
 #define CONSTANT_CLASS 7
 #define CONSTANT_FIELD_REF 9
 #define CONSTANT_METHOD_REF 10
@@ -42,7 +44,7 @@ class Array {
 public:
     Array(VariableType type) : type(type) {}
     VariableType type;
-    std::vector<Variable> elements;
+    vector<Variable> elements;
 };
 
 struct Variable {
@@ -147,25 +149,25 @@ struct LineNumberTable {
 
 struct ExceptionsAttribute {
     u2 number_of_exceptions;
-    std::vector<u2> exception_index_table;
+    vector<u2> exception_index_table;
 };
 
 struct LineNumberTableAttribute {
     u2 attribute_name_index;
     u4 attribute_length;
     u2 line_number_table_length;
-    std::vector<LineNumberTable> line_number_table;
+    vector<LineNumberTable> line_number_table;
 };
 
 struct CodeAttribute {
 	u2 max_stack;
 	u2 max_locals;
 	u4 code_length;
-	std::vector<u1> code;
+	vector<u1> code;
 	u2 exception_table_length;
-    std::vector<ExceptionTable> exception_table;
+    vector<ExceptionTable> exception_table;
     u2 attributes_count;
-    std::vector<AttributeInfo> attributes;
+    vector<AttributeInfo> attributes;
 };
 
 struct SourceFileAttribute {
@@ -192,7 +194,7 @@ struct FieldInfo {
     u2 name_index;
     u2 descriptor_index;
     u2 attributes_count;
-    std::vector<AttributeInfo> attributes;
+    vector<AttributeInfo> attributes;
 };
 
 struct MethodInfo {
@@ -200,6 +202,33 @@ struct MethodInfo {
     u2 name_index;
     u2 descriptor_index;
     u2 attributes_count;
-    std::vector<AttributeInfo> attributes;
+    vector<AttributeInfo> attributes;
 };
 
+struct ClassFile {
+    u4 magic_number;
+
+    u2 min_version;
+    u2 major_version;
+
+    u2 constant_pool_length;
+    vector<Constant_pool_variables> constant_pool;
+    
+    u2 access_flags;
+    
+    u2 this_class;
+    
+    u2 super_class;
+    
+    u2 interfaces_count;
+    vector<u2> interfaces;
+    
+    u2 fields_count;
+    vector<FieldInfo> fields;
+    
+    u2 methods_count;
+    vector<MethodInfo> methods;
+    
+    u2 attributes_count;
+    vector<AttributeInfo> attributes;
+};

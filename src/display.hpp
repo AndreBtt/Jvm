@@ -7,7 +7,6 @@
 #include <math.h>
 #include <map>
 
-#include "class_file.hpp"
 #include "utils.hpp"
 #include "attribute.hpp"
 
