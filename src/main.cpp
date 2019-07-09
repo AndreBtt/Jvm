@@ -8,24 +8,21 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
 
-    char* file_name = argv[1];
+    char* file_path;
 
     bool interpretador = false;
     bool exibidor = false;
 
-    for (size_t optind = 2; optind < argc && argv[optind][0] == '-'; optind++) {
-        switch (argv[optind][1]) {
-            case 'i':
-                interpretador = true;
-            break;
-        
-            case 'e': 
-                exibidor = true;
-            break;
-        }
+    for (size_t optind = 0; optind < argc; optind++) {
+        if (argv[optind][0] == '-') {
+            if(argv[optind][1] == 'i') interpretador = true;
+            if(argv[optind][1] == 'e') exibidor = true; 
+        } else {
+            file_path = argv[optind];
+        }        
     }
 
-    ClassFile* class_file = build_class_file(string(file_name));
+    ClassFile* class_file = build_class_file(string(file_path));
 
     // //botar isso aqui em outro lugar
     // {

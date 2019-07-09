@@ -23,7 +23,11 @@ typedef uint8_t u1;
 typedef uint16_t u2;
 typedef uint32_t u4;
 
+typedef struct ClassFile ClassFile;
+
 typedef struct Variable Variable;
+
+typedef struct AttributeInfo AttributeInfo;
 
 enum VariableType {
     BOOLEAN,
@@ -40,8 +44,7 @@ enum VariableType {
     ARRAYREF
 };
 
-class Array {
-public:
+struct Array {
     Array(VariableType type) : type(type) {}
     VariableType type;
     vector<Variable> elements;
@@ -61,6 +64,7 @@ struct Variable {
         u4 return_address;
         char* v_string;
         Array *v_array;
+        ClassFile *v_class_file;
     } data;
 };
 
@@ -131,9 +135,6 @@ struct Constant_pool_variables {
         Utf8Info utf8_info;
     } info;
 };
-
-// declare here since some attributes will use it inside of their declarations
-typedef struct AttributeInfo AttributeInfo;
 
 struct ExceptionTable {
     u2 start_pc;
