@@ -33,6 +33,7 @@ enum VariableType {
     LONG,
     DOUBLE,
     RETURN_ADDR,
+    CLASSREF,
     STRINGREF,
     ARRAYREF
 };
@@ -56,7 +57,6 @@ struct Variable {
         int64_t v_long;
         double v_double;
         u4 return_address;
-        // Object* object;
         char* v_string;
         Array *v_array;
     } data;

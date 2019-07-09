@@ -246,39 +246,41 @@ void invokevirtual(stack<Frame>* frame_stack) {
     string method_descriptor = get_constant_pool_element(constant_pool, method_name_and_type.descriptor_index);
 
     if (class_name == "java/io/PrintStream" && (method_name == "print" || method_name == "println")) {
-        Variable variable = frame_stack->top().operand_stack.top();
-        frame_stack->top().operand_stack.pop();
+        if (method_descriptor != "()V") {
+            Variable variable = frame_stack->top().operand_stack.top();
+            frame_stack->top().operand_stack.pop();
 
-        switch (variable.type) {
-            case VariableType::BOOLEAN:
-                printf("%s", variable.data.v_boolean == 0 ? "false" : "true");
-                break;
-            case VariableType::BYTE:
-                printf("%d", variable.data.v_byte);
-                break;
-            case VariableType::CHAR:
-                printf("%c", variable.data.v_char);
-                break;
-            case VariableType::SHORT:
-                printf("%d", variable.data.v_short);
-                break;
-            case VariableType::INT:
-                printf("%d", variable.data.v_int);
-                break;
-            case VariableType::DOUBLE:
-                printf("%f", variable.data.v_double);
-                break;
-            case VariableType::FLOAT:
-                printf("%f", variable.data.v_float);
-                break;
-            case VariableType::LONG:
-                printf("%lld", (long long) variable.data.v_long);
-                break;
-            case VariableType::STRINGREF:
-                printf("%s", variable.data.v_string);
-                break;
-            default:
-                cout << "tipo : " << variable.type << endl;
+            switch (variable.type) {
+                case VariableType::BOOLEAN:
+                    printf("%s", variable.data.v_boolean == 0 ? "false" : "true");
+                    break;
+                case VariableType::BYTE:
+                    printf("%d", variable.data.v_byte);
+                    break;
+                case VariableType::CHAR:
+                    printf("%c", variable.data.v_char);
+                    break;
+                case VariableType::SHORT:
+                    printf("%d", variable.data.v_short);
+                    break;
+                case VariableType::INT:
+                    printf("%d", variable.data.v_int);
+                    break;
+                case VariableType::DOUBLE:
+                    printf("%f", variable.data.v_double);
+                    break;
+                case VariableType::FLOAT:
+                    printf("%f", variable.data.v_float);
+                    break;
+                case VariableType::LONG:
+                    printf("%lld", (long long) variable.data.v_long);
+                    break;
+                case VariableType::STRINGREF:
+                    printf("%s", variable.data.v_string);
+                    break;
+                default:
+                    cout << "tipo : " << variable.type << endl;
+            }
         }
 
         if (method_name == "println") printf("\n");
@@ -699,6 +701,7 @@ void fload_3(stack<Frame>* frame_stack) {
 
 void dload_0(stack<Frame>* frame_stack) {
     Variable variable = frame_stack->top().local_variables[0];
+    cout << variable.data.v_double << endl;
     frame_stack->top().operand_stack.push(variable);
 
     frame_stack->top().pc += 1;
@@ -2188,6 +2191,8 @@ void invokestatic(stack<Frame>* frame_stack) {
         if(variable.type == DOUBLE || variable.type == LONG) i++;
     }
 
+    reverse(args.begin(), args.end());
+
     // update before put the new Frame
     frame_stack->top().pc += 3;
 
@@ -2207,9 +2212,37 @@ void invokedynamic(stack<Frame>* frame_stack) {
 }
 
 void new_instruction(stack<Frame>* frame_stack) {
+
     // TODO
     std::cout << "new_instruction nao implementado" << std::endl;
     exit(1);
+
+    // Frame curr_frame = frame_stack->top();
+    
+    // std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+
+    // u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    // u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+
+    // uint16_t class_index = (byte1 << 8) | byte2;
+    // Constant_pool_variables cp_class = constant_pool[class_index];
+    
+    // ClassInfo class_info = cp_class.info.class_info;
+    // string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
+
+    // if (class_name == "java/lang/String") {
+    //     cout << "precisa implementar dentro de new uma instancia para string" << endl;
+    //     exit(1);
+    //     // object = new StringObject();
+    // } else {
+    //     ClassFile class_file = build_class(class_name);
+    //     Variable class_ref;
+    //     class_ref.v_class = class_file;
+    //     class_ref.type = CLASSREF;
+    //     frame_stack->top().operand_stack.push(class_ref);
+    // }
+
+    // frame_stack->top().pc += 3;    
 }
 
 void newarray(stack<Frame>* frame_stack) {
@@ -2327,6 +2360,68 @@ void multianewarray(stack<Frame>* frame_stack) {
     // TODO
     std::cout << "multianewarray nao implementado" << std::endl;
     exit(1);
+
+    Frame curr_frame = frame_stack->top();
+    
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    u1 dimensions = curr_frame.get_method_code(curr_frame.pc + 3);
+
+    uint16_t class_index = (byte1 << 8) | byte2;
+    Constant_pool_variables cp_class = constant_pool[class_index];
+
+    ClassInfo class_info = cp_class.info.class_info;
+    string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
+    
+    VariableType type;
+    int i = 0;
+    while (class_name[i] == '[') i++;
+    
+    string multi_array_type = class_name.substr(i+1, class_name.size()-i-2);
+    
+    switch (class_name[i]) {
+        case 'L':
+            cout << "multianewarray do tipo referencia nao implementado" << endl;
+            exit(1);
+            break;
+        case 'B':
+            type = BYTE;
+            break;
+        case 'C':
+            type = CHAR;
+            break;
+        case 'D':
+            type = DOUBLE;
+            break;
+        case 'F':
+            type = FLOAT;
+            break;
+        case 'I':
+            type = INT;
+            break;
+        case 'J':
+            type = LONG;
+            break;
+        case 'S':
+            type = SHORT;
+            break;
+        case 'Z':
+            type = BOOLEAN;
+            break;
+    }
+    
+    stack<int> count;
+    for (int i = 0; i < dimensions; i++) {
+        Variable dim_length = frame_stack->top().operand_stack.top();
+        frame_stack->top().operand_stack.pop();
+        count.push(dim_length.data.v_int);
+    }
+    
+    Array *array = new Array((dimensions > 1) ? ARRAYREF : type);
+
+    // put elements in array
 }
 
 void iaload(stack<Frame>* frame_stack) {
@@ -2390,15 +2485,27 @@ void aaload(stack<Frame>* frame_stack) {
 }
 
 void baload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "baload nao implementado" << std::endl;
-    exit(1);
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+
+    frame_stack->top().pc += 1;
 }
 
 void caload(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "caload nao implementado" << std::endl;
-    exit(1);
+    Variable index = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+
+    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+
+    frame_stack->top().pc += 1;
 }
 
 void saload(stack<Frame>* frame_stack) {
@@ -2548,19 +2655,17 @@ void sastore(stack<Frame>* frame_stack) {
 }
 
 void dup2(stack<Frame>* frame_stack) {
-    std::cout << "instrucao dup2 nao implementada" << std::endl;
-    exit(1);
-
-    // Variable variable_1 = frame_stack->top().operand_stack.top();
-    // frame_stack->top().operand_stack.pop();
-    // if(variable_1.type == VariableType::LONG || variable_1.type == VariableType::DOUBLE) {
-    //     frame_stack->top().operand_stack.push(variable_1);
-    // } else {
-    //     Variable variable_2 = frame_stack->top().operand_stack.top();
-    //     frame_stack->top().operand_stack.pop();
-    //     frame_stack->top().operand_stack.push(variable_2);
-    //     frame_stack->top().operand_stack.push(variable_1);
-    // }
+    Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+        
+    frame_stack->top().operand_stack.push(variable_2);
+    frame_stack->top().operand_stack.push(variable_1);
+    frame_stack->top().operand_stack.push(variable_2);
+    frame_stack->top().operand_stack.push(variable_1);
+    
+    frame_stack->top().pc += 1;   
 }
 
 void dup2_x1(stack<Frame>* frame_stack) {

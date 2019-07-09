@@ -63,27 +63,27 @@ int main(int argc, char* argv[]) {
     // set attributes size and create it
     class_file.set_attributes(file_pointer);
 
-    // botar isso aqui em outro lugar
-    // {
-    //     // Remove directory if present.
-    //     // Do this before extension removal incase directory has a period character.
-    //     std::string file_name_str(file_name);
-    //     const size_t last_slash_idx = file_name_str.find_last_of("\\/");
-    //     if (std::string::npos != last_slash_idx) {
-    //         file_name_str.erase(0, last_slash_idx + 1);
-    //     }
-    //     // Remove extension if present.
-    //     const size_t period_idx = file_name_str.rfind('.');
-    //     if (std::string::npos != period_idx) {
-    //         file_name_str.erase(period_idx);
-    //     }   
-    //     std::string class_file_name = get_constant_pool_element(class_file.constant_pool, class_file.this_class);
-    //     if (file_name_str != class_file_name) {
-    //         std::cerr << "Nome do arquivo ( " << file_name_str << " ) diferente do nome da classe ( " << class_file_name << " )" << std::endl;
-    //         exit(1);
-    //     }
+    //botar isso aqui em outro lugar
+    {
+        // Remove directory if present.
+        // Do this before extension removal incase directory has a period character.
+        std::string file_name_str(file_name);
+        const size_t last_slash_idx = file_name_str.find_last_of("\\/");
+        if (std::string::npos != last_slash_idx) {
+            file_name_str.erase(0, last_slash_idx + 1);
+        }
+        // Remove extension if present.
+        const size_t period_idx = file_name_str.rfind('.');
+        if (std::string::npos != period_idx) {
+            file_name_str.erase(period_idx);
+        }   
+        std::string class_file_name = get_constant_pool_element(class_file.constant_pool, class_file.this_class);
+        if (file_name_str != class_file_name) {
+            std::cerr << std::endl << "Nome do arquivo ( " << file_name_str << " ) diferente do nome da classe ( " << class_file_name << " )" << std::endl << std::endl;
+            exit(1);
+        }
     
-    // }
+    }
 
     if(exibidor){
         display::class_file(class_file);

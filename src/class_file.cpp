@@ -177,3 +177,4 @@ void ClassFile::set_attributes(FILE* file_pointer) {
         attributes[i] = get_attribute_info(file_pointer, constant_pool);
     }
 }
+

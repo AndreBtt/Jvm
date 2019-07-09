@@ -3,6 +3,7 @@
 #include "frame.hpp"
 
 #include <stack>
+#include <algorithm>
 
 void ldc2_w(stack<Frame>*);
 

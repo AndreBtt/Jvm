@@ -7,7 +7,7 @@
 
 #include "types.hpp"
 
-class ClassFile{
+class ClassFile {
 	public:
 		u4 magic_number;
 

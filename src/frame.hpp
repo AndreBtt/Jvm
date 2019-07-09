@@ -25,7 +25,7 @@ public:
 
 private:
 
-    void get_method_by_name(ClassFile, std::string, std::string);
+    void get_method(ClassFile, std::string, std::string);
     void get_attributes();
 
 };
