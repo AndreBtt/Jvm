@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
         file_name_str.erase(period_idx);
     } 
 
-    ClassFile* class_file = build_class_file(string(file_name_str));
+    ClassRuntime* class_run_time = build_class(string(file_name_str));
 
     // //botar isso aqui em outro lugar
     // {
@@ -58,12 +58,12 @@ int main(int argc, char* argv[]) {
     // }
 
     if(exibidor){
-        display::class_file(*class_file);
+        display::class_file(*class_run_time->class_file);
     }
 
     if(interpretador) {
         Engine engine;
-        engine.start(*class_file);
+        engine.start(class_run_time);
     }
 
 }

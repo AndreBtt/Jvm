@@ -1,21 +1,46 @@
 #include "engine.hpp"
 
-void Engine::start(ClassFile class_file) {
+void Engine::start(ClassRuntime* class_run_time) {
     stack<Frame> frame_stack;
 
     std::vector<Variable> arguments;
 
-    frame_stack.push(Frame(ClassRuntime(class_file), "main", "([Ljava/lang/String;)V", arguments));
+    frame_stack.push(Frame(class_run_time, "main", "([Ljava/lang/String;)V", arguments));
 
     while (frame_stack.size() > 0) {
         Frame curr_frame = frame_stack.top();
         u1 instruction_code = curr_frame.get_method_code(curr_frame.pc);
+
+        
         std::cout << "pc -> " << curr_frame.pc << " code -> " << std::hex << int(instruction_code) << endl;
         // string current_method_name = get_constant_pool_element(curr_frame.class_run_time.class_file.constant_pool, curr_frame.method.name_index);
         // cout << "met -> " << current_method_name << endl;
 
         // std::cout << "tamanho -> " << std::dec << curr_frame.operand_stack.size() << std::endl;
         execute_instruction(&frame_stack, instruction_code);
+
+        // {
+        //     stack<Variable> copia = frame_stack.top().operand_stack;
+        //     vector <string> todas;
+        //     while(copia.size() > 0) {
+        //         auto x = copia.top();
+        //         copia.pop();
+        //         if(x.type == 9 and x.ref_type == STRING) {
+        //             todas.push_back(string(x.data.v_string));
+        //         }
+        //     }
+        //     if(todas.size() > 0) {
+        //         cout << "strings na pilha : " << endl;
+
+        //         for(auto x: todas) {
+        //             cout << x << endl;
+        //         }
+
+        //         cout << "fim das strings na pilha : " << endl;
+
+        //     }
+
+        // }
     }
 }
 

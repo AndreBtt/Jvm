@@ -13,7 +13,7 @@ void ldc2_w(stack<Frame>* frame_stack) {
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
     u2 index = (byte1 << 8) | byte2;
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
     Constant_pool_variables cp_element = constant_pool[index];
 
     if (cp_element.tag == CONSTANT_LONG) {
@@ -201,7 +201,7 @@ void drem(stack<Frame>* frame_stack) {
 void invokevirtual(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -250,10 +250,9 @@ void invokevirtual(stack<Frame>* frame_stack) {
                         printf("%lld", (long long) variable.data.v_long);
                         break;
                     case REFERENCE:
-                        printf("%s", variable.data.v_string);
+                        StringObject* print_string = (StringObject *) variable.data.object;
+                        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA %s", print_string->v_string.c_str());
                         break;
-                    default:
-                        cout << "tipo : " << variable.type << endl;
                 }
             }
 
@@ -456,7 +455,7 @@ void ldc(stack<Frame>* frame_stack) {
 
     u1 index = curr_frame.get_method_code(curr_frame.pc + 1);
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
     Constant_pool_variables cp_element = constant_pool[index];
 
     Variable variable;
@@ -471,12 +470,8 @@ void ldc(stack<Frame>* frame_stack) {
             utf8_string += char(bytes[i]);
         }
 
-        variable.data.v_string = (char*) malloc(sizeof(char) * (utf8_string.size() + 1));
         variable.type = REFERENCE;
-        for(int i = 0; i < utf8_string.size(); i++) {
-            variable.data.v_string[i] = char(utf8_string[i]);
-        }
-        variable.data.v_string[utf8_string.size()] = '\0';
+        variable.data.object = new StringObject(utf8_string);
 
     } else if (cp_element.tag == CONSTANT_INTEGER) {
         variable.type = VariableType::INT;
@@ -504,7 +499,7 @@ void ldc_w(stack<Frame>* frame_stack) {
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
     u2 index = (byte1 << 8) | byte2;
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
     Constant_pool_variables cp_element = constant_pool[index];
 
     Variable variable;
@@ -550,7 +545,9 @@ void iload(stack<Frame>* frame_stack) {
     // TODO pensar como passar se o wide foi setado ou nao !!
 
 	Variable variable = curr_frame.local_variables[index];
-	frame_stack->top().operand_stack.push(variable);
+	
+    frame_stack->top().operand_stack.push(variable);
+
     frame_stack->top().pc += 2;
 }
 
@@ -679,7 +676,6 @@ void fload_3(stack<Frame>* frame_stack) {
 
 void dload_0(stack<Frame>* frame_stack) {
     Variable variable = frame_stack->top().local_variables[0];
-    cout << variable.data.v_double << endl;
     frame_stack->top().operand_stack.push(variable);
 
     frame_stack->top().pc += 1;
@@ -2092,7 +2088,7 @@ void if_acmpne(stack<Frame>* frame_stack) {
 void getstatic(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2116,35 +2112,18 @@ void getstatic(stack<Frame>* frame_stack) {
         return;
     }
     
-    ClassFile *class_run_file = build_class_file(class_name);
+    ClassRuntime *class_run_time = build_class(class_name);
 
-    while (class_run_file != NULL) {
-        if (find_field(class_run_file, field_name) == false) {
-            cout << "SE nao achar o field nao sei oq fazer" << endl;
-            exit(1);
-        } else {
-            break;
-        }
-    }
+    // while (class_run_time != NULL) {
+    //     if (find_field(class_run_time, field_name) == false) {
+    //         cout << "SE nao achar o field nao sei oq fazer" << endl;
+    //         exit(1);
+    //     } else {
+    //         break;
+    //     }
+    // }
 
-    Variable static_var = class_run_file->static_fields[field_name];
-    
-    switch (static_var.type) {
-        case BOOLEAN:
-            static_var.type = BOOLEAN;
-            break;
-        case BYTE:
-            static_var.type = BYTE;
-            break;
-        case SHORT:
-            static_var.type = SHORT;
-            break;
-        case INT:
-            static_var.type = INT;
-            break;
-        default:
-            break;
-    }
+    Variable static_var = class_run_time->static_fields[field_name];
 
     frame_stack->top().operand_stack.push(static_var);
 
@@ -2155,7 +2134,7 @@ void putstatic(stack<Frame>* frame_stack) {
 
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2174,16 +2153,16 @@ void putstatic(stack<Frame>* frame_stack) {
     string field_name = get_constant_pool_element(constant_pool, field_name_and_type.name_index);
     string field_descriptor = get_constant_pool_element(constant_pool, field_name_and_type.descriptor_index);
 
-    ClassFile *class_run_file = build_class_file(class_name);
+    ClassRuntime *class_run_time = build_class(class_name);
 
-    while (class_run_file != NULL) {
-        if (find_field(class_run_file, field_name) == false) {
-            cout << "SE nao achar o field nao sei oq fazer" << endl;
-            exit(1);
-        } else {
-            break;
-        }
-    }
+    // while (class_run_file != NULL) {
+    //     if (find_field(class_run_file, field_name) == false) {
+    //         cout << "SE nao achar o field nao sei oq fazer" << endl;
+    //         exit(1);
+    //     } else {
+    //         break;
+    //     }
+    // }
 
     Variable top_var = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
@@ -2203,7 +2182,7 @@ void putstatic(stack<Frame>* frame_stack) {
             break;
     }
 
-    class_run_file->static_fields[field_name] = top_var;
+    class_run_time->static_fields[field_name] = top_var;
 
     frame_stack->top().pc += 3;
 }
@@ -2211,7 +2190,7 @@ void putstatic(stack<Frame>* frame_stack) {
 void getfield(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2233,26 +2212,19 @@ void getfield(stack<Frame>* frame_stack) {
     Variable object_variable = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    ClassFile *object = object_variable.data.v_class_file;
+    Object *object = object_variable.data.object;
+    ClassObject *class_object = (ClassObject*) object;
 
-    Variable field_var = object->static_fields[field_name];
-    switch (field_var.type) {
-        case BOOLEAN:
-            field_var.type = BOOLEAN;
-            break;
-        case BYTE:
-            field_var.type = BYTE;
-            break;
-        case SHORT:
-            field_var.type = SHORT;
-            break;
-        case INT:
-            field_var.type = INT;
-            break;
-        default:
-            break;
-    }
-    
+    // cout << "NOME DA CLASSE ";
+    // cout <<  get_constant_pool_element(object->constant_pool, object->this_class) << endl;
+    // cout << "NOME DO FIELD ";
+    // cout << field_name << endl;
+
+    Variable field_var = class_object->fields[field_name];
+
+    // cout << "CONTEUDO ";
+    // cout << field_var.data.v_string << endl;
+
     frame_stack->top().operand_stack.push(field_var);
 
     frame_stack->top().pc += 3;
@@ -2261,7 +2233,7 @@ void getfield(stack<Frame>* frame_stack) {
 void putfield(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2301,9 +2273,20 @@ void putfield(stack<Frame>* frame_stack) {
     Variable object_variable = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    ClassFile *object = object_variable.data.v_class_file;
+    Object *object = object_variable.data.object;
+    ClassObject *class_object = (ClassObject*) object;
 
-    object->static_fields[field_name] = insert_variable;
+    class_object->fields[field_name] = insert_variable;
+
+    // cout << "inserido na classe : ";
+    // cout <<  get_constant_pool_element(object->constant_pool, object->this_class) << endl;
+    // cout << "dentro do field : ";
+    // cout << field_name << endl;
+    // cout << "a variavel : ";
+    // if(insert_variable.type == 9 and insert_variable.ref_type == STRING) {
+    //     cout << insert_variable.data.v_string << endl;
+    // }
+    // cout << endl;
 
     frame_stack->top().pc += 3;
 }
@@ -2312,7 +2295,7 @@ void invokespecial(stack<Frame>* frame_stack) {
 
     Frame curr_frame = frame_stack->top();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2375,22 +2358,19 @@ void invokespecial(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     args.push_back(object_variable);
-
     reverse(args.begin(), args.end());
 
-    ClassFile *class_file = build_class_file(class_name);
-
-    // ClassFile *class_file = object_variable.data.v_class_file;
+    ClassRuntime *class_run_time = build_class(class_name);
 
     frame_stack->top().pc += 3;
 
-    frame_stack->push(Frame(ClassRuntime(*class_file), method_name, method_descriptor, args));
+    frame_stack->push(Frame(class_run_time, method_name, method_descriptor, args));
 }
 
 void invokestatic(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2466,7 +2446,7 @@ void invokedynamic(stack<Frame>* frame_stack) {
 void new_instruction(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2477,86 +2457,94 @@ void new_instruction(stack<Frame>* frame_stack) {
     ClassInfo class_info = cp_class.info.class_info;
     string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
 
+    Object* object;
     if (class_name == "java/lang/String") {
-        cout << "precisa implementar dentro de new uma instancia para string" << endl;
-        exit(1);
-        // object = new StringObject();
+        object = new StringObject();
     } else {
-
-        ClassFile *class_file = build_class_file(class_name);
-
-        Variable class_ref;
-        class_ref.data.v_class_file = class_file;
-        class_ref.type = REFERENCE;
-        frame_stack->top().operand_stack.push(class_ref);
+        ClassRuntime *class_run_time = build_class(class_name);
+        object = new ClassObject(class_run_time);
     }
+
+    Variable object_ref;
+    object_ref.data.object = object;
+    object_ref.type = REFERENCE;
+    frame_stack->top().operand_stack.push(object_ref);
 
     frame_stack->top().pc += 3;    
 }
 
 void newarray(stack<Frame>* frame_stack) {
+    
     Variable array_size = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
     
-    Array *array; 
+    ArrayObject *array;
     Variable variable; 
     
     u1 array_type = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
 
     switch (array_type) {
         case 4:
-            array = new Array(BOOLEAN);
+            array = new ArrayObject(BOOLEAN);
             variable.type = BOOLEAN;
             for (int i = 0; i < array_size.data.v_int; i++) {
+                variable.data.v_boolean = 0;
                 array->elements.push_back(variable);
             }
             break;
         case 5:
-            array = new Array(CHAR);
+            array = new ArrayObject(CHAR);
             variable.type = CHAR;
             for (int i = 0; i < array_size.data.v_int; i++) {
+                variable.data.v_char = 0;
                 array->elements.push_back(variable);
             }
             break;
         case 6:
-            array = new Array(FLOAT);
+            array = new ArrayObject(FLOAT);
             variable.type = FLOAT;
             for (int i = 0; i < array_size.data.v_int; i++) {
+                variable.data.v_float = 0;
                 array->elements.push_back(variable);
             }
             break;
         case 7:
-            array = new Array(DOUBLE);
+            array = new ArrayObject(DOUBLE);
             variable.type = DOUBLE;
             for (int i = 0; i < array_size.data.v_int; i++) {
+                variable.data.v_double = 0;
                 array->elements.push_back(variable);
             }
             break;
         case 8:
-            array = new Array(BYTE);
+            array = new ArrayObject(BYTE);
             variable.type = BYTE;
             for (int i = 0; i < array_size.data.v_int; i++) {
+                variable.data.v_byte = 0;
                 array->elements.push_back(variable);
             }
             break;
         case 9:
-            array = new Array(SHORT);
+            array = new ArrayObject(SHORT);
             variable.type = SHORT;
             for (int i = 0; i < array_size.data.v_int; i++) {
+                variable.data.v_short = 0;
                 array->elements.push_back(variable);
             }
             break;
         case 10:
-            array = new Array(INT);
+            array = new ArrayObject(INT);
             variable.type = INT;
             for (int i = 0; i < array_size.data.v_int; i++) {
+                variable.data.v_int = 0;
                 array->elements.push_back(variable);
             }
             break;
         case 11:
-            array = new Array(LONG);
+            array = new ArrayObject(LONG);
             variable.type = LONG;
             for (int i = 0; i < array_size.data.v_int; i++) {
+                variable.data.v_long = 0;
                 array->elements.push_back(variable);
             }
             break;
@@ -2564,7 +2552,7 @@ void newarray(stack<Frame>* frame_stack) {
     
     Variable array_ref;
     array_ref.type = REFERENCE;
-    array_ref.data.v_array = array;
+    array_ref.data.object = array;
     
     frame_stack->top().operand_stack.push(array_ref);
 
@@ -2577,7 +2565,7 @@ void anewarray(stack<Frame>* frame_stack) {
     Variable count = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2591,13 +2579,13 @@ void anewarray(stack<Frame>* frame_stack) {
 
     Variable array_ref;
     array_ref.type = REFERENCE;
-    array_ref.data.v_array = new Array(REFERENCE);
+    array_ref.data.object = new ArrayObject(REFERENCE);
     
     Variable null_value;
     null_value.type = REFERENCE;
-    null_value.data.v_array = NULL;
+    null_value.data.object = NULL;
     for (int i = 0; i < count.data.v_int; i++) {
-        array_ref.data.v_array->elements.push_back(null_value);
+        ((ArrayObject *) array_ref.data.object)->elements.push_back(null_value);
     }
 
     frame_stack->top().operand_stack.push(array_ref);
@@ -2708,7 +2696,9 @@ void iaload(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    frame_stack->top().operand_stack.push(array->elements[index.data.v_int]);
 
     frame_stack->top().pc += 1;
 }
@@ -2720,7 +2710,9 @@ void laload(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    frame_stack->top().operand_stack.push(array->elements[index.data.v_int]);
 
     frame_stack->top().pc += 1;
 }
@@ -2732,7 +2724,9 @@ void faload(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    frame_stack->top().operand_stack.push(array->elements[index.data.v_int]);
 
     frame_stack->top().pc += 1;
 }
@@ -2744,7 +2738,9 @@ void daload(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    frame_stack->top().operand_stack.push(array->elements[index.data.v_int]);
 
     frame_stack->top().pc += 1;
 }
@@ -2756,9 +2752,9 @@ void aaload(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    cout << array_ref.data.v_array->elements[index.data.v_int].data.v_string << endl;
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
 
-    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+    frame_stack->top().operand_stack.push(array->elements[index.data.v_int]);
 
     frame_stack->top().pc += 1;
 }
@@ -2770,7 +2766,9 @@ void baload(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    frame_stack->top().operand_stack.push(array->elements[index.data.v_int]);
 
     frame_stack->top().pc += 1;
 }
@@ -2782,7 +2780,9 @@ void caload(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    frame_stack->top().operand_stack.push(array->elements[index.data.v_int]);
 
     frame_stack->top().pc += 1;
 }
@@ -2794,7 +2794,9 @@ void saload(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    frame_stack->top().operand_stack.push(array->elements[index.data.v_int]);
 
     frame_stack->top().pc += 1;
 }
@@ -2808,8 +2810,10 @@ void iastore(stack<Frame>* frame_stack) {
 
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
-    
-    array_ref.data.v_array->elements[index.data.v_int] = variable;
+
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    array->elements[index.data.v_int] = variable;
 
     frame_stack->top().pc += 1;   
 }
@@ -2824,7 +2828,9 @@ void lastore(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
     
-    array_ref.data.v_array->elements[index.data.v_int] = variable;
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    array->elements[index.data.v_int] = variable;
 
     frame_stack->top().pc += 1;
 }
@@ -2839,7 +2845,9 @@ void fastore(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
     
-    array_ref.data.v_array->elements[index.data.v_int] = variable;
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    array->elements[index.data.v_int] = variable;
 
     frame_stack->top().pc += 1; 
 }
@@ -2854,7 +2862,9 @@ void dastore(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
     
-    array_ref.data.v_array->elements[index.data.v_int] = variable;
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    array->elements[index.data.v_int] = variable;
 
     frame_stack->top().pc += 1; 
 }
@@ -2869,7 +2879,9 @@ void aastore(stack<Frame>* frame_stack) {
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    array_ref.data.v_array->elements[index.data.v_int] = variable;
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    array->elements[index.data.v_int] = variable;
 
     frame_stack->top().pc += 1;  
 }
@@ -2883,8 +2895,10 @@ void bastore(stack<Frame>* frame_stack) {
 
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
-    
-    if (array_ref.data.v_array->type == BOOLEAN) {
+
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    if (array->type == BOOLEAN) {
         variable.data.v_boolean = (variable.data.v_int != 0) ? true : false;
         variable.type = BOOLEAN;
     } else {
@@ -2892,7 +2906,7 @@ void bastore(stack<Frame>* frame_stack) {
         variable.type = BYTE;
     }
 
-    array_ref.data.v_array->elements[index.data.v_int] = variable;
+    array->elements[index.data.v_int] = variable;
 
     frame_stack->top().pc += 1;  
 }
@@ -2910,7 +2924,9 @@ void castore(stack<Frame>* frame_stack) {
     variable.data.v_char = (uint8_t) variable.data.v_int;
     variable.type = CHAR;
     
-    array_ref.data.v_array->elements[index.data.v_int] = variable;
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    array->elements[index.data.v_int] = variable;
 
     frame_stack->top().pc += 1; 
 }
@@ -2928,7 +2944,9 @@ void sastore(stack<Frame>* frame_stack) {
     variable.data.v_short = (int16_t) variable.data.v_int;
     variable.type = SHORT;
     
-    array_ref.data.v_array->elements[index.data.v_int] = variable;
+    ArrayObject* array = (ArrayObject *) array_ref.data.object;
+
+    array->elements[index.data.v_int] = variable;
 
     frame_stack->top().pc += 1;   
 }

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "types.hpp"
-#include "class_run_time.hpp"
+#include "class_loader.hpp"
 #include "instructions.hpp"
 
 class Engine {
 
 public:
-    void start(ClassFile);
+    void start(ClassRuntime*);
     
 };
 

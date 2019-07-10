@@ -43,11 +43,14 @@ enum VariableType {
     REFERENCE
 };
 
-struct Array {
-    Array(VariableType type) : type(type) {}
-    VariableType type;
-    vector<Variable> elements;
+enum ObjectType {
+    CLASS,
+    STRING,
+    ARRAY,
+    UNDEFINED
 };
+
+class Object;
 
 struct Variable {
     VariableType type;
@@ -61,9 +64,7 @@ struct Variable {
         int64_t v_long;
         double v_double;
         u4 return_address;
-        char* v_string;
-        Array *v_array;
-        ClassFile *v_class_file;
+        Object *object;
     } data;
 };
 
@@ -231,7 +232,4 @@ struct ClassFile {
     
     u2 attributes_count;
     vector<AttributeInfo> attributes;
-
-    // just for engine
-    map<string, Variable> static_fields;
 };

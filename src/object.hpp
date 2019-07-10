@@ -2,4 +2,6 @@
 
 #include "types.hpp"
 
-class Object {};
+class Object {
+    virtual ObjectType object_type() = 0;
+};

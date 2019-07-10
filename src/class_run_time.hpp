@@ -14,8 +14,9 @@ class ClassRuntime {
 
 public:
 
-    ClassRuntime();
-    ClassRuntime(ClassFile);
+    ClassRuntime(ClassFile*);
 
-    ClassFile class_file;
+    ClassFile *class_file;
+
+    map<string, Variable> static_fields;
 };

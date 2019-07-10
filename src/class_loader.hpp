@@ -11,8 +11,9 @@
 #include "reader.hpp"
 #include "attribute.hpp"
 #include "utils.hpp"
+#include "class_run_time.hpp"
 
-ClassFile* build_class_file(string class_name);
+ClassRuntime* build_class(string class_name);
 
 void set_magic_number(FILE*, ClassFile*);
 void set_version(FILE*, ClassFile*);

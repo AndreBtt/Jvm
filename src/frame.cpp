@@ -17,7 +17,7 @@ void Frame::get_method(ClassFile class_file, std::string method_name, std::strin
 }
 
 void Frame::get_attributes() {
-    std::vector<Constant_pool_variables> constant_pool = class_run_time.class_file.constant_pool;
+    std::vector<Constant_pool_variables> constant_pool = class_run_time->class_file->constant_pool;
     
     bool code_attr_find = false;
     bool exceptions_attr_find = false;
@@ -42,7 +42,7 @@ void Frame::get_attributes() {
     }
 }
 
-Frame::Frame(ClassRuntime curr_class_run_time, string method_name, string method_descriptor, std::vector<Variable> arguments) : pc(0), class_run_time(curr_class_run_time) {
+Frame::Frame(ClassRuntime *curr_class_run_time, string method_name, string method_descriptor, std::vector<Variable> arguments) : pc(0), class_run_time(curr_class_run_time) {
 
     // cout << "variaveis locais do metodo " << method_name << " : " << endl;
     for (int i = 0, index = 0; i < arguments.size(); i++, index++) {
@@ -56,8 +56,8 @@ Frame::Frame(ClassRuntime curr_class_run_time, string method_name, string method
     //     cout << x.first << " " << x.second.type << endl;
     // }
     
-    ClassFile current_class = class_run_time.class_file;
-    get_method(current_class, method_name, method_descriptor);
+    ClassFile* current_class = class_run_time->class_file;
+    get_method(*current_class, method_name, method_descriptor);
     
     get_attributes();
 }

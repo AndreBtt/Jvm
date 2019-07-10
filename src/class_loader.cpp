@@ -1,12 +1,12 @@
 #include "class_loader.hpp"
 
 // global variable to save already loaded classes
-map<string, ClassFile*> loaded_classes;
+map<string, ClassRuntime*> loaded_classes;
 
-ClassFile* build_class_file(string class_path) {
+ClassRuntime* build_class(string class_path) {
     class_path += ".class";
     
-    cout << "carregou a classe " << class_path << endl;
+    // cout << "carregou a classe " << class_path << endl;
     
     if(loaded_classes.count(class_path) != 0) {
         return loaded_classes[class_path];
@@ -51,9 +51,9 @@ ClassFile* build_class_file(string class_path) {
     // set attributes size and create it
     set_attributes(file_pointer, class_file);
 
-    fclose(file_pointer);    
+    fclose(file_pointer);
 
-    return loaded_classes[class_path] = class_file;
+    return loaded_classes[class_path] = new ClassRuntime(class_file);
 }
 
 void set_magic_number(FILE* file_pointer, ClassFile* class_file) {

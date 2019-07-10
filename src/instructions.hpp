@@ -2,6 +2,9 @@
 
 #include "frame.hpp"
 #include "class_loader.hpp"
+#include "array_obj.hpp"
+#include "string_obj.hpp"
+#include "class_obj.hpp"
 
 #include <stack>
 #include <algorithm>
