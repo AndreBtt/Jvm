@@ -11,8 +11,7 @@ void Engine::start(ClassRuntime* class_run_time) {
         Frame curr_frame = frame_stack.top();
         u1 instruction_code = curr_frame.get_method_code(curr_frame.pc);
 
-        
-        std::cout << "pc -> " << curr_frame.pc << " code -> " << std::hex << int(instruction_code) << endl;
+        // std::cout << "pc -> " << curr_frame.pc << " code -> " << std::hex << int(instruction_code) << endl;
         // string current_method_name = get_constant_pool_element(curr_frame.class_run_time.class_file.constant_pool, curr_frame.method.name_index);
         // cout << "met -> " << current_method_name << endl;
 

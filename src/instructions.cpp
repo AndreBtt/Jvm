@@ -13,7 +13,7 @@ void ldc2_w(stack<Frame>* frame_stack) {
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
     u2 index = (byte1 << 8) | byte2;
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
     Constant_pool_variables cp_element = constant_pool[index];
 
     if (cp_element.tag == CONSTANT_LONG) {
@@ -152,7 +152,7 @@ void ddiv(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     if(variable_2.data.v_double == 0) {
-        std::cerr << "divisao por 0" << std::endl;
+        cerr << "divisao por 0" << endl;
         exit(1);
     }
 
@@ -185,7 +185,7 @@ void drem(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     if(variable_2.data.v_double == 0) {
-        std::cerr << "divisao por 0" << std::endl;
+        cerr << "divisao por 0" << endl;
         exit(1);
     }
 
@@ -201,7 +201,7 @@ void drem(stack<Frame>* frame_stack) {
 void invokevirtual(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -251,19 +251,59 @@ void invokevirtual(stack<Frame>* frame_stack) {
                         break;
                     case REFERENCE:
                         StringObject* print_string = (StringObject *) variable.data.object;
-                        printf("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA %s", print_string->v_string.c_str());
+                        printf("%s", print_string->v_string.c_str());
                         break;
                 }
             }
 
             if (method_name == "println") printf("\n");
         } else {
-            std::cout << "nao sei implementar isso" << std::endl;
+            cout << "nao sei implementar isso ainda, tem haver com string object" << endl;
             exit(1);
         }
     } else {
-        std::cout << "Falta isso aqui do invoke" << std::endl;
-        exit(1);
+        uint16_t args_count = 0; 
+        uint16_t i = 1; // skip '('
+        while (method_descriptor[i] != ')') {
+            char base_type = method_descriptor[i];
+            if (base_type == 'D' || base_type == 'J') {
+                args_count += 2;
+            } else if (base_type == 'L') {
+                args_count++;
+                while (method_descriptor[++i] != ';');
+            } else if (base_type == '[') {
+                args_count++;
+                while (method_descriptor[++i] == '[');
+                if (method_descriptor[i] == 'L') while (method_descriptor[++i] != ';');
+            } else {
+                args_count++;
+            }
+            i++;
+        }
+
+        vector<Variable> args;
+        for (int i = 0; i < args_count; i++) {
+            Variable variable = frame_stack->top().operand_stack.top();
+            frame_stack->top().operand_stack.pop();
+            args.push_back(variable);
+
+            // simulate a padding
+            if(variable.type == DOUBLE || variable.type == LONG) i++;
+        }
+
+        Variable object_variable = frame_stack->top().operand_stack.top();
+        frame_stack->top().operand_stack.pop();
+
+        args.push_back(object_variable);
+        reverse(args.begin(), args.end());
+
+        ClassRuntime *class_run_time = build_class(class_name);
+
+        frame_stack->top().pc += 3;
+
+        frame_stack->push(Frame(class_run_time, method_name, method_descriptor, args));
+
+        return;
     }
 
     frame_stack->top().pc += 3;
@@ -296,16 +336,13 @@ void istore_1(stack<Frame>* frame_stack) {
 }
 
 void aconst_null(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "aconst_null nao implementado" << std::endl;
-    exit(1);
-    // Variable variable;
-    // variable.type = VariableType::STRINGREF;
-    // variable.data.object = NULL;
+    Variable variable;
+    variable.type = REFERENCE;
+    variable.data.object = NULL;
 
-    // frame_stack->top().operand_stack.push(variable);
+    frame_stack->top().operand_stack.push(variable);
 
-    // frame_stack->top().pc += 1;
+    frame_stack->top().pc += 1;
 }
 
 void iconst_m1(stack<Frame>* frame_stack) {
@@ -455,7 +492,7 @@ void ldc(stack<Frame>* frame_stack) {
 
     u1 index = curr_frame.get_method_code(curr_frame.pc + 1);
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
     Constant_pool_variables cp_element = constant_pool[index];
 
     Variable variable;
@@ -499,7 +536,7 @@ void ldc_w(stack<Frame>* frame_stack) {
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
     u2 index = (byte1 << 8) | byte2;
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
     Constant_pool_variables cp_element = constant_pool[index];
 
     Variable variable;
@@ -515,7 +552,7 @@ void ldc_w(stack<Frame>* frame_stack) {
         }
         
         // TODO
-        std::cout << "preciso transformar string em objeto" << std::endl;
+        cout << "preciso transformar string em objeto" << endl;
         exit(1);
         
     } else if (cp_element.tag == CONSTANT_INTEGER) {
@@ -1146,7 +1183,7 @@ void idiv(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     if(variable_2.data.v_int == 0) {
-        std::cerr << "divisao por 0" << std::endl;
+        cerr << "divisao por 0" << endl;
         exit(1);
     }
 
@@ -1167,7 +1204,7 @@ void ldiv_instruction(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     if(variable_2.data.v_long == 0) {
-        std::cerr << "divisao por 0" << std::endl;
+        cerr << "divisao por 0" << endl;
         exit(1);
     }
 
@@ -1188,7 +1225,7 @@ void fdiv(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     if(variable_2.data.v_float == 0) {
-        std::cerr << "divisao por 0" << std::endl;
+        cerr << "divisao por 0" << endl;
         exit(1);
     }
 
@@ -1209,7 +1246,7 @@ void irem(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     if(variable_2.data.v_int == 0) {
-        std::cerr << "divisao por 0" << std::endl;
+        cerr << "divisao por 0" << endl;
         exit(1);
     }
 
@@ -1230,7 +1267,7 @@ void lrem(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     if(variable_2.data.v_long == 0) {
-        std::cerr << "divisao por 0" << std::endl;
+        cerr << "divisao por 0" << endl;
         exit(1);
     }
 
@@ -1251,7 +1288,7 @@ void frem(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
 
     if(variable_2.data.v_float == 0) {
-        std::cerr << "divisao por 0" << std::endl;
+        cerr << "divisao por 0" << endl;
         exit(1);
     }
 
@@ -1369,12 +1406,12 @@ void lshr(stack<Frame>* frame_stack) {
 }
 
 void iushr(stack<Frame>* frame_stack) {
-    std::cout << "falta implementar iushr" << std::endl;
+    cout << "falta implementar iushr" << endl;
     exit(1);
 }
 
 void lushr(stack<Frame>* frame_stack) {
-    std::cout << "falta implementar lushr" << std::endl;
+    cout << "falta implementar lushr" << endl;
     exit(1);
 }
 
@@ -1993,37 +2030,33 @@ void areturn(stack<Frame>* frame_stack) {
 }
 
 void ifnull(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "ifnull nao implementado" << std::endl;
-    exit(1);
-    // Variable ref_variable = frame_stack->top().operand_stack.top();
-    // frame_stack->top().operand_stack.pop();
+
+    Variable reference_variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
     
-    // if (ref_variable.data.object == NULL) {
-    //     u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
-    //     u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-	// 	int16_t branch_offset = (byte1 << 8) | byte2;
-	// 	frame_stack->top().pc += branch_offset;
-    // } else {
-    //     frame_stack->top().pc += 3;
-    // }
+    if (reference_variable.data.object == NULL) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        int16_t branch_offset = (byte1 << 8) | byte2;
+        frame_stack->top().pc += branch_offset;
+    } else {
+        frame_stack->top().pc += 3;
+    }
 }
 
 void ifnonnull(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "ifnonnull nao implementado" << std::endl;
-    exit(1);
-    // Variable ref_variable = frame_stack->top().operand_stack.top();
-    // frame_stack->top().operand_stack.pop();
     
-    // if (ref_variable.data.object != NULL) {
-    //     u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
-    //     u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-	// 	int16_t branch_offset = (byte1 << 8) | byte2;
-	// 	frame_stack->top().pc += branch_offset;
-    // } else {
-    //     frame_stack->top().pc += 3;
-    // }
+    Variable reference_variable = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    if (reference_variable.data.object != NULL) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        int16_t branch_offset = (byte1 << 8) | byte2;
+        frame_stack->top().pc += branch_offset;
+    } else {
+        frame_stack->top().pc += 3;
+    }
 }
 
 void goto_w(stack<Frame>* frame_stack) {
@@ -2063,32 +2096,32 @@ void monitorexit(stack<Frame>* frame_stack) {
 
 void tableswitch(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "tableswitch nao implementado" << std::endl;
+    cout << "tableswitch nao implementado" << endl;
     exit(1);
 }
 
 void lookupswitch(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "lookupswitch nao implementado" << std::endl;
+    cout << "lookupswitch nao implementado" << endl;
     exit(1);
 }
 
 void if_acmpeq(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "if_acmpeq nao implementado" << std::endl;
+    cout << "if_acmpeq nao implementado" << endl;
     exit(1);
 }
 
 void if_acmpne(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "if_acmpne nao implementado" << std::endl;
+    cout << "if_acmpne nao implementado" << endl;
     exit(1);
 }
 
 void getstatic(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2134,7 +2167,7 @@ void putstatic(stack<Frame>* frame_stack) {
 
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2190,7 +2223,7 @@ void putstatic(stack<Frame>* frame_stack) {
 void getfield(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2233,7 +2266,7 @@ void getfield(stack<Frame>* frame_stack) {
 void putfield(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2295,7 +2328,7 @@ void invokespecial(stack<Frame>* frame_stack) {
 
     Frame curr_frame = frame_stack->top();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2370,7 +2403,7 @@ void invokespecial(stack<Frame>* frame_stack) {
 void invokestatic(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2433,20 +2466,20 @@ void invokestatic(stack<Frame>* frame_stack) {
 
 void invokeinterface(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "invokeinterface nao implementado" << std::endl;
+    cout << "invokeinterface nao implementado" << endl;
     exit(1);
 }
 
 void invokedynamic(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "invokedynamic nao implementado" << std::endl;
+    cout << "invokedynamic nao implementado" << endl;
     exit(1);
 }
 
 void new_instruction(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2565,7 +2598,7 @@ void anewarray(stack<Frame>* frame_stack) {
     Variable count = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
     
-    std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
 
     u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2594,9 +2627,16 @@ void anewarray(stack<Frame>* frame_stack) {
 }
 
 void arraylength(stack<Frame>* frame_stack) {
-    // TODO
-    std::cout << "arraylength nao implementado" << std::endl;
-    exit(1);
+    
+    Variable array_ref = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    
+    Variable length;
+    length.type = INT;
+    length.data.v_int = ((ArrayObject *) array_ref.data.object)->elements.size();
+    
+    frame_stack->top().operand_stack.push(length);
+    frame_stack->top().pc += 1;
 }
 
 void athrow(stack<Frame>* frame_stack) {
@@ -2605,30 +2645,30 @@ void athrow(stack<Frame>* frame_stack) {
 
 void checkcast(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "checkcast nao implementado" << std::endl;
+    cout << "checkcast nao implementado" << endl;
     exit(1);
 }
 
 void instanceof(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "instanceof nao implementado" << std::endl;
+    cout << "instanceof nao implementado" << endl;
     exit(1);
 }
 
 void wide(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "wide nao implementado" << std::endl;
+    cout << "wide nao implementado" << endl;
     exit(1);
 }
 
 void multianewarray(stack<Frame>* frame_stack) {
     // TODO
-    std::cout << "multianewarray nao implementado" << std::endl;
+    cout << "multianewarray nao implementado" << endl;
     exit(1);
 
     // Frame curr_frame = frame_stack->top();
     
-    // std::vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    // vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
 
     // u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
     // u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
@@ -2966,12 +3006,12 @@ void dup2(stack<Frame>* frame_stack) {
 }
 
 void dup2_x1(stack<Frame>* frame_stack) {
-    std::cout << "instrucao dup2_x1 nao implementada" << std::endl;
+    cout << "instrucao dup2_x1 nao implementada" << endl;
     exit(1);
 }
 
 void dup2_x2(stack<Frame>* frame_stack) {
-    std::cout << "instrucao dup2_x2 nao implementada" << std::endl;
+    cout << "instrucao dup2_x2 nao implementada" << endl;
     exit(1);
 }
 
