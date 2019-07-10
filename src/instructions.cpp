@@ -2433,13 +2433,75 @@ void invokestatic(stack<Frame>* frame_stack) {
 }
 
 void invokeinterface(stack<Frame>* frame_stack) {
-    // TODO
-    cout << "invokeinterface nao implementado" << endl;
-    exit(1);
+    
+    Frame curr_frame = frame_stack->top();
+    
+    vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time->class_file->constant_pool;
+
+    u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
+    u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
+    uint16_t method_index = (byte1 << 8) | byte2;
+
+    Constant_pool_variables cp_method = constant_pool[method_index];
+
+    MethodRefInfo method_info = cp_method.info.method_ref_info;
+
+    string class_name = get_constant_pool_element(constant_pool, method_info.class_index);
+
+    Constant_pool_variables cp_name_and_type = constant_pool[method_info.name_and_type_index];
+
+    NameAndTypeInfo method_name_and_type = cp_name_and_type.info.name_and_type_info;
+
+    string method_name = get_constant_pool_element(constant_pool, method_name_and_type.name_index);
+    string method_descriptor = get_constant_pool_element(constant_pool, method_name_and_type.descriptor_index);
+    
+    uint16_t args_count = 0; 
+    uint16_t i = 1; // skip '('
+    while (method_descriptor[i] != ')') {
+        char base_type = method_descriptor[i];
+        if (base_type == 'D' || base_type == 'J') {
+            args_count += 2;
+        } else if (base_type == 'L') {
+            args_count++;
+            while (method_descriptor[++i] != ';');
+        } else if (base_type == '[') {
+            args_count++;
+            while (method_descriptor[++i] == '[');
+            if (method_descriptor[i] == 'L') while (method_descriptor[++i] != ';');
+        } else {
+            args_count++;
+        }
+        i++;
+    }
+
+    vector<Variable> args;
+    for (int i = 0; i < args_count; i++) {
+        Variable variable = frame_stack->top().operand_stack.top();
+        frame_stack->top().operand_stack.pop();
+        args.push_back(variable);
+
+        // simulate a padding
+        if(variable.type == DOUBLE || variable.type == LONG) i++;
+    }
+
+    Variable v_object = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+    args.push_back(v_object);
+    reverse(args.begin(), args.end());
+
+    Object *object = v_object.data.object;
+    ClassObject *class_obj = (ClassObject *) object;
+
+    build_class(class_name);
+    
+    // update before put the new Frame
+    frame_stack->top().pc += 5;
+
+    frame_stack->push(Frame(class_obj->class_run_time, method_name, method_descriptor, args));
 }
 
 void invokedynamic(stack<Frame>* frame_stack) {
-    // TODO
+    // TODO acho que é igual ao static
     cout << "invokedynamic nao implementado" << endl;
     exit(1);
 }
