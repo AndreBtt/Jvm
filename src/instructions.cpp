@@ -2147,15 +2147,6 @@ void getstatic(stack<Frame>* frame_stack) {
     
     ClassRuntime *class_run_time = build_class(class_name);
 
-    // while (class_run_time != NULL) {
-    //     if (find_field(class_run_time, field_name) == false) {
-    //         cout << "SE nao achar o field nao sei oq fazer" << endl;
-    //         exit(1);
-    //     } else {
-    //         break;
-    //     }
-    // }
-
     Variable static_var = class_run_time->static_fields[field_name];
 
     frame_stack->top().operand_stack.push(static_var);
@@ -2187,15 +2178,6 @@ void putstatic(stack<Frame>* frame_stack) {
     string field_descriptor = get_constant_pool_element(constant_pool, field_name_and_type.descriptor_index);
 
     ClassRuntime *class_run_time = build_class(class_name);
-
-    // while (class_run_file != NULL) {
-    //     if (find_field(class_run_file, field_name) == false) {
-    //         cout << "SE nao achar o field nao sei oq fazer" << endl;
-    //         exit(1);
-    //     } else {
-    //         break;
-    //     }
-    // }
 
     Variable top_var = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();

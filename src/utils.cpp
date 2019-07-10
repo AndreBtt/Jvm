@@ -157,20 +157,20 @@ string get_constant_pool_element(vector<Constant_pool_variables> constant_pool, 
     }
 }
 
-bool find_field(ClassFile* class_file, string field_name) {
-    
-    vector <FieldInfo> fields = class_file->fields;
+void format_path(string path, string* file_class_name, string* path_prefix) {
 
-    for (int i = 0; i < class_file->fields_count; i++) {
-        FieldInfo field = fields[i];
-        u2 static_flag = 0x0008;
-        u2 final_flag = 0x0010;
-        
-        if ((field.access_flags & static_flag) != 0 && (field.access_flags & final_flag) == 0) {
-            string curr_field_name = get_constant_pool_element(class_file->constant_pool, field.name_index);
-            if(curr_field_name == field_name) return true;
-        }
+    const size_t last_slash_idx = path.find_last_of("\\/");
+
+    if (string::npos != last_slash_idx) {
+        *path_prefix = path.substr(0, last_slash_idx + 1);
+        path.erase(0, last_slash_idx + 1);
     }
-    
-    return false;
+
+    // Remove extension if present.
+    const size_t period_idx = path.rfind('.');
+    if (string::npos != period_idx) {
+        path.erase(period_idx);
+    }
+
+    *file_class_name = path;
 }

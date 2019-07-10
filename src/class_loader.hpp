@@ -13,7 +13,9 @@
 #include "utils.hpp"
 #include "class_run_time.hpp"
 
-ClassRuntime* build_class(string class_name);
+void set_path_files(string);
+
+ClassRuntime* build_class(string);
 
 void set_magic_number(FILE*, ClassFile*);
 void set_version(FILE*, ClassFile*);
@@ -25,3 +27,5 @@ void set_interfaces(FILE*, ClassFile*);
 void set_fields(FILE*, ClassFile*);
 void set_methods(FILE*, ClassFile*);
 void set_attributes(FILE*, ClassFile*);
+
+void check_class_name(ClassFile*, string);

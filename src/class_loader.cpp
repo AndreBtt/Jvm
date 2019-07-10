@@ -3,8 +3,15 @@
 // global variable to save already loaded classes
 map<string, ClassRuntime*> loaded_classes;
 
-ClassRuntime* build_class(string class_path) {
-    class_path += ".class";
+string files_path = "";
+
+void set_path_files(string path) {
+    files_path = path;
+}
+
+ClassRuntime* build_class(string file_name) {
+
+    string class_path = files_path + file_name + ".class";
     
     // cout << "carregou a classe " << class_path << endl;
     
@@ -53,7 +60,17 @@ ClassRuntime* build_class(string class_path) {
 
     fclose(file_pointer);
 
+    check_class_name(class_file, file_name);
+
     return loaded_classes[class_path] = new ClassRuntime(class_file);
+}
+
+void check_class_name(ClassFile* class_file, string file_name) {
+    string class_file_name = get_constant_pool_element(class_file->constant_pool, class_file->this_class);
+    if (file_name != class_file_name) {
+        std::cerr << std::endl << "Nome do arquivo ( " << file_name << " ) diferente do nome da classe ( " << class_file_name << " )" << std::endl << std::endl;
+        exit(1);
+    }
 }
 
 void set_magic_number(FILE* file_pointer, ClassFile* class_file) {

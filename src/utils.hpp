@@ -18,5 +18,4 @@ string format_UTF8(u2, u1*);
 
 string get_constant_pool_element(vector<Constant_pool_variables>, u2);
 
-bool find_field(ClassFile*, string);
-
+void format_path(string, string*, string*);
