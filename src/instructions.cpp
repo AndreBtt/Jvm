@@ -70,8 +70,6 @@ void dstore_3(stack<Frame>* frame_stack) {
     frame_stack->top().pc += 1;
 }
 
-
-
 void dload(stack<Frame>* frame_stack) {
     Frame curr_frame = frame_stack->top();
 
@@ -550,10 +548,9 @@ void ldc_w(stack<Frame>* frame_stack) {
         for (int i = 0; i < utf8_variable.info.utf8_info.length; i++) {
             utf8_string += char(bytes[i]);
         }
-        
-        // TODO
-        cout << "preciso transformar string em objeto" << endl;
-        exit(1);
+
+        variable.type = REFERENCE;
+        variable.data.object = new StringObject(utf8_string);
         
     } else if (cp_element.tag == CONSTANT_INTEGER) {
         variable.type = VariableType::INT;
@@ -1182,11 +1179,6 @@ void idiv(stack<Frame>* frame_stack) {
 	Variable variable_1 = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    if(variable_2.data.v_int == 0) {
-        cerr << "divisao por 0" << endl;
-        exit(1);
-    }
-
     Variable result;
     result.type = INT;
     result.data.v_int = (variable_1.data.v_int) / (variable_2.data.v_int);
@@ -1202,11 +1194,6 @@ void ldiv_instruction(stack<Frame>* frame_stack) {
 
 	Variable variable_1 = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
-
-    if(variable_2.data.v_long == 0) {
-        cerr << "divisao por 0" << endl;
-        exit(1);
-    }
 
     Variable result;
     result.type = LONG;
@@ -1224,11 +1211,6 @@ void fdiv(stack<Frame>* frame_stack) {
 	Variable variable_1 = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    if(variable_2.data.v_float == 0) {
-        cerr << "divisao por 0" << endl;
-        exit(1);
-    }
-
     Variable result;
     result.type = FLOAT;
     result.data.v_float = (variable_1.data.v_float) / (variable_2.data.v_float);
@@ -1244,11 +1226,6 @@ void irem(stack<Frame>* frame_stack) {
 
 	Variable variable_1 = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
-
-    if(variable_2.data.v_int == 0) {
-        cerr << "divisao por 0" << endl;
-        exit(1);
-    }
 
     Variable result;
     result.type = INT;
@@ -1266,11 +1243,6 @@ void lrem(stack<Frame>* frame_stack) {
 	Variable variable_1 = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
 
-    if(variable_2.data.v_long == 0) {
-        cerr << "divisao por 0" << endl;
-        exit(1);
-    }
-
     Variable result;
     result.type = LONG;
     result.data.v_long = (variable_1.data.v_long) % (variable_2.data.v_long);
@@ -1286,11 +1258,6 @@ void frem(stack<Frame>* frame_stack) {
 
 	Variable variable_1 = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
-
-    if(variable_2.data.v_float == 0) {
-        cerr << "divisao por 0" << endl;
-        exit(1);
-    }
 
     Variable result;
     result.type = FLOAT;
@@ -2048,7 +2015,7 @@ void ifnonnull(stack<Frame>* frame_stack) {
     
     Variable reference_variable = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
-    
+
     if (reference_variable.data.object != NULL) {
         u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
         u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
@@ -2107,15 +2074,35 @@ void lookupswitch(stack<Frame>* frame_stack) {
 }
 
 void if_acmpeq(stack<Frame>* frame_stack) {
-    // TODO
-    cout << "if_acmpeq nao implementado" << endl;
-    exit(1);
+	Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable_1.data.object == variable_2.data.object) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        uint16_t branch_off_set = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_off_set;
+    } else {
+		frame_stack->top().pc += 3;
+    }
 }
 
 void if_acmpne(stack<Frame>* frame_stack) {
-    // TODO
-    cout << "if_acmpne nao implementado" << endl;
-    exit(1);
+    Variable variable_2 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	Variable variable_1 = frame_stack->top().operand_stack.top();
+    frame_stack->top().operand_stack.pop();
+	
+	if (variable_1.data.object != variable_2.data.object) {
+        u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+        u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+        uint16_t branch_off_set = (byte1 << 8) | byte2;
+		frame_stack->top().pc += branch_off_set;
+    } else {
+		frame_stack->top().pc += 3;
+    }
 }
 
 void getstatic(stack<Frame>* frame_stack) {
@@ -2338,7 +2325,6 @@ void invokespecial(stack<Frame>* frame_stack) {
         frame_stack->top().pc += 3;        
         return;
     }
-    
     
     uint16_t args_count = 0; 
     uint16_t i = 1; // skip '('
@@ -2644,71 +2630,77 @@ void wide(stack<Frame>* frame_stack) {
 }
 
 void multianewarray(stack<Frame>* frame_stack) {
-    // TODO
-    cout << "multianewarray nao implementado" << endl;
-    exit(1);
+    vector<Constant_pool_variables> constant_pool = frame_stack->top().class_run_time->class_file->constant_pool;
 
-    // Frame curr_frame = frame_stack->top();
-    
-    // vector<Constant_pool_variables> constant_pool = curr_frame.class_run_time.class_file.constant_pool;
+    u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
+    u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
+    u1 dimensions = frame_stack->top().get_method_code(frame_stack->top().pc + 3);
 
-    // u1 byte1 = curr_frame.get_method_code(curr_frame.pc + 1);
-    // u1 byte2 = curr_frame.get_method_code(curr_frame.pc + 2);
-    // u1 dimensions = curr_frame.get_method_code(curr_frame.pc + 3);
+    uint16_t class_index = (byte1 << 8) | byte2;
+    
+    Constant_pool_variables cp_element = constant_pool[class_index];
+    
+    ClassInfo class_info = cp_element.info.class_info;
+    string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
+    
+    VariableType variable_type;
+    int i = 0;
+    while (class_name[i] == '[') i++;
+    
+    string multi_array_type = class_name.substr(i+1, class_name.size()-i-2); 
+    
+    switch (class_name[i]) {
+        case 'L':
+            if (multi_array_type != "java/lang/String") {
+                cout << "falta implementar isso dentro do mult array" << endl;
+                exit(1);
+                // chamar o build class so para criar a referencia
+            }
+            variable_type = REFERENCE;
+            break;
+        case 'B':
+            variable_type = BYTE;
+            break;
+        case 'C':
+            variable_type = CHAR;
+            break;
+        case 'D':
+            variable_type = DOUBLE;
+            break;
+        case 'F':
+            variable_type = FLOAT;
+            break;
+        case 'I':
+            variable_type = INT;
+            break;
+        case 'J':
+            variable_type = LONG;
+            break;
+        case 'S':
+            variable_type = SHORT;
+            break;
+        case 'Z':
+            variable_type = BOOLEAN;
+            break;
+    }
+    
+    stack<int> count;
+    for (int i = 0; i < dimensions; i++) {
+        Variable dim_length = frame_stack->top().operand_stack.top();
+        frame_stack->top().operand_stack.pop();
+        count.push(dim_length.data.v_int);
+    }
+    
+    ArrayObject *array = new ArrayObject((dimensions > 1) ? REFERENCE : variable_type);
+    fill_multi_array(array, variable_type, count);
+    
+    Variable array_variable;
+    array_variable.type = REFERENCE;
+    array_variable.data.object = array;
+    
+    frame_stack->top().operand_stack.push(array_variable);
 
-    // uint16_t class_index = (byte1 << 8) | byte2;
-    // Constant_pool_variables cp_class = constant_pool[class_index];
-
-    // ClassInfo class_info = cp_class.info.class_info;
-    // string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
-    
-    // VariableType type;
-    // int i = 0;
-    // while (class_name[i] == '[') i++;
-    
-    // string multi_array_type = class_name.substr(i+1, class_name.size()-i-2);
-    
-    // switch (class_name[i]) {
-    //     case 'L':
-    //         cout << "multianewarray do tipo referencia nao implementado" << endl;
-    //         exit(1);
-    //         break;
-    //     case 'B':
-    //         type = BYTE;
-    //         break;
-    //     case 'C':
-    //         type = CHAR;
-    //         break;
-    //     case 'D':
-    //         type = DOUBLE;
-    //         break;
-    //     case 'F':
-    //         type = FLOAT;
-    //         break;
-    //     case 'I':
-    //         type = INT;
-    //         break;
-    //     case 'J':
-    //         type = LONG;
-    //         break;
-    //     case 'S':
-    //         type = SHORT;
-    //         break;
-    //     case 'Z':
-    //         type = BOOLEAN;
-    //         break;
-    // }
-    
-    // stack<int> count;
-    // for (int i = 0; i < dimensions; i++) {
-    //     Variable dim_length = frame_stack->top().operand_stack.top();
-    //     frame_stack->top().operand_stack.pop();
-    //     count.push(dim_length.data.v_int);
-    // }
-    
-    // Array *array = new Array((dimensions > 1) ? ARRAYREF : type);
-
-    // // put elements in array
+    frame_stack->top().pc += 4; 
 }
 
 void iaload(stack<Frame>* frame_stack) {
@@ -2974,6 +2966,7 @@ void sastore(stack<Frame>* frame_stack) {
 }
 
 void dup2(stack<Frame>* frame_stack) {
+    // cout << "POSSIVELMENTE ERRADA !!!" << endl;
     Variable variable_1 = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
     Variable variable_2 = frame_stack->top().operand_stack.top();

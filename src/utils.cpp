@@ -174,3 +174,29 @@ void format_path(string path, string* file_class_name, string* path_prefix) {
 
     *file_class_name = path;
 }
+
+void fill_multi_array(ArrayObject* array, VariableType var_type, stack<int> dim_length) {
+    int curr_dim = dim_length.top();
+    dim_length.pop();
+    
+    VariableType array_type = (dim_length.size() > 1) ? REFERENCE : var_type;
+    
+    if (dim_length.size() == 0) {
+        for (int i = 0; i < curr_dim; i++) {
+            Variable array_var;
+            array_var.type = var_type;
+            array_var.data.v_long = 0;
+            array->elements.push_back(array_var);
+        }
+    } else {
+        for (int i = 0; i < curr_dim; i++) {
+            ArrayObject *sub_array = new ArrayObject(var_type);
+            fill_multi_array(sub_array, var_type, dim_length);
+            
+            Variable array_var;
+            array_var.type = REFERENCE;
+            array_var.data.object = sub_array;
+            array->elements.push_back(array_var);
+        }
+    }
+}

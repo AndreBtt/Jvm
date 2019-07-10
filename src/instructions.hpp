@@ -5,6 +5,7 @@
 #include "array_obj.hpp"
 #include "string_obj.hpp"
 #include "class_obj.hpp"
+#include "utils.hpp"
 
 #include <stack>
 #include <algorithm>
