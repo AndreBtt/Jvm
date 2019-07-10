@@ -44,16 +44,17 @@ void Frame::get_attributes() {
 
 Frame::Frame(ClassRuntime curr_class_run_time, string method_name, string method_descriptor, std::vector<Variable> arguments) : pc(0), class_run_time(curr_class_run_time) {
 
-    cout << "variaveis locais do metodo " << method_name << " : " << endl;
+    // cout << "variaveis locais do metodo " << method_name << " : " << endl;
     for (int i = 0, index = 0; i < arguments.size(); i++, index++) {
         local_variables[index] = arguments[i];
+
         // simulate a padding
         if(local_variables[index].type == DOUBLE || local_variables[index].type == LONG) index++;
     }
 
-    for(auto x: local_variables) {
-        cout << x.first << " " << x.second.type << endl;
-    }
+    // for(auto x: local_variables) {
+    //     cout << x.first << " " << x.second.type << endl;
+    // }
     
     ClassFile current_class = class_run_time.class_file;
     get_method(current_class, method_name, method_descriptor);

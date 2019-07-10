@@ -218,47 +218,52 @@ void invokevirtual(stack<Frame>* frame_stack) {
     string method_name = get_constant_pool_element(constant_pool, method_name_and_type.name_index);
     string method_descriptor = get_constant_pool_element(constant_pool, method_name_and_type.descriptor_index);
 
-    if (class_name == "java/io/PrintStream" && (method_name == "print" || method_name == "println")) {
-        if (method_descriptor != "()V") {
-            Variable variable = frame_stack->top().operand_stack.top();
-            frame_stack->top().operand_stack.pop();
+    if (class_name.find("java/") != string::npos) {
+        if (class_name == "java/io/PrintStream" && (method_name == "print" || method_name == "println")) {
+            if (method_descriptor != "()V") {
+                Variable variable = frame_stack->top().operand_stack.top();
+                frame_stack->top().operand_stack.pop();
 
-            switch (variable.type) {
-                case BOOLEAN:
-                    printf("%s", variable.data.v_boolean == 0 ? "false" : "true");
-                    break;
-                case BYTE:
-                    printf("%d", variable.data.v_byte);
-                    break;
-                case CHAR:
-                    printf("%c", variable.data.v_char);
-                    break;
-                case SHORT:
-                    printf("%d", variable.data.v_short);
-                    break;
-                case INT:
-                    printf("%d", variable.data.v_int);
-                    break;
-                case DOUBLE:
-                    printf("%f", variable.data.v_double);
-                    break;
-                case FLOAT:
-                    printf("%f", variable.data.v_float);
-                    break;
-                case LONG:
-                    printf("%lld", (long long) variable.data.v_long);
-                    break;
-                case REFERENCE:
-                    printf("%s", variable.data.v_string);
-                    break;
-                default:
-                    cout << "tipo : " << variable.type << endl;
+                switch (variable.type) {
+                    case BOOLEAN:
+                        printf("%s", variable.data.v_boolean == 0 ? "false" : "true");
+                        break;
+                    case BYTE:
+                        printf("%d", variable.data.v_byte);
+                        break;
+                    case CHAR:
+                        printf("%c", variable.data.v_char);
+                        break;
+                    case SHORT:
+                        printf("%d", variable.data.v_short);
+                        break;
+                    case INT:
+                        printf("%d", variable.data.v_int);
+                        break;
+                    case DOUBLE:
+                        printf("%f", variable.data.v_double);
+                        break;
+                    case FLOAT:
+                        printf("%f", variable.data.v_float);
+                        break;
+                    case LONG:
+                        printf("%lld", (long long) variable.data.v_long);
+                        break;
+                    case REFERENCE:
+                        printf("%s", variable.data.v_string);
+                        break;
+                    default:
+                        cout << "tipo : " << variable.type << endl;
+                }
             }
-        }
 
-        if (method_name == "println") printf("\n");
+            if (method_name == "println") printf("\n");
+        } else {
+            std::cout << "nao sei implementar isso" << std::endl;
+            exit(1);
+        }
     } else {
-        std::cout << "nao sei implementar isso" << std::endl;
+        std::cout << "Falta isso aqui do invoke" << std::endl;
         exit(1);
     }
 
@@ -1099,7 +1104,7 @@ void imul(stack<Frame>* frame_stack) {
     Variable result;
     result.type = INT;
     result.data.v_int = (variable_1.data.v_int) * (variable_2.data.v_int);
-	
+
     frame_stack->top().operand_stack.push(result);
 
     frame_stack->top().pc += 1;
@@ -1487,10 +1492,10 @@ void iinc(stack<Frame>* frame_stack) {
     Variable local_variable = frame_stack->top().local_variables[index];
     
     u4 inc = (int32_t) (int8_t) frame_stack->top().get_method_code(frame_stack->top().pc + 2);
-    
+
     local_variable.data.v_int += inc;
     frame_stack->top().local_variables[index] = local_variable;
-    
+
     frame_stack->top().pc += 3;   
 }
 
@@ -1883,7 +1888,7 @@ void if_icmpge(stack<Frame>* frame_stack) {
     frame_stack->top().operand_stack.pop();
     Variable variable_1 = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
-	
+
 	if (variable_1.data.v_int >= variable_2.data.v_int) {
         u1 byte1 = frame_stack->top().get_method_code(frame_stack->top().pc + 1);
         u1 byte2 = frame_stack->top().get_method_code(frame_stack->top().pc + 2);
@@ -2122,7 +2127,6 @@ void getstatic(stack<Frame>* frame_stack) {
         }
     }
 
-
     Variable static_var = class_run_file->static_fields[field_name];
     
     switch (static_var.type) {
@@ -2141,7 +2145,7 @@ void getstatic(stack<Frame>* frame_stack) {
         default:
             break;
     }
-    
+
     frame_stack->top().operand_stack.push(static_var);
 
     frame_stack->top().pc += 3;
@@ -2374,7 +2378,9 @@ void invokespecial(stack<Frame>* frame_stack) {
 
     reverse(args.begin(), args.end());
 
-    ClassFile *class_file = object_variable.data.v_class_file;
+    ClassFile *class_file = build_class_file(class_name);
+
+    // ClassFile *class_file = object_variable.data.v_class_file;
 
     frame_stack->top().pc += 3;
 
@@ -2749,6 +2755,8 @@ void aaload(stack<Frame>* frame_stack) {
 
     Variable array_ref = frame_stack->top().operand_stack.top();
     frame_stack->top().operand_stack.pop();
+
+    cout << array_ref.data.v_array->elements[index.data.v_int].data.v_string << endl;
 
     frame_stack->top().operand_stack.push(array_ref.data.v_array->elements[index.data.v_int]);
 

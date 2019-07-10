@@ -7,10 +7,6 @@ void Engine::start(ClassFile class_file) {
 
     frame_stack.push(Frame(ClassRuntime(class_file), "main", "([Ljava/lang/String;)V", arguments));
 
-    // if (doesMethodExist(classRuntime, "<clinit>", "()V")) {
-    //     stackFrame.addFrame(Frame(classRuntime, "<clinit>", "()V", arguments));
-    // }
-
     while (frame_stack.size() > 0) {
         Frame curr_frame = frame_stack.top();
         u1 instruction_code = curr_frame.get_method_code(curr_frame.pc);

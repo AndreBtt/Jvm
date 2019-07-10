@@ -6,8 +6,9 @@ map<string, ClassFile*> loaded_classes;
 ClassFile* build_class_file(string class_path) {
     class_path += ".class";
     
+    cout << "carregou a classe " << class_path << endl;
+    
     if(loaded_classes.count(class_path) != 0) {
-        cout << "tbm to entrando agora" << endl;
         return loaded_classes[class_path];
     }
     
@@ -50,7 +51,7 @@ ClassFile* build_class_file(string class_path) {
     // set attributes size and create it
     set_attributes(file_pointer, class_file);
 
-    fclose(file_pointer);
+    fclose(file_pointer);    
 
     return loaded_classes[class_path] = class_file;
 }
