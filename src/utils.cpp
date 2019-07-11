@@ -1,6 +1,5 @@
 #include "utils.hpp"
 
-
 string format_UTF8(u2 utf8_length, u1 *utf8_bytes) {
     string formated_string = "";
 

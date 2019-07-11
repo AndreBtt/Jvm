@@ -1,7 +1,5 @@
 #include "instructions.hpp"
 
-#include "display.hpp"
-
 void nop(stack<Frame>* frame_stack) {
     frame_stack->top().pc += 1;
 }
@@ -216,6 +214,8 @@ void invokevirtual(stack<Frame>* frame_stack) {
     string method_name = get_constant_pool_element(constant_pool, method_name_and_type.name_index);
     string method_descriptor = get_constant_pool_element(constant_pool, method_name_and_type.descriptor_index);
 
+    // cout << class_name << " " << method_name << " " << method_descriptor << endl;
+
     if (class_name.find("java/") != string::npos) {
         if (class_name == "java/io/PrintStream" && (method_name == "print" || method_name == "println")) {
             if (method_descriptor != "()V") {
@@ -255,6 +255,25 @@ void invokevirtual(stack<Frame>* frame_stack) {
             }
 
             if (method_name == "println") printf("\n");
+        } else if(class_name == "java/lang/StringBuffer") {
+            if(method_name == "append") {
+                Variable variable = frame_stack->top().operand_stack.top();
+                // frame_stack->top().operand_stack.pop();
+
+                StringObject* print_string = (StringObject *) variable.data.object;
+                printf("%s", print_string->v_string.c_str());
+            } else if(method_name == "toString") {
+
+                // StringBuffer TA ERRADO MAS FUNCIONA !
+
+                // Variable variable = frame_stack->top().operand_stack.top();
+                // frame_stack->top().operand_stack.pop();
+
+                // StringObject* print_string = (StringObject *) variable.data.object;
+                // printf(" AAA%s", print_string->v_string.c_str());
+            }
+            
+            
         } else {
             cout << "nao sei implementar isso ainda, tem haver com string object" << endl;
             exit(1);
@@ -2317,8 +2336,8 @@ void invokespecial(stack<Frame>* frame_stack) {
     string method_descriptor = get_constant_pool_element(constant_pool, method_name_and_type.descriptor_index);
 
     // special cases
-    if ((class_name == "java/lang/Object" || class_name == "java/lang/String") && method_name == "<init>") {
-        if (class_name == "java/lang/String") {
+    if ((class_name == "java/lang/Object" || class_name == "java/lang/String" || class_name == "java/lang/StringBuffer") && method_name == "<init>") {
+        if (class_name == "java/lang/String" || class_name == "java/lang/StringBuffer") {
             frame_stack->top().operand_stack.pop();
         }
 
@@ -2521,7 +2540,7 @@ void new_instruction(stack<Frame>* frame_stack) {
     string class_name = get_constant_pool_element(constant_pool, class_info.name_index);
 
     Object* object;
-    if (class_name == "java/lang/String") {
+    if (class_name == "java/lang/String" || class_name == "java/lang/StringBuffer") {
         object = new StringObject();
     } else {
         ClassRuntime *class_run_time = build_class(class_name);
