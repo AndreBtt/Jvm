@@ -16,6 +16,7 @@ ClassRuntime* build_class(string file_name) {
     // cout << "carregou a classe " << class_path << endl;
     
     if(loaded_classes.count(class_path) != 0) {
+        // cout << file_name << " sendo recarregado" << endl;
         return loaded_classes[class_path];
     }
     

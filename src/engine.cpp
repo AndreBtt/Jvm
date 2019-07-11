@@ -9,6 +9,7 @@ void Engine::start(ClassRuntime* class_run_time) {
 
     while (frame_stack.size() > 0) {
         Frame curr_frame = frame_stack.top();
+        // cout << get_constant_pool_element(curr_frame.class_run_time->class_file->constant_pool, curr_frame.class_run_time->class_file->this_class) << endl;
         u1 instruction_code = curr_frame.get_method_code(curr_frame.pc);
 
         // use printf instead of endl to not shuffle out put
